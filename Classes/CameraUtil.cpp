@@ -27,7 +27,9 @@ void CameraUtil::initialize(Scene *now)
     
     nowScene = now;
     
-    fixedLayer = Layer::create();
+    fixedLayer = LayerColor::create(Color4B::RED);
+	//fixedLayer->setGlobalZOrder(99999999999);
+	fixedLayer->setOpacity(0);
     now->addChild(fixedLayer);
     
     this->scheduleUpdate();
@@ -43,7 +45,7 @@ void CameraUtil::addUIChild(Node *child)
 void CameraUtil::update(float dt)
 {
     Camera::getDefaultCamera()->setPosition(pos);
-    fixedLayer->setPosition(Camera::getDefaultCamera()->getPosition());
+    fixedLayer->setPosition(Camera::getDefaultCamera()->getPosition() - fixedLayer->getContentSize() / 2);
     fixedLayer->setRotation(Camera::getDefaultCamera()->getRotation());
 }
 

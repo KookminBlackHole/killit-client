@@ -23,7 +23,7 @@ bool HelloWorld::init()
     auto visibleSize = Director::getInstance()->getVisibleSize();
     Vec2 origin = visibleSize / 2;
     
-    CameraUtil::getInstance()->initialize(this);
+    CameraUtil::getInstance()->initialize(this); // asdf
     
     auto bg = LayerColor::create(Color4B::BLACK);
     this->addChild(bg);
@@ -177,7 +177,7 @@ bool HelloWorld::init()
     }, "debug");
     
     auto joystick = Joystick::create(Vec2::ZERO);
-//    joystick->setPosition(joystick->pad->getContentSize().width + 36, joystick->pad->getContentSize().height + 36);
+    joystick->setPosition(joystick->pad->getContentSize().width + 36, joystick->pad->getContentSize().height + 36);
     joystick->bind(player);
     joystick->setName("joystick");
     CameraUtil::getInstance()->addUIChild(joystick);
@@ -243,6 +243,6 @@ void HelloWorld::update(float dt) {
     
     CameraUtil::getInstance()->setPosition(player->getPosition());
 //    Camera::getDefaultCamera()->setPosition(player->getPosition());
-    
-    getChildByName("debug2")->setPosition(player->getPosition());
+
+    //getChildByName("debug2")->setPosition(CameraUtil::getInstance()->fixedLayer->getChildByName<Joystick*>("joystick")->stick->getBoundingBox().origin);
 }
