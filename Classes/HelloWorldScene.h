@@ -3,18 +3,25 @@
 
 #include "cocos2d.h"
 
-class HelloWorld : public cocos2d::Layer
+class Player;
+
+class HelloWorld : public cocos2d::Scene
 {
 public:
-    static cocos2d::Scene* createScene();
-
+    ~HelloWorld();
     virtual bool init();
     
-    // a selector callback
-    void menuCloseCallback(cocos2d::Ref* pSender);
-    
+    void update(float dt);
     // implement the "static create()" method manually
     CREATE_FUNC(HelloWorld);
+    
+public:
+    int **mapData, mapWidth, mapHeight;
+    cocos2d::Sprite ***mapTile;
+    
+    Player *player;
+    /// 맵 위에서의 플레이어 좌표
+    int pX, pY;
 };
 
 #endif // __HELLOWORLD_SCENE_H__
