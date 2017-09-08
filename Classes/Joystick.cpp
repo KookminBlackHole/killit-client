@@ -8,6 +8,7 @@
 
 #include "Joystick.h"
 #include "Player.h"
+#include "CameraUtil.h"
 
 USING_NS_CC;
 using namespace std;
@@ -59,11 +60,11 @@ bool Joystick::init() {
 void Joystick::onTouchesBegan(const vector<Touch *> &touches, Event *e) {
     for (auto &t : touches) {
         auto bb = pad->getBoundingBox();
-        if (Rect(bb.origin, bb.size + Size(20, 20)).containsPoint(this->convertTouchToNodeSpace(t))) {
+        if (Rect(bb.origin, bb.size + Size(20, 20)).containsPoint(this->convertToNodeSpace(t->getLocation() + CameraUtil::getInstance()->getPosition()))) {
             if (touchId == -1) {
                 touchId = t->getID();
-            
-                pos = this->convertTouchToNodeSpace(t);
+
+				pos = this->convertToNodeSpace(t->getLocation() + CameraUtil::getInstance()->getPosition());
                 int radius = pad->getContentSize().width / 2;
                 if (pos.getLengthSq() > radius * radius) pos = pos.getNormalized() * radius;
                 stick->setPosition(pos);
@@ -76,7 +77,7 @@ void Joystick::onTouchesBegan(const vector<Touch *> &touches, Event *e) {
 void Joystick::onTouchesMoved(const vector<Touch *> &touches, Event *e) {
     for (auto &t : touches) {
         if (touchId == t->getID()) {
-            pos = this->convertTouchToNodeSpace(t);
+            pos = this->convertToNodeSpace(t->getLocation() + CameraUtil::getInstance()->getPosition());
             int radius = pad->getContentSize().width / 2;
             if (pos.getLengthSq() > radius * radius) pos = pos.getNormalized() * radius;
             stick->setPosition(pos);
@@ -86,7 +87,6 @@ void Joystick::onTouchesMoved(const vector<Touch *> &touches, Event *e) {
 }
 
 void Joystick::onTouchesEnded(const vector<Touch *> &touches, Event *e) {
-	//MessageBoxA(0, (to_string(pos.x) + ", " + to_string(pos.y)).c_str(), 0, 0);
     touchId = -1;
     stick->setPosition(Vec2::ZERO);
     bnd->onStickEnded(pos.getNormalized(), this);

@@ -50,7 +50,7 @@ void CameraUtil::update(float dt)
 }
 
 void CameraUtil::setPosition(float x, float y)
-{
+{	
     pos.x = x;
     pos.y = y;
 }
@@ -75,5 +75,5 @@ void CameraUtil::setRelPosition(const Vec2 &pos)
 
 const Vec2 &CameraUtil::getPosition() const
 {
-    return pos;
+    return fixedLayer->getPosition();
 }
