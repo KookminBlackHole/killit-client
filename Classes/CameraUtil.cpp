@@ -27,9 +27,7 @@ void CameraUtil::initialize(Scene *now)
     
     nowScene = now;
     
-    fixedLayer = LayerColor::create(Color4B::RED);
-	//fixedLayer->setGlobalZOrder(99999999999);
-	fixedLayer->setOpacity(0);
+    fixedLayer = Layer::create();
     now->addChild(fixedLayer);
     
     this->scheduleUpdate();

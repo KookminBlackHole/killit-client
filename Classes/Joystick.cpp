@@ -1,6 +1,6 @@
 //
 //  Joystick.cpp
-//  Battle
+//  Killit
 //
 //  Created by a on 2017. 9. 4..
 //

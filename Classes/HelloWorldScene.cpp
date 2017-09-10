@@ -69,7 +69,7 @@ bool HelloWorld::init()
         1,2,1,2,2,2,2,2,2,2,2,2,2,2,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,
         1,2,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,
         1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,
-        1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,
+        1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,
         1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,
         1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,
         1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,
@@ -98,7 +98,8 @@ bool HelloWorld::init()
     
     mapWidth = 64;
     mapHeight = 64;
-    pX = pY = 5;
+	pX = 20;
+	pY = 28;
     
     /// 맵 데이터 초기화
     mapData = new int*[mapHeight];
@@ -158,11 +159,8 @@ bool HelloWorld::init()
     for (auto &i : player->getChildren()) {
         i->setGlobalZOrder(100100);
     }
-    player->setPosition(origin);
+    player->setPosition(Vec2(48 * pX - (24 * mapWidth - origin.x), 48 * pY - (24 * mapHeight - origin.y)));
     this->addChild(player);
-    
-    pX = (player->getPositionX() + (24 * mapWidth - origin.x)) / 48;
-    pY = (player->getPositionY() + (24 * mapHeight - origin.y)) / 48;
     
     auto lb = Label::createWithSystemFont("x: 0\ny: 0", "", 24);
     lb->setTextColor(Color4B::RED);
@@ -170,10 +168,10 @@ bool HelloWorld::init()
     lb->setAnchorPoint(Vec2(0, 1));
     lb->setName("debug1");
     lb->setGlobalZOrder(1000000);
-    this->addChild(lb);
+	CameraUtil::getInstance()->addUIChild(lb);
     
     this->schedule([=](float dt){
-        lb->setString("x: " + to_string(pX) + " y: " + to_string(pY) + "\nangle: " + to_string(CC_RADIANS_TO_DEGREES(player->angle.getAngle())));
+        //lb->setString("x: " + to_string(pX) + " y: " + to_string(pY) + "\nangle: " + to_string(CC_RADIANS_TO_DEGREES(player->angle.getAngle())));
     }, "debug");
     
     auto joystick = Joystick::create(Vec2::ZERO);
@@ -181,7 +179,6 @@ bool HelloWorld::init()
     joystick->bind(player);
     joystick->setName("joystick");
     CameraUtil::getInstance()->addUIChild(joystick);
-//    this->addChild(joystick);
     
     joystick->setGlobalZOrder(1000000);
     for (auto &i : joystick->getChildren()) {
@@ -215,6 +212,7 @@ void HelloWorld::update(float dt) {
     for (int i = max(pY - 5, 0); i < min(pY + 5, mapHeight); i++) {
         for (int j = max(pX - 5, 0); j < min(pX + 5, mapWidth); j++) {
             mapTile[i][j]->setVisible(true);
+			mapTile[i][j]->setColor(Color3B::WHITE);
         }
     }
     
@@ -223,26 +221,52 @@ void HelloWorld::update(float dt) {
     for (auto &i : player->getChildren()) {
         i->setGlobalZOrder(zorder);
     }
+
+	if (player->touchJoystick) {
+		player->pos = player->getPosition() + player->angle * player->speed;
+	}
     
     for (int i = max(pY - 1, 0); i < min(pY + 2, mapHeight); i++) {
         for (int j = max(pX - 1, 0); j < min(pX + 2, mapWidth); j++) {
             if (mapData[i][j] != 0) {
-                if (Rect(player->getPosition(), player->player->getBoundingBox().size * 2).intersectsRect(Rect(mapTile[i][j]->getPosition(), Size(48, 48)))) {
-                    auto p = player->angle * player->speed;
+				auto playerBB = Rect(player->pos, player->player->getBoundingBox().size * 2);
+				auto otherBB = Rect(mapTile[i][j]->getPosition(), Size(48, 48));
+                if (playerBB.intersectsRect(otherBB)) {
+					mapTile[i][j]->setColor(Color3B::RED);
+
+					/// 0: left, 1: right, 2: up, 3: down
+					int dir = 0;
+
+					float angle = CC_RADIANS_TO_DEGREES((playerBB.origin - otherBB.origin).getAngle());
+
+					if (angle > -45 && angle <= 45) dir = 1;
+					else if (angle > 45 && angle <= 135) dir = 2;
+					else if ((angle > 135 && angle <= 180) || (angle < -135 && angle >= -180)) dir = 0;
+					else dir = 3;
                     
-                    player->setPosition(player->getPosition() - p);
-                    float angle = CC_RADIANS_TO_DEGREES(player->angle.getAngle());
-                    auto n = Vec2(0, 1);//((angle > 45 && angle < 45) || (angle > -135 && angle < -45)) ? Vec2(0, 1) : Vec2(1, 0);
-                    auto s = p - n * (p.dot(n));
-                    
-                    player->setPosition(player->getPosition() + s);
+					if (dir == 0) {
+						player->pos.x = otherBB.getMinX() - 48;
+					} else if (dir == 1) {
+						player->pos.x = otherBB.getMaxX();
+					} else if (dir == 2) {
+						player->pos.y = otherBB.getMaxY();
+					} else {
+						player->pos.y = otherBB.getMinY() - 48;
+					}
+
+					//auto p = player->angle * player->speed;
+                    //player->pos = player->pos - p;
+                    //float angle = CC_RADIANS_TO_DEGREES(player->angle.getAngle());
+                    //auto n = dir == 0 ? Vec2(1, 0) : Vec2(0, 1);
+                    //auto s = p - n * (p.dot(n));
+                    //
+                    //player->setPosition(player->getPosition() + s);
                 }
             }
         }
     }
-    
-    CameraUtil::getInstance()->setPosition(player->getPosition());
-//    Camera::getDefaultCamera()->setPosition(player->getPosition());
 
-    //getChildByName("debug2")->setPosition(CameraUtil::getInstance()->fixedLayer->getChildByName<Joystick*>("joystick")->stick->getBoundingBox().origin);
+	player->setPosition(player->pos);
+     
+    CameraUtil::getInstance()->setPosition(player->getPosition());
 }

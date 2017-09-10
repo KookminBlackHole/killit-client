@@ -1,6 +1,6 @@
 //
 //  Player.cpp
-//  Battle
+//  Killit
 //
 //  Created by a on 2017. 9. 4..
 //
@@ -43,9 +43,6 @@ bool Player::init() {
 }
 
 void Player::update(float dt) {
-    if (touchJoystick) {
-        this->setPosition(this->getPosition() + angle * speed);
-    }
 }
 
 void Player::onStickBegan(Vec2 angle, Ref *pSender) {

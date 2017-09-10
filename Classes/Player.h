@@ -1,6 +1,6 @@
 //
 //  Player.h
-//  Battle
+//  Killit
 //
 //  Created by a on 2017. 9. 4..
 //
@@ -24,10 +24,10 @@ public:
     
 public:
     cocos2d::Sprite *player, *arrow;
-    cocos2d::Vec2 angle;
+    cocos2d::Vec2 angle, pos;
     bool touchJoystick = false;
     
-    float speed = 2;
+    float speed = 3;
     
 };
 
