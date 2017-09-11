@@ -241,13 +241,6 @@ void HelloWorld::update(float dt) {
         }
     }
     
-//    /// 안개 투명도 설정
-//    for (int i = max(pY - 4, 0); i < min(pY + 5, mapHeight); i++) {
-//        for (int j = max(pX - 4, 0); j < min(pX + 5, mapWidth); j++) {
-//            mapFog[i][j]->setOpacity(255 * 1.0f);
-//        }
-//    }
-    
     /// 플레이어 좌표를 타일맵 좌표로 변환
     pX = (player->getPositionX() + (24 * mapWidth - origin.x)) / 48;
     pY = (player->getPositionY() + (24 * mapHeight - origin.y)) / 48;
@@ -267,8 +260,9 @@ void HelloWorld::update(float dt) {
         for (int k = 0; k < 360; k += 2) {
             float x = player->getPositionX() + cos(CC_DEGREES_TO_RADIANS(k)) * i * 15;
             float y = player->getPositionY() + sin(CC_DEGREES_TO_RADIANS(k)) * i * 15;
-            int gX = clampf((x + (24 * mapWidth - origin.x)) / 48, 0, mapWidth - 1);
-            int gY = clampf((y + (24 * mapHeight - origin.y)) / 48, 0, mapHeight - 1);
+            int gX = (x + (24 * mapWidth - origin.x)) / 48;
+            int gY = (y + (24 * mapHeight - origin.y)) / 48;
+            if (gY > mapHeight - 1 || gY < 0 || gX > mapWidth - 1 || gX < 0) continue;
             mapFog[gY][gX]->setOpacity(255 * MAX(((i - 15) / 25.0f), 0));
         }
     }
