@@ -19,6 +19,9 @@ HelloWorld::~HelloWorld() {
     
     for (int i = 0; i < mapHeight; i++) delete[] mapObjects[i];
     delete[] mapObjects;
+    
+    for (int i = 0; i < mapHeight; i++) delete[] mapFog[i];
+    delete[] mapFog;
 }
 
 // on "init" you need to initialize your instance
@@ -118,13 +121,18 @@ bool HelloWorld::init()
     
     /// 맵 타일 초기화 및 맵 데이터 매핑
     mapTile = new Sprite**[mapHeight];
+    mapObjects = new Sprite**[mapHeight];
+    mapFog = new Sprite**[mapHeight];
     for (int i = 0; i < mapHeight; i++) {
         mapTile[i] = new Sprite*[mapWidth];
+        mapObjects[i] = new Sprite*[mapWidth];
+        mapFog[i] = new Sprite*[mapWidth];
         for (int j = 0; j < mapWidth; j++) {
             int tileSize = 24 * 2;
             Vec2 pos = Vec2(j * tileSize + origin.x - tileSize * mapWidth * 0.5 + tileSize * 0.5,
                             i * tileSize + origin.y - tileSize * mapHeight * 0.5 + tileSize * 0.5);
             
+            /// 맵 타일 생성
             switch(mapData[i][j]) {
                 case 0:
                 case 2:
@@ -143,19 +151,8 @@ bool HelloWorld::init()
             mapTile[i][j]->setPosition(pos);
             mapTile[i][j]->setVisible(false);
             this->addChild(mapTile[i][j]);
-        }
-        zorder -= 1;
-    }
-    
-    zorder = ZORDER::WALL;
-    mapObjects = new Sprite**[mapHeight];
-    for (int i = 0; i < mapHeight; i++) {
-        mapObjects[i] = new Sprite*[mapWidth];
-        for (int j = 0; j < mapWidth; j++) {
-            int tileSize = 24 * 2;
-            Vec2 pos = Vec2(j * tileSize + origin.x - tileSize * mapWidth * 0.5 + tileSize * 0.5,
-                            i * tileSize + origin.y - tileSize * mapHeight * 0.5 + tileSize * 0.5);
             
+            /// 맵 오브젝트 생성
             switch(mapData[i][j]) {
                 case 2:
                     mapObjects[i][j] = Sprite::create("res/tile2.png");
@@ -167,7 +164,17 @@ bool HelloWorld::init()
                     this->addChild(mapObjects[i][j]);
                     break;
             }
+            
+            /// 맵 시야 생성
+            mapFog[i][j] = Sprite::create("res/tile4.png");
+            mapFog[i][j]->setGlobalZOrder(ZORDER::FOG);
+            mapFog[i][j]->getTexture()->setAliasTexParameters();
+            mapFog[i][j]->setScale(2);
+            mapFog[i][j]->setPosition(pos);
+            mapFog[i][j]->setVisible(false);
+            this->addChild(mapFog[i][j]);
         }
+        zorder -= 1;
     }
     
     player = Player::create();
@@ -228,9 +235,18 @@ void HelloWorld::update(float dt) {
     for (int i = max(pY - 9, 0); i < min(pY + 9, mapHeight); i++) {
         for (int j = max(pX - 14, 0); j < min(pX + 15, mapWidth); j++) {
             mapTile[i][j]->setVisible(false);
+            mapFog[i][j]->setVisible(false);
+            mapFog[i][j]->setOpacity(255 * 1.0f);
             if (mapObjects[i][j] != nullptr) mapObjects[i][j]->setVisible(false);
         }
     }
+    
+//    /// 안개 투명도 설정
+//    for (int i = max(pY - 4, 0); i < min(pY + 5, mapHeight); i++) {
+//        for (int j = max(pX - 4, 0); j < min(pX + 5, mapWidth); j++) {
+//            mapFog[i][j]->setOpacity(255 * 1.0f);
+//        }
+//    }
     
     /// 플레이어 좌표를 타일맵 좌표로 변환
     pX = (player->getPositionX() + (24 * mapWidth - origin.x)) / 48;
@@ -241,7 +257,19 @@ void HelloWorld::update(float dt) {
         for (int j = max(pX - 14, 0); j < min(pX + 15, mapWidth); j++) {
             mapTile[i][j]->setVisible(true);
             mapTile[i][j]->setColor(Color3B::WHITE);
+            mapFog[i][j]->setVisible(true);
             if (mapObjects[i][j] != nullptr) mapObjects[i][j]->setVisible(true);
+        }
+    }
+    
+    /// 안개 투명도 설정
+    for (int i = 0; i < 40; i++) {
+        for (int k = 0; k < 360; k += 2) {
+            float x = player->getPositionX() + cos(CC_DEGREES_TO_RADIANS(k)) * i * 15;
+            float y = player->getPositionY() + sin(CC_DEGREES_TO_RADIANS(k)) * i * 15;
+            int gX = clampf((x + (24 * mapWidth - origin.x)) / 48, 0, mapWidth - 1);
+            int gY = clampf((y + (24 * mapHeight - origin.y)) / 48, 0, mapHeight - 1);
+            mapFog[gY][gX]->setOpacity(255 * MAX(((i - 15) / 25.0f), 0));
         }
     }
     

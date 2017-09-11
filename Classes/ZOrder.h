@@ -13,6 +13,7 @@ enum ZORDER {
     GROUND = 99899,
     WALL = 99999,
     PLAYER = 100000,
+    FOG = 100010,
     UI = 100100,
 };
 

@@ -17,7 +17,7 @@ public:
     
 public:
     int **mapData, mapWidth, mapHeight;
-    cocos2d::Sprite ***mapTile, ***mapObjects;
+    cocos2d::Sprite ***mapTile, ***mapObjects, ***mapFog;
     
     Player *player;
     /// 맵 위에서의 플레이어 좌표
