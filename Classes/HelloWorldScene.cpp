@@ -257,20 +257,21 @@ void HelloWorld::update(float dt) {
     }
     
     /// 안개 투명도 설정
-	for (int r = 0; r < 360; r += 2) {
+	for (float r = 0; r < 360; r += 1.0f) {
 		bool escape = false;
 		for (int i = 0; i < 20; i++) {
 			if (escape) break;
 
 			float x = player->getPositionX() + cos(CC_DEGREES_TO_RADIANS(r)) * i * 24;
 			float y = player->getPositionY() + sin(CC_DEGREES_TO_RADIANS(r)) * i * 24;
+            
 			int gX = (x + (24 * mapWidth - origin.x)) / 48;
 			int gY = (y + (24 * mapHeight - origin.y)) / 48;
 			if (gY > mapHeight - 1 || gY < 0 || gX > mapWidth - 1 || gX < 0) continue;
 
 			if (mapData[gY][gX] == 1 || mapData[gY][gX] == 2) escape = true;
 
-			mapFog[gY][gX]->setOpacity(255 * MAX(((i - 10) / 10.0f), 0));
+			mapFog[gY][gX]->setOpacity(255 * MAX(((i - 12.0f) / 8.0f), 0));
 		}
 	}
     

@@ -27,7 +27,7 @@ public:
     cocos2d::Vec2 angle, pos;
     bool touchJoystick = false;
     
-    float speed = 3;
+    float speed = 4.5f;
     
 };
 
