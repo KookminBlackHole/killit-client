@@ -1,6 +1,7 @@
 #include "HelloWorldScene.h"
 #include "SimpleAudioEngine.h"
 #include "Joystick.h"
+#include "Button.h"
 #include "Player.h"
 #include "CameraUtil.h"
 #include "ZOrder.h"
@@ -204,25 +205,38 @@ bool HelloWorld::init()
     joystick->setName("joystick");
     CameraUtil::getInstance()->addUIChild(joystick);
     
-    auto interaction = Sprite::create("res/interaction.png");
-    interaction->setPosition(Vec2(visibleSize.width - interaction->getContentSize().width - 36, interaction->getContentSize().height + 36));
-    interaction->getTexture()->setAliasTexParameters();
-    interaction->setGlobalZOrder(ZORDER::UI);
-    interaction->setOpacity(255 * 0.5f);
-    interaction->setScale(2);
-    CameraUtil::getInstance()->addUIChild(interaction);
+//    auto interaction = MenuItemImage::create("res/interaction.png", "res/interaction.png");
+//    interaction->getNormalImage()->setGlobalZOrder(ZORDER::UI);
+//    interaction->getSelectedImage()->setGlobalZOrder(ZORDER::UI);
+//    ((Sprite*)interaction->getNormalImage())->getTexture()->setAliasTexParameters();
+//    ((Sprite*)interaction->getSelectedImage())->getTexture()->setAliasTexParameters();
+//    interaction->setOpacity(255 * 0.5f);
+//    interaction->setPosition(Vec2(visibleSize.width - interaction->getContentSize().width - 36, interaction->getContentSize().height + 36) / 2);
+//    interaction->setCallback([&](Ref *r) {
+//        switch(state) {
+//            case 0:
+//                break;
+//            case 2:
+//                map
+//                break;
+//            case 3:
+//                
+//                break;
+//        }
+//    });
+//
+    auto button = Button::create("res/interaction.png");
+    button->setScale(2);
+    button->setPosition(Vec2(visibleSize.width - button->getContentSize().width - 36, button->getContentSize().height + 36));
+    button->setOpacity(255 * 0.5f);
+    button->getTexture()->setAliasTexParameters();
+    button->setGlobalZOrder(ZORDER::UI);
+    CameraUtil::getInstance()->addUIChild(button);
     
     joystick->setGlobalZOrder(ZORDER::UI);
     for (auto &i : joystick->getChildren()) {
         i->setGlobalZOrder(ZORDER::UI);
     }
-    
-    auto dd = DrawNode::create(2);
-    dd->setName("debug2");
-    dd->drawRect(-Vec2(24, 24), Vec2(24, 24), Color4F::GREEN);
-    dd->setPosition(player->getPosition());
-    dd->setGlobalZOrder(ZORDER::UI);
-    this->addChild(dd);
     
     scheduleUpdate();
     
@@ -257,7 +271,7 @@ void HelloWorld::update(float dt) {
     }
     
     /// 안개 투명도 설정
-	for (float r = 0; r < 360; r += 1.0f) {
+	for (float r = 0; r < 360; r += 0.5f) {
 		bool escape = false;
 		for (int i = 0; i < 20; i++) {
 			if (escape) break;
@@ -290,8 +304,8 @@ void HelloWorld::update(float dt) {
     /// 현재 위치를 기준으로 3x3칸을 충돌 검사를 함
     for (int i = max(pY - 1, 0); i < min(pY + 2, mapHeight); i++) {
         for (int j = max(pX - 1, 0); j < min(pX + 2, mapWidth); j++) {
-            /// 바닥이 아니면
-            if (mapData[i][j] != 0) {
+            /// 벽이나 문이면
+            if (mapData[i][j] == 1 || mapData[i][j] == 2) {
                 /// 플레이어와 상대 충돌체의 BoundingBox를 가져옴
 				auto playerBB = Rect(player->pos, player->player->getBoundingBox().size * 2);
 				auto otherBB = Rect(mapTile[i][j]->getPosition(), Size(48, 48));
@@ -320,11 +334,32 @@ void HelloWorld::update(float dt) {
 					}
                 }
             }
+            
         }
+    }
+    
+    /// 게임 오브젝트 검사
+    Vec2 pos = player->getPosition() + player->angle * 48;
+    
+    int xx = (pos.x + (24 * mapWidth - origin.x)) / 48;
+    int yy = (pos.y + (24 * mapHeight - origin.y)) / 48;
+    
+    mapTile[yy][xx]->setColor(Color3B::BLUE);
+    
+    state = 0;
+    switch(mapData[yy][xx]) {
+        case 2:
+            mapTile[yy][xx]->setColor(Color3B::GREEN);
+            state = 2;
+            break;
+        case 3:
+            mapTile[yy][xx]->setColor(Color3B::YELLOW);
+            state = 3;
+            break;
     }
 
     /// 계산된 플레이어 위치 실제 적용
 	player->setPosition(player->pos);
-     
+    
     CameraUtil::getInstance()->setPosition(player->getPosition());
 }

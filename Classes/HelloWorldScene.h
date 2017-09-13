@@ -19,6 +19,8 @@ public:
     int **mapData, mapWidth, mapHeight;
     cocos2d::Sprite ***mapTile, ***mapObjects, ***mapFog;
     
+    int state = 0;
+    
     Player *player;
     /// 맵 위에서의 플레이어 좌표
     int pX, pY;
