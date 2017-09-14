@@ -3,6 +3,8 @@
 
 #include "cocos2d.h"
 
+#include "Button.h"
+
 class Player;
 
 class HelloWorld : public cocos2d::Scene
@@ -22,6 +24,7 @@ public:
     int state = 0;
     
     Player *player;
+	Button * interactButton;
     /// 맵 위에서의 플레이어 좌표
     int pX, pY;
 };

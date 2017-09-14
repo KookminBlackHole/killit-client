@@ -15,7 +15,12 @@ class Button : public cocos2d::Sprite {
 public:
     static Button *create(const std::string &filename);
     
+	void initialize();
+
 public:
+	void onTouchBegan(std::function<void()>);
+
+	std::function<void()> callback;
     
 };
 

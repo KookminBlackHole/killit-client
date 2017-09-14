@@ -225,13 +225,13 @@ bool HelloWorld::init()
 //        }
 //    });
 //
-    auto button = Button::create("res/interaction.png");
-    button->setScale(2);
-    button->setPosition(Vec2(visibleSize.width - button->getContentSize().width - 36, button->getContentSize().height + 36));
-    button->setOpacity(255 * 0.5f);
-    button->getTexture()->setAliasTexParameters();
-    button->setGlobalZOrder(ZORDER::UI);
-    CameraUtil::getInstance()->addUIChild(button);
+    interactButton = Button::create("res/interaction.png");
+	interactButton->setScale(2);
+	interactButton->setPosition(Vec2(visibleSize.width - interactButton->getContentSize().width - 36, interactButton->getContentSize().height + 36));
+	interactButton->setOpacity(255 * 0.5f);
+	interactButton->getTexture()->setAliasTexParameters();
+	interactButton->setGlobalZOrder(ZORDER::UI);
+    CameraUtil::getInstance()->addUIChild(interactButton);
     
     joystick->setGlobalZOrder(ZORDER::UI);
     for (auto &i : joystick->getChildren()) {
@@ -357,6 +357,14 @@ void HelloWorld::update(float dt) {
             state = 3;
             break;
     }
+
+	//interactButton->onTouchBegan([&] {
+	//	if (state == 2) {
+	//		mapData[yy][xx] = 3;
+	//	} else if (state == 3) {
+	//		mapData[yy][xx] = 2;
+	//	}
+	//});
 
     /// 계산된 플레이어 위치 실제 적용
 	player->setPosition(player->pos);
