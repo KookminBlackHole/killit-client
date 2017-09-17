@@ -39,3 +39,4 @@ void Button::initialize() {
 void Button::onTouchBegan(std::function<void()> callback) {
 	this->callback = callback;
 }
+

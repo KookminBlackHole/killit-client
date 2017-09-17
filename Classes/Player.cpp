@@ -103,7 +103,7 @@ void Player::collision() {
 	for (int i = MAX(gY - 1, 0); i < MIN(gY + 2, parent->mapHeight); i++) {
 		for (int j = MAX(gX - 1, 0); j < MIN(gX + 2, parent->mapWidth); j++) {
 			/// 벽이나 문이면
-			if (parent->mapData[i][j] == 1 || parent->mapData[i][j] == 2) {
+			if (parent->checkSolidObject(j, i)) {
 				/// 플레이어와 상대 충돌체의 BoundingBox를 가져옴
 				auto playerBB = Rect(tempPosition, player->getBoundingBox().size * 2);
 				auto otherBB = Rect(parent->mapTile[i][j]->getPosition(), Size(48, 48));

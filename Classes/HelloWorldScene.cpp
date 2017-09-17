@@ -69,40 +69,39 @@ bool HelloWorld::init()
             int tileSize = 24 * 2;
             Vec2 pos = Vec2(j * tileSize + origin.x - tileSize * mapWidth * 0.5 + tileSize * 0.5,
                             i * tileSize + origin.y - tileSize * mapHeight * 0.5 + tileSize * 0.5);
-            
-            /// 맵 타일 생성
-            switch(mapData[i][j]) {
-                case 0:
-                case 2:
-                    mapTile[i][j] = Sprite::create("res/tile0.png");
-                    mapTile[i][j]->setGlobalZOrder(zorder - 1000);
-                    break;
-                case 1:
-                    mapTile[i][j] = Sprite::create("res/tile1.png");
-                    mapTile[i][j]->setAnchorPoint(Vec2(0.5f, 1/3.0f));
-                    mapTile[i][j]->setGlobalZOrder(zorder);
-                    break;
-            }
+
+			mapObjects[i][j] = nullptr;
+			if (mapData[i][j] <= 10) { /// 게임 오브젝트 및 바닥
+				/// 게임 오브젝트 생성
+				switch (mapData[i][j]) {
+				case 1: /// 문 (문 밑에도 바닥이 필요해서 break 안씀)
+					mapObjects[i][j] = Sprite::create("res/tile2.png");
+					mapObjects[i][j]->setGlobalZOrder(zorder);
+					mapObjects[i][j]->getTexture()->setAliasTexParameters();
+					mapObjects[i][j]->setScale(2);
+					mapObjects[i][j]->setPosition(pos);
+					mapObjects[i][j]->setVisible(false);
+					this->addChild(mapObjects[i][j]);
+				case 0: /// 바닥
+					mapTile[i][j] = Sprite::create("res/tile0.png");
+					mapTile[i][j]->setGlobalZOrder(zorder - 1000);
+					break;
+				}
+			} else { /// 맵 타일
+				int idx = mapData[i][j] - 11;
+
+				mapTile[i][j] = Sprite::create("res/tileset_wall.png");
+				mapTile[i][j]->setAnchorPoint(Vec2(0.5f, 1 / 3.0f));
+				mapTile[i][j]->setGlobalZOrder(zorder);
+
+				mapTile[i][j]->setTextureRect(Rect(24 * (idx % 4), 36 * (idx / 4), 24 ,36));
+			}
             
             mapTile[i][j]->getTexture()->setAliasTexParameters();
             mapTile[i][j]->setScale(2);
             mapTile[i][j]->setPosition(pos);
             mapTile[i][j]->setVisible(false);
             this->addChild(mapTile[i][j]);
-            
-            /// 맵 오브젝트 생성
-			mapObjects[i][j] = nullptr;
-            switch(mapData[i][j]) {
-                case 2:
-                    mapObjects[i][j] = Sprite::create("res/tile2.png");
-                    mapObjects[i][j]->setGlobalZOrder(zorder);
-                    mapObjects[i][j]->getTexture()->setAliasTexParameters();
-                    mapObjects[i][j]->setScale(2);
-                    mapObjects[i][j]->setPosition(pos);
-                    mapObjects[i][j]->setVisible(false);
-                    this->addChild(mapObjects[i][j]);
-                    break;
-            }
 
             /// 맵 시야 생성
             mapFog[i][j] = Sprite::create("res/tile4.png");
@@ -222,7 +221,7 @@ void HelloWorld::update(float dt) {
 			int gY = (y + (24 * mapHeight - origin.y)) / 48;
 			if (gY > mapHeight - 1 || gY < 0 || gX > mapWidth - 1 || gX < 0) continue;
 
-			if (mapData[gY][gX] == 1 || mapData[gY][gX] == 2) escape = true;
+			if (checkSolidObject(gX, gY)) escape = true;
 
 			mapFog[gY][gX]->setOpacity(255 * MAX(((i - 12.0f) / 8.0f), 0));
 		}
@@ -233,4 +232,14 @@ void HelloWorld::update(float dt) {
 	player->collision();
 	player->checkGameObjects();
 	player->updatePosition();
+}
+
+bool HelloWorld::checkSolidObject(int x, int y) {
+	int value = mapData[y][x];
+	if (value <= 10) { /// 게임 오브젝트
+		if (value == 1) return true; /// 문
+	} else { /// 블록 타일
+		return true;
+	}
+	return false;
 }

@@ -16,6 +16,8 @@ public:
     void update(float dt);
     // implement the "static create()" method manually
     CREATE_FUNC(HelloWorld);
+
+	bool checkSolidObject(int x, int y);
     
 public:
     int **mapData, mapWidth, mapHeight;
