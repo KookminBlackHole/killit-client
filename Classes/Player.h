@@ -37,7 +37,7 @@ public:
 	void checkGameObjects();
     
 public:
-    cocos2d::Sprite *player, *arrow;
+    cocos2d::Sprite *player;
 	/// angle: 플레이어가 보고 있는 각도, pos: 플레이어 임시 좌표
     cocos2d::Vec2 angle, tempPosition;
 

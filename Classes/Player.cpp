@@ -36,12 +36,6 @@ bool Player::init() {
     player = Sprite::create("res/player.png");
     player->getTexture()->setAliasTexParameters();
     this->addChild(player);
-    
-    arrow = Sprite::create("res/arrow.png");
-    arrow->getTexture()->setAliasTexParameters();
-    arrow->setPosition(cos(CC_DEGREES_TO_RADIANS(30)) * 16, sin(CC_DEGREES_TO_RADIANS(30)) * 16);
-    arrow->setRotation(90 - 30);
-    this->addChild(arrow);
 
 	/// 플레이어 zorder 설정
 	this->setGlobalZOrder(ZORDER::PLAYER);
@@ -49,20 +43,24 @@ bool Player::init() {
 		i->setGlobalZOrder(ZORDER::PLAYER);
 	}
     
-    //scheduleUpdate();
+    scheduleUpdate();
     
     return true;
 }
 
 void Player::update(float dt) {
+	float pAngle = CC_RADIANS_TO_DEGREES(angle.getAngle());
+	if (pAngle > 90 || pAngle <= -90) { /// 왼쪽
+		player->setFlippedX(true);
+	} else {
+		player->setFlippedX(false);
+	}
 }
 
 void Player::onStickBegan(Vec2 angle, Ref *pSender) {
     this->angle = angle;
     
     float a = angle.getAngle();
-    arrow->setRotation(90 - CC_RADIANS_TO_DEGREES(a));
-    arrow->setPosition(cos(a) * 16, sin(a) * 16);
     touchJoystick = true;
 }
 
@@ -70,8 +68,6 @@ void Player::onStickMoved(Vec2 angle, Ref *pSender) {
     this->angle = angle;
     
     float a = angle.getAngle();
-    arrow->setRotation(90 - CC_RADIANS_TO_DEGREES(a));
-    arrow->setPosition(cos(a) * 16, sin(a) * 16);
 }
 
 void Player::onStickEnded(Vec2 angle, Ref *pSender) {
@@ -105,7 +101,7 @@ void Player::collision() {
 			/// 벽이나 문이면
 			if (parent->checkSolidObject(j, i)) {
 				/// 플레이어와 상대 충돌체의 BoundingBox를 가져옴
-				auto playerBB = Rect(tempPosition, player->getBoundingBox().size * 2);
+				auto playerBB = Rect(Vec2(tempPosition.x + player->getContentSize().width / 2, tempPosition.y), player->getContentSize() * 2);
 				auto otherBB = Rect(parent->mapTile[i][j]->getPosition(), Size(48, 48));
 				/// 충돌 검사
 				if (playerBB.intersectsRect(otherBB)) {
@@ -121,15 +117,15 @@ void Player::collision() {
 					else if ((angle > 135 && angle <= 180) || (angle < -135 && angle >= -180)) dir = 0;
 					else dir = 3;
 
-					if (dir == 0) {
-						tempPosition.x = otherBB.getMinX() - 48;
-					} else if (dir == 1) {
-						tempPosition.x = otherBB.getMaxX();
-					} else if (dir == 2) {
-						tempPosition.y = otherBB.getMaxY();
-					} else {
-						tempPosition.y = otherBB.getMinY() - 48;
-					}
+					//if (dir == 0) {
+					//	tempPosition.x = otherBB.getMinX() - 40;
+					//} else if (dir == 1) {
+					//	tempPosition.x = otherBB.getMaxX() + 8;
+					//} else if (dir == 2) {
+					//	tempPosition.y = otherBB.getMaxY();
+					//} else {
+					//	tempPosition.y = otherBB.getMinY() - 48;
+					//}
 				}
 			}
 
@@ -163,17 +159,17 @@ void Player::checkGameObjects() {
 	int xx = (check.x + (24 * parent->mapWidth - origin.x)) / 48;
 	int yy = (check.y + (24 * parent->mapHeight - origin.y)) / 48;
 
-	parent->mapTile[yy][xx]->setColor(Color3B::BLUE);
+	//parent->mapTile[yy][xx]->setColor(Color3B::BLUE);
 
 	//state = 0;
 	switch (parent->mapData[yy][xx]) {
-	case 2:
+	case 1:
 		parent->mapTile[yy][xx]->setColor(Color3B::GREEN);
-		//state = 2;
+		//state = 1;
 		break;
-	case 3:
+	case 2:
 		parent->mapTile[yy][xx]->setColor(Color3B::YELLOW);
-		//state = 3;
+		//state = 2;
 		break;
 	}
 }

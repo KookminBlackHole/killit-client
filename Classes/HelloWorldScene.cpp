@@ -108,7 +108,7 @@ bool HelloWorld::init()
             mapFog[i][j]->setGlobalZOrder(ZORDER::FOG);
             mapFog[i][j]->getTexture()->setAliasTexParameters();
             mapFog[i][j]->setScale(2);
-            mapFog[i][j]->setPosition(pos);
+            mapFog[i][j]->setPosition(pos.x, pos.y + 24);
             mapFog[i][j]->setVisible(false);
             this->addChild(mapFog[i][j]);
         }
