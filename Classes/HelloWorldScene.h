@@ -21,12 +21,10 @@ public:
     int **mapData, mapWidth, mapHeight;
     cocos2d::Sprite ***mapTile, ***mapObjects, ***mapFog;
     
-    int state = 0;
+    //int state = 0;
     
     Player *player;
 	Button * interactButton;
-    /// 맵 위에서의 플레이어 좌표
-    int pX, pY;
 };
 
 #endif // __HELLOWORLD_SCENE_H__
