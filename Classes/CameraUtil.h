@@ -34,12 +34,8 @@ public:
     
     void setPosition(float x, float y);
     void setPosition(const cocos2d::Vec2 &pos);
-    void setRelPosition(float x, float y);
-    void setRelPosition(const cocos2d::Vec2 &pos);
     
     const cocos2d::Vec2 &getPosition() const;
-    
-    void update(float dt) override;
     
 };
 #endif /* CameraUtil_h */

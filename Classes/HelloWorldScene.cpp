@@ -67,14 +67,14 @@ bool HelloWorld::init()
         mapFog[i] = new Sprite*[mapWidth];
         for (int j = 0; j < mapWidth; j++) {
             int tileSize = 24 * 2;
-            Vec2 pos = Vec2(j * tileSize + origin.x - tileSize * mapWidth * 0.5 + tileSize * 0.5,
-                            i * tileSize + origin.y - tileSize * mapHeight * 0.5 + tileSize * 0.5);
+            Vec2 pos = Vec2(j * tileSize + origin.x - tileSize * mapWidth * 0.5,
+                            i * tileSize + origin.y - tileSize * mapHeight * 0.5);
 
 			mapObjects[i][j] = nullptr;
 			if (mapData[i][j] <= 10) { /// 게임 오브젝트 및 바닥
 				/// 게임 오브젝트 생성
 				switch (mapData[i][j]) {
-				case 1: /// 문 (문 밑에도 바닥이 필요해서 break 안씀)
+				case 1: /// 문 (오브젝트 밑에도 바닥이 필요해서 break 안씀)
 					mapObjects[i][j] = Sprite::create("res/tile2.png");
 					mapObjects[i][j]->setGlobalZOrder(zorder);
 					mapObjects[i][j]->getTexture()->setAliasTexParameters();
@@ -115,8 +115,8 @@ bool HelloWorld::init()
         zorder -= 1;
     }
     
-    player = Player::create(20, 28);
-	player->calculateGridCoord(mapWidth, mapHeight);
+    player = Player::create(2, 2);
+	player->gridCoordUpdate(mapWidth, mapHeight);
     this->addChild(player);
     
     auto lb = Label::createWithSystemFont("x: 0\ny: 0", "", 24);
@@ -127,9 +127,9 @@ bool HelloWorld::init()
     lb->setGlobalZOrder(ZORDER::UI);
 	CameraUtil::getInstance()->addUIChild(lb);
     
-//    this->schedule([=](float dt){
-//        //lb->setString("x: " + to_string(pX) + " y: " + to_string(pY) + "\nangle: " + to_string(CC_RADIANS_TO_DEGREES(player->angle.getAngle())));
-//    }, "debug");
+    this->schedule([=](float dt){
+        lb->setString("x: " + to_string(player->gX) + " y: " + to_string(player->gY));
+    }, "debug");
 
 	auto uim = UIManager::create();
 	CameraUtil::getInstance()->addUIChild(uim);

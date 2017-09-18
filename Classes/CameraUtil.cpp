@@ -12,8 +12,7 @@ USING_NS_CC;
 
 CameraUtil *CameraUtil::instance = new CameraUtil();
 
-CameraUtil *CameraUtil::getInstance()
-{
+CameraUtil *CameraUtil::getInstance() {
     return instance;
 }
 
@@ -21,8 +20,7 @@ CameraUtil::~CameraUtil() {
     this->unscheduleUpdate();
 }
 
-void CameraUtil::initialize(Scene *now)
-{
+void CameraUtil::initialize(Scene *now) {
     this->autorelease();
     
     nowScene = now;
@@ -30,48 +28,25 @@ void CameraUtil::initialize(Scene *now)
     fixedLayer = Layer::create();
     now->addChild(fixedLayer);
     
-    this->scheduleUpdate();
-    
     now->addChild(this);
 }
 
-void CameraUtil::addUIChild(Node *child)
-{
+void CameraUtil::addUIChild(Node *child) {
     fixedLayer->addChild(child);
 }
 
-void CameraUtil::update(float dt)
-{
+void CameraUtil::setPosition(float x, float y) {
+    Camera::getDefaultCamera()->setPosition(Vec2(x, y));
+    fixedLayer->setPosition(Camera::getDefaultCamera()->getPosition() - fixedLayer->getContentSize() / 2);
+    fixedLayer->setRotation(Camera::getDefaultCamera()->getRotation());
+}
+
+void CameraUtil::setPosition(const Vec2 &pos) {
     Camera::getDefaultCamera()->setPosition(pos);
     fixedLayer->setPosition(Camera::getDefaultCamera()->getPosition() - fixedLayer->getContentSize() / 2);
     fixedLayer->setRotation(Camera::getDefaultCamera()->getRotation());
 }
 
-void CameraUtil::setPosition(float x, float y)
-{	
-    pos.x = x;
-    pos.y = y;
-}
-
-void CameraUtil::setPosition(const Vec2 &pos)
-{
-    this->pos.x = pos.x;
-    this->pos.y = pos.y;
-}
-
-void CameraUtil::setRelPosition(float x, float y)
-{
-    pos.x += x;
-    pos.y += y;
-}
-
-void CameraUtil::setRelPosition(const Vec2 &pos)
-{
-    this->pos.x += pos.x;
-    this->pos.y += pos.y;
-}
-
-const Vec2 &CameraUtil::getPosition() const
-{
+const Vec2 &CameraUtil::getPosition() const {
     return fixedLayer->getPosition();
 }

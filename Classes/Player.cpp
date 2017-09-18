@@ -33,11 +33,11 @@ Player *Player::create(int sx, int sy) {
 bool Player::init() {
     setScale(2);
     
-    player = Sprite::create("res/player.png");
+    player = Sprite::create("res/player2.png");
     player->getTexture()->setAliasTexParameters();
     this->addChild(player);
 
-	/// ÇÃ·¹ÀÌ¾î zorder ¼³Á¤
+	/// Â«âˆšâˆ‘Ï€Â¿ÃƒÃ¦Ã“ zorder Âºâ‰¥Â¡Â§
 	this->setGlobalZOrder(ZORDER::PLAYER);
 	for (auto &i : this->getChildren()) {
 		i->setGlobalZOrder(ZORDER::PLAYER);
@@ -50,7 +50,7 @@ bool Player::init() {
 
 void Player::update(float dt) {
 	float pAngle = CC_RADIANS_TO_DEGREES(angle.getAngle());
-	if (pAngle > 90 || pAngle <= -90) { /// ¿ŞÂÊ
+	if (pAngle > 90 || pAngle <= -90) { /// Ã¸ï¬Â¬Â 
 		player->setFlippedX(true);
 	} else {
 		player->setFlippedX(false);
@@ -59,15 +59,11 @@ void Player::update(float dt) {
 
 void Player::onStickBegan(Vec2 angle, Ref *pSender) {
     this->angle = angle;
-    
-    float a = angle.getAngle();
     touchJoystick = true;
 }
 
 void Player::onStickMoved(Vec2 angle, Ref *pSender) {
     this->angle = angle;
-    
-    float a = angle.getAngle();
 }
 
 void Player::onStickEnded(Vec2 angle, Ref *pSender) {
@@ -82,11 +78,12 @@ void Player::calculateGridCoord(int mapWidth, int mapHeight) {
 
 void Player::gridCoordUpdate(int mapWidth, int mapHeight) {
 	Vec2 origin = Director::getInstance()->getVisibleSize() / 2;
-	this->setPosition(Vec2(48 * gX - (24 * mapWidth - origin.x), 48 * gY - (24 * mapHeight - origin.y)));
+    tempPosition = Vec2(48 * gX - (24 * mapWidth - origin.x), 48 * gY - (24 * mapHeight - origin.y));
+	this->setPosition(tempPosition);
 }
 
 void Player::move() {
-	/// ÇÃ·¹ÀÌ¾î°¡ Á¶ÀÌ½ºÆ½ ÅÍÄ¡ÇßÀ» ¶§ ÇØ´ç ¹æÇâÀ¸·Î ÀÌµ¿
+	/// Â«âˆšâˆ‘Ï€Â¿ÃƒÃ¦Ã“âˆÂ° Â¡âˆ‚Â¿ÃƒÎ©âˆ«âˆ†Î© â‰ˆÃ•Æ’Â°Â«ï¬‚Â¿Âª âˆ‚ÃŸ Â«Ã¿Â¥Ã Ï€ÃŠÂ«â€šÂ¿âˆâˆ‘Å’ Â¿ÃƒÂµÃ¸
 	if (touchJoystick) {
 		tempPosition = getPosition() + angle * speed;
 	}
@@ -95,15 +92,16 @@ void Player::move() {
 void Player::collision() {
 	HelloWorld *parent = (HelloWorld *)getParent();
 
-	/// ÇöÀç À§Ä¡¸¦ ±âÁØÀ¸·Î 3x3Ä­À» Ãæµ¹ °Ë»ç¸¦ ÇÔ
+	/// Â«Ë†Â¿Ã Â¿ÃŸÆ’Â°âˆÂ¶ Â±â€šÂ¡Ã¿Â¿âˆâˆ‘Å’ 3x3Æ’â‰ Â¿Âª âˆšÃŠÂµÏ€ âˆÃ€ÂªÃâˆÂ¶ Â«â€˜
 	for (int i = MAX(gY - 1, 0); i < MIN(gY + 2, parent->mapHeight); i++) {
 		for (int j = MAX(gX - 1, 0); j < MIN(gX + 2, parent->mapWidth); j++) {
-			/// º®ÀÌ³ª ¹®ÀÌ¸é
+            if (i == gY && j == gX) continue;
+			/// âˆ«Ã†Â¿Ãƒâ‰¥â„¢ Ï€Ã†Â¿ÃƒâˆÃˆ
 			if (parent->checkSolidObject(j, i)) {
-				/// ÇÃ·¹ÀÌ¾î¿Í »ó´ë Ãæµ¹Ã¼ÀÇ BoundingBox¸¦ °¡Á®¿È
-				auto playerBB = Rect(Vec2(tempPosition.x + player->getContentSize().width / 2, tempPosition.y), player->getContentSize() * 2);
+				/// Â«âˆšâˆ‘Ï€Â¿ÃƒÃ¦Ã“Ã¸Ã• ÂªÃ›Â¥Ã âˆšÃŠÂµÏ€âˆšÂºÂ¿Â« BoundingBoxâˆÂ¶ âˆÂ°Â¡Ã†Ã¸Â»
+				auto playerBB = Rect(Vec2(tempPosition.x/* + player->getContentSize().width / 2*/, tempPosition.y), player->getContentSize() * 2);
 				auto otherBB = Rect(parent->mapTile[i][j]->getPosition(), Size(48, 48));
-				/// Ãæµ¹ °Ë»ç
+				/// âˆšÃŠÂµÏ€ âˆÃ€ÂªÃ
 				if (playerBB.intersectsRect(otherBB)) {
 					parent->mapTile[i][j]->setColor(Color3B::RED);
 
@@ -136,7 +134,7 @@ void Player::collision() {
 void Player::updateZOrder() {
 	HelloWorld *parent = (HelloWorld *)getParent();
 
-	/// ÇÃ·¹ÀÌ¾î z-order º¯°æ
+	/// Â«âˆšâˆ‘Ï€Â¿ÃƒÃ¦Ã“ z-order âˆ«Ã˜âˆÃŠ
 	int zorder = parent->mapTile[int(clampf(gY, 0, parent->mapHeight - 1))][int(clampf(gX, 0, parent->mapWidth - 1))]->getGlobalZOrder() + 1000;
 	this->setGlobalZOrder(zorder);
 	for (auto &i : this->getChildren()) {
@@ -145,7 +143,7 @@ void Player::updateZOrder() {
 }
 
 void Player::updatePosition() {
-	/// °è»êµÈ ÇÃ·¹ÀÌ¾î À§Ä¡ ½ÇÁ¦ Àû¿ë
+	/// âˆÃ‹ÂªÃÂµÂ» Â«âˆšâˆ‘Ï€Â¿ÃƒÃ¦Ã“ Â¿ÃŸÆ’Â° Î©Â«Â¡Â¶ Â¿ËšÃ¸Ã
 	this->setPosition(tempPosition);
 	CameraUtil::getInstance()->setPosition(this->getPosition());
 }
