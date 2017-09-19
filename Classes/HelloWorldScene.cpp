@@ -6,10 +6,7 @@
 #include "CameraUtil.h"
 #include "ZOrder.h"
 #include "UIManager.h"
-
-#include <string>
-#include <iostream>
-#include <fstream>
+#include "Utils.h"
 
 USING_NS_CC;
 using namespace std;
@@ -38,22 +35,37 @@ bool HelloWorld::init()
     
     auto bg = LayerColor::create(Color4B::BLACK);
     this->addChild(bg);
-
+    
 	/// 맵 파일 읽음
-	ifstream mapFile("res/map.txt");
-    
-	mapFile >> mapWidth >> mapHeight;
-    
-    /// 맵 데이터 초기화
-    mapData = new int*[mapHeight];
-    for (int i = mapHeight - 1; i >= 0; i--) {
-        mapData[i] = new int[mapWidth];
-        for (int j = 0; j < mapWidth; j++) {
-			mapFile >> mapData[i][j];
+    auto mapFileString = FileUtils::getInstance()->getStringFromFile("res/map.txt");
+    int **tempData, idx = -1;
+    for (auto i : split(mapFileString, '\n')) {
+        auto data = split(i, ' ');
+        if (idx < 0) {
+            mapWidth = toInt(data[0]);
+            mapHeight = toInt(data[1]);
+            
+            mapData = new int*[mapHeight];
+            tempData = new int*[mapHeight];
+            idx++;
+        } else {
+            mapData[(idx / mapHeight)] = new int[mapWidth];
+            tempData[(idx / mapHeight)] = new int[mapWidth];
+            for (auto j : data) {
+                tempData[(idx / mapHeight)][(idx % mapWidth)] = toInt(j);
+                idx++;
+            }
         }
     }
-
-	mapFile.close();
+    
+    for (int i = 0; i < mapHeight; i++) {
+        for (int j = 0; j < mapWidth; j++) {
+            mapData[mapHeight - i - 1][j] = tempData[i][j];
+        }
+    }
+    
+    for (int i = 0; i < mapHeight; i++) delete[] tempData[i];
+    delete[] tempData;
     
     int zorder = ZORDER::WALL;
     
@@ -127,9 +139,9 @@ bool HelloWorld::init()
     lb->setGlobalZOrder(ZORDER::UI);
 	CameraUtil::getInstance()->addUIChild(lb);
     
-    this->schedule([=](float dt){
-        lb->setString("x: " + to_string(player->gX) + " y: " + to_string(player->gY));
-    }, "debug");
+//    this->schedule([=](float dt){
+//        lb->setString("x: " + to_string(player->gX) + " y: " + to_string(player->gY));
+//    }, "debug");
 
 	auto uim = UIManager::create();
 	CameraUtil::getInstance()->addUIChild(uim);
@@ -159,7 +171,12 @@ bool HelloWorld::init()
 //                break;
 //        }
 //    });
-//
+
+    auto dn = DrawNode::create(4);
+    dn->setName("debug2");
+    dn->setGlobalZOrder(ZORDER::UI);
+    this->addChild(dn);
+    
     interactButton = Button::create("res/interaction.png");
 	interactButton->setScale(2);
 	interactButton->setPosition(Vec2(visibleSize.width - interactButton->getContentSize().width - 36, interactButton->getContentSize().height + 36));
@@ -172,8 +189,8 @@ bool HelloWorld::init()
     for (auto &i : joystick->getChildren()) {
         i->setGlobalZOrder(ZORDER::UI);
     }
-
-    scheduleUpdate();
+    
+    this->scheduleUpdate();
     
     return true;
 }

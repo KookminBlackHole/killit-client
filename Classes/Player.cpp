@@ -33,7 +33,7 @@ Player *Player::create(int sx, int sy) {
 bool Player::init() {
     setScale(2);
     
-    player = Sprite::create("res/player2.png");
+    player = Sprite::create("res/player.png");
     player->getTexture()->setAliasTexParameters();
     this->addChild(player);
 
@@ -91,16 +91,18 @@ void Player::move() {
 
 void Player::collision() {
 	HelloWorld *parent = (HelloWorld *)getParent();
-
+    
+    
+    
 	/// «ˆ¿Á ¿ßƒ°∏¶ ±‚¡ÿ¿∏∑Œ 3x3ƒ≠¿ª √Êµπ ∞ÀªÁ∏¶ «‘
 	for (int i = MAX(gY - 1, 0); i < MIN(gY + 2, parent->mapHeight); i++) {
 		for (int j = MAX(gX - 1, 0); j < MIN(gX + 2, parent->mapWidth); j++) {
             if (i == gY && j == gX) continue;
-			/// ∫Æ¿Ã≥™ πÆ¿Ã∏È
-			if (parent->checkSolidObject(j, i)) {
-				/// «√∑π¿ÃæÓøÕ ªÛ¥Î √Êµπ√º¿« BoundingBox∏¶ ∞°¡Æø»
-				auto playerBB = Rect(Vec2(tempPosition.x/* + player->getContentSize().width / 2*/, tempPosition.y), player->getContentSize() * 2);
-				auto otherBB = Rect(parent->mapTile[i][j]->getPosition(), Size(48, 48));
+            /// ∫Æ¿Ã≥™ πÆ¿Ã∏È
+            if (parent->checkSolidObject(j, i)) {
+                /// «√∑π¿ÃæÓøÕ ªÛ¥Î √Êµπ√º¿« BoundingBox∏¶ ∞°¡Æø»
+                auto playerBB = Rect(tempPosition - player->getContentSize(), player->getContentSize() * 2);
+                auto otherBB = Rect(parent->mapTile[i][j]->getPosition() - Size(24, 24), Size(48, 48));
 				/// √Êµπ ∞ÀªÁ
 				if (playerBB.intersectsRect(otherBB)) {
 					parent->mapTile[i][j]->setColor(Color3B::RED);
@@ -108,22 +110,33 @@ void Player::collision() {
 					/// 0: left, 1: right, 2: up, 3: down
 					int dir = 0;
 
-					float angle = CC_RADIANS_TO_DEGREES((playerBB.origin - otherBB.origin).getAngle());
+					float angle = CC_RADIANS_TO_DEGREES((Vec2(playerBB.getMidX(), playerBB.getMidY()) - Vec2(otherBB.getMidX(), otherBB.getMidY())).getAngle());
 
 					if (angle > -45 && angle <= 45) dir = 1;
 					else if (angle > 45 && angle <= 135) dir = 2;
 					else if ((angle > 135 && angle <= 180) || (angle < -135 && angle >= -180)) dir = 0;
 					else dir = 3;
+                    
+                    if (dir == 0)
+                        CameraUtil::getInstance()->fixedLayer->getChildByName<Label*>("debug1")->setString("left");
+                    if (dir == 1)
+                        CameraUtil::getInstance()->fixedLayer->getChildByName<Label*>("debug1")->setString("right");
+                    if (dir == 2)
+                        CameraUtil::getInstance()->fixedLayer->getChildByName<Label*>("debug1")->setString("up");
+                    if (dir == 3)
+                        CameraUtil::getInstance()->fixedLayer->getChildByName<Label*>("debug1")->setString("down");
+                    
+//                    parent->getChildByName<DrawNode*>("debug2")->drawLine(playerBB.origin, otherBB.origin, Color4F::RED);
 
-					//if (dir == 0) {
-					//	tempPosition.x = otherBB.getMinX() - 40;
-					//} else if (dir == 1) {
-					//	tempPosition.x = otherBB.getMaxX() + 8;
-					//} else if (dir == 2) {
-					//	tempPosition.y = otherBB.getMaxY();
-					//} else {
-					//	tempPosition.y = otherBB.getMinY() - 48;
-					//}
+					if (dir == 0) {
+						tempPosition.x = otherBB.getMinX() - player->getContentSize().width;
+					} else if (dir == 1) {
+						tempPosition.x = otherBB.getMaxX() + player->getContentSize().width;
+					} else if (dir == 2) {
+						tempPosition.y = otherBB.getMaxY() + player->getContentSize().height;
+					} else {
+						tempPosition.y = otherBB.getMinY() - player->getContentSize().height;
+					}
 				}
 			}
 
