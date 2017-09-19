@@ -42,7 +42,7 @@ public:
     cocos2d::Vec2 angle, tempPosition;
 
     bool touchJoystick = false;
-    float speed = 2;
+    float speed = 4.5f;
 	/// Å¸ÀÏ¸Ê¿¡¼­ÀÇ ÁÂÇ¥
 	int gX = 0, gY = 0;
     

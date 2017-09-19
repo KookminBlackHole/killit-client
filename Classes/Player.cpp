@@ -1,4 +1,4 @@
-//
+﻿//
 //  Player.cpp
 //  Killit
 //
@@ -37,7 +37,7 @@ bool Player::init() {
     player->getTexture()->setAliasTexParameters();
     this->addChild(player);
 
-	/// «√∑π¿ÃæÓ zorder º≥¡§
+	/// ≪√∑π¿AæO zorder º≥¡§
 	this->setGlobalZOrder(ZORDER::PLAYER);
 	for (auto &i : this->getChildren()) {
 		i->setGlobalZOrder(ZORDER::PLAYER);
@@ -50,7 +50,7 @@ bool Player::init() {
 
 void Player::update(float dt) {
 	float pAngle = CC_RADIANS_TO_DEGREES(angle.getAngle());
-	if (pAngle > 90 || pAngle <= -90) { /// øﬁ¬ 
+	if (pAngle > 90 || pAngle <= -90) { /// ø?￢?
 		player->setFlippedX(true);
 	} else {
 		player->setFlippedX(false);
@@ -83,7 +83,7 @@ void Player::gridCoordUpdate(int mapWidth, int mapHeight) {
 }
 
 void Player::move() {
-	/// «√∑π¿ÃæÓ∞° ¡∂¿ÃΩ∫∆Ω ≈Õƒ°«ﬂ¿ª ∂ß «ÿ¥Á πÊ«‚¿∏∑Œ ¿Ãµø
+	/// ≪√∑π¿AæO∞° ¡∂¿AΩ∫?Ω ?O?°≪?¿ª ∂ß ≪y￥A πE≪?¿∏∑Œ ¿Aμø
 	if (touchJoystick) {
 		tempPosition = getPosition() + angle * speed;
 	}
@@ -92,18 +92,16 @@ void Player::move() {
 void Player::collision() {
 	HelloWorld *parent = (HelloWorld *)getParent();
     
-    
-    
-	/// «ˆ¿Á ¿ßƒ°∏¶ ±‚¡ÿ¿∏∑Œ 3x3ƒ≠¿ª √Êµπ ∞ÀªÁ∏¶ «‘
+	/// ≪?¿A ¿ß?°∏¶ ±?¡y¿∏∑Œ 3x3?≠¿ª √Eμπ ∞AªA∏¶ ≪‘
 	for (int i = MAX(gY - 1, 0); i < MIN(gY + 2, parent->mapHeight); i++) {
 		for (int j = MAX(gX - 1, 0); j < MIN(gX + 2, parent->mapWidth); j++) {
             if (i == gY && j == gX) continue;
-            /// ∫Æ¿Ã≥™ πÆ¿Ã∏È
+            /// ∫Æ¿A≥™ πÆ¿A∏E
             if (parent->checkSolidObject(j, i)) {
-                /// «√∑π¿ÃæÓøÕ ªÛ¥Î √Êµπ√º¿« BoundingBox∏¶ ∞°¡Æø»
+                /// ≪√∑π¿AæOøO ªU￥I √Eμπ√º¿≪ BoundingBox∏¶ ∞°¡Æø≫
                 auto playerBB = Rect(tempPosition - player->getContentSize(), player->getContentSize() * 2);
                 auto otherBB = Rect(parent->mapTile[i][j]->getPosition() - Size(24, 24), Size(48, 48));
-				/// √Êµπ ∞ÀªÁ
+				/// √Eμπ ∞AªA
 				if (playerBB.intersectsRect(otherBB)) {
 					parent->mapTile[i][j]->setColor(Color3B::RED);
 
@@ -125,8 +123,6 @@ void Player::collision() {
                         CameraUtil::getInstance()->fixedLayer->getChildByName<Label*>("debug1")->setString("up");
                     if (dir == 3)
                         CameraUtil::getInstance()->fixedLayer->getChildByName<Label*>("debug1")->setString("down");
-                    
-//                    parent->getChildByName<DrawNode*>("debug2")->drawLine(playerBB.origin, otherBB.origin, Color4F::RED);
 
 					if (dir == 0) {
 						tempPosition.x = otherBB.getMinX() - player->getContentSize().width;
@@ -147,7 +143,7 @@ void Player::collision() {
 void Player::updateZOrder() {
 	HelloWorld *parent = (HelloWorld *)getParent();
 
-	/// «√∑π¿ÃæÓ z-order ∫Ø∞Ê
+	/// ≪√∑π¿AæO z-order ∫Ø∞E
 	int zorder = parent->mapTile[int(clampf(gY, 0, parent->mapHeight - 1))][int(clampf(gX, 0, parent->mapWidth - 1))]->getGlobalZOrder() + 1000;
 	this->setGlobalZOrder(zorder);
 	for (auto &i : this->getChildren()) {
@@ -156,7 +152,7 @@ void Player::updateZOrder() {
 }
 
 void Player::updatePosition() {
-	/// ∞ËªÍµ» «√∑π¿ÃæÓ ¿ßƒ° Ω«¡¶ ¿˚øÎ
+	/// ∞EªIμ≫ ≪√∑π¿AæO ¿ß?° Ω≪¡¶ ¿˚øI
 	this->setPosition(tempPosition);
 	CameraUtil::getInstance()->setPosition(this->getPosition());
 }

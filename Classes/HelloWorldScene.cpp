@@ -102,11 +102,11 @@ bool HelloWorld::init()
 			} else { /// 맵 타일
 				int idx = mapData[i][j] - 11;
 
-				mapTile[i][j] = Sprite::create("res/tileset_wall.png");
-				mapTile[i][j]->setAnchorPoint(Vec2(0.5f, 1 / 3.0f));
+				mapTile[i][j] = Sprite::create("res/tileset_wall2.png");
+				mapTile[i][j]->setAnchorPoint(Vec2(0.5f, 0.25f));
 				mapTile[i][j]->setGlobalZOrder(zorder);
 
-				mapTile[i][j]->setTextureRect(Rect(24 * (idx % 4), 36 * (idx / 4), 24 ,36));
+				mapTile[i][j]->setTextureRect(Rect(24 * (idx % 4), 48 * (idx / 4), 24 ,48));
 			}
             
             mapTile[i][j]->getTexture()->setAliasTexParameters();
