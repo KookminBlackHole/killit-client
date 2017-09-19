@@ -217,8 +217,9 @@ void HelloWorld::update(float dt) {
 			float x = player->getPositionX() + cos(CC_DEGREES_TO_RADIANS(r)) * i * 24;
 			float y = player->getPositionY() + sin(CC_DEGREES_TO_RADIANS(r)) * i * 24;
             
-			int gX = (x + (24 * mapWidth - origin.x)) / 48;
-			int gY = (y + (24 * mapHeight - origin.y)) / 48;
+			int gX = (x + (24 * (mapWidth - 1) - origin.x)) / 48 + 1;
+            int gY = (y + (24 * (mapHeight - 1) - origin.y)) / 48 + 1;
+            
 			if (gY > mapHeight - 1 || gY < 0 || gX > mapWidth - 1 || gX < 0) continue;
 
 			if (checkSolidObject(gX, gY)) escape = true;

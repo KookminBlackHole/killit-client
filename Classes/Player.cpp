@@ -72,8 +72,8 @@ void Player::onStickEnded(Vec2 angle, Ref *pSender) {
 
 void Player::calculateGridCoord(int mapWidth, int mapHeight) {
 	Vec2 origin = Director::getInstance()->getVisibleSize() / 2;
-	gX = (this->getPositionX() + (24 * mapWidth - origin.x)) / 48;
-	gY = (this->getPositionY() + (24 * mapHeight - origin.y)) / 48;
+	gX = (this->getPositionX() + (24 * (mapWidth - 1) - origin.x)) / 48 + 1;
+	gY = (this->getPositionY() + (24 * (mapHeight - 1) - origin.y)) / 48 + 1;
 }
 
 void Player::gridCoordUpdate(int mapWidth, int mapHeight) {
@@ -154,10 +154,10 @@ void Player::checkGameObjects() {
 
 	Vec2 check = this->getPosition() + angle * 48;
 
-	int xx = (check.x + (24 * parent->mapWidth - origin.x)) / 48;
-	int yy = (check.y + (24 * parent->mapHeight - origin.y)) / 48;
+    int xx = (check.x + (24 * (parent->mapWidth - 1) - origin.x)) / 48 + 1;
+	int yy = (check.y + (24 * (parent->mapHeight - 1) - origin.y)) / 48 + 1;
 
-	//parent->mapTile[yy][xx]->setColor(Color3B::BLUE);
+//	parent->mapTile[yy][xx]->setColor(Color3B::BLUE);
 
 	//state = 0;
 	switch (parent->mapData[yy][xx]) {
