@@ -38,6 +38,7 @@ public:
     
 public:
     cocos2d::Sprite *player;
+	cocos2d::Size playerSize;
 	/// angle: 플레이어가 보고 있는 각도, pos: 플레이어 임시 좌표
     cocos2d::Vec2 angle, tempPosition;
 

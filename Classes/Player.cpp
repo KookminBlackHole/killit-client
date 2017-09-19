@@ -42,6 +42,8 @@ bool Player::init() {
 	for (auto &i : this->getChildren()) {
 		i->setGlobalZOrder(ZORDER::PLAYER);
 	}
+
+	playerSize = Size(32, 32);
     
     scheduleUpdate();
     
@@ -99,7 +101,7 @@ void Player::collision() {
             /// ∫Æ¿A≥™ πÆ¿A∏E
             if (parent->checkSolidObject(j, i)) {
                 /// ≪√∑π¿AæOøO ªU￥I √Eμπ√º¿≪ BoundingBox∏¶ ∞°¡Æø≫
-                auto playerBB = Rect(tempPosition - player->getContentSize(), player->getContentSize() * 2);
+                auto playerBB = Rect(tempPosition - Size(playerSize.width / 2, playerSize.height), playerSize);
                 auto otherBB = Rect(parent->mapTile[i][j]->getPosition() - Size(24, 24), Size(48, 48));
 				/// √Eμπ ∞AªA
 				if (playerBB.intersectsRect(otherBB)) {
@@ -125,13 +127,13 @@ void Player::collision() {
                         CameraUtil::getInstance()->fixedLayer->getChildByName<Label*>("debug1")->setString("down");
 
 					if (dir == 0) {
-						tempPosition.x = otherBB.getMinX() - player->getContentSize().width;
+						tempPosition.x = otherBB.getMinX() - playerSize.width / 2;
 					} else if (dir == 1) {
-						tempPosition.x = otherBB.getMaxX() + player->getContentSize().width;
+						tempPosition.x = otherBB.getMaxX() + playerSize.width / 2;
 					} else if (dir == 2) {
-						tempPosition.y = otherBB.getMaxY() + player->getContentSize().height;
+						tempPosition.y = otherBB.getMaxY() + playerSize.height;
 					} else {
-						tempPosition.y = otherBB.getMinY() - player->getContentSize().height;
+						tempPosition.y = otherBB.getMinY() - playerSize.height / 2 + playerSize.height;
 					}
 				}
 			}
