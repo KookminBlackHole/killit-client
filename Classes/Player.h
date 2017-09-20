@@ -13,7 +13,7 @@
 
 class Player : public cocos2d::Node {
 public:
-	/// ½ÃÀÛ xÁÂÇ¥, ½ÃÀÛ yÁÂÇ¥
+	/// Î©âˆšÂ¿â‚¬ xÂ¡Â¬Â«â€¢, Î©âˆšÂ¿â‚¬ yÂ¡Â¬Â«â€¢
     static Player *create(int sx, int sy);
     
     bool init() override;
@@ -23,13 +23,13 @@ public:
     void onStickMoved(cocos2d::Vec2 angle, cocos2d::Ref *pSender);
     void onStickEnded(cocos2d::Vec2 angle, cocos2d::Ref *pSender);
 
-	/// ÀÌ¸§ º¯°æ ÇÊ¿ä
-	/// ½ÇÁ¦ ÁÂÇ¥¸¦ ±×¸®µå ÁÂÇ¥·Î º¯È¯ÇÏ´Â ÇÔ¼ö
+	/// Â¿ÃƒâˆÃŸ âˆ«Ã˜âˆÃŠ Â«Â Ã¸â€°
+	/// Î©Â«Â¡Â¶ Â¡Â¬Â«â€¢âˆÂ¶ Â±â—ŠâˆÃ†ÂµÃ‚ Â¡Â¬Â«â€¢âˆ‘Å’ âˆ«Ã˜Â»Ã˜Â«Å“Â¥Â¬ Â«â€˜ÂºË†
 	void calculateGridCoord(int mapWidth, int mapHeight);
-	/// ±×¸®µµ ÁÂÇ¥¸¦ ½ÇÁ¦ ÁÂÇ¥¿¡ ¹İ¿µ½ÃÅ°´Â ÇÔ¼ö
+	/// Â±â—ŠâˆÃ†ÂµÂµ Â¡Â¬Â«â€¢âˆÂ¶ Î©Â«Â¡Â¶ Â¡Â¬Â«â€¢Ã¸Â° Ï€â€ºÃ¸ÂµÎ©âˆšâ‰ˆâˆÂ¥Â¬ Â«â€˜ÂºË†
 	void gridCoordUpdate(int mapWidth, int mapHeight);
 
-	/// °è»ê ½ÃÁ¡À» ¸íÈ®È÷ ÇØ¾ßÇØ¼­ µû·Î ¸¸µç ÇÔ¼öµé
+	/// âˆÃ‹ÂªÃ Î©âˆšÂ¡Â°Â¿Âª âˆÃŒÂ»Ã†Â»Ëœ Â«Ã¿Ã¦ï¬‚Â«Ã¿Âºâ‰  ÂµËšâˆ‘Å’ âˆâˆÂµÃ Â«â€˜ÂºË†ÂµÃˆ
 	void move();
 	void collision();
 	void updateZOrder();
@@ -38,13 +38,14 @@ public:
     
 public:
     cocos2d::Sprite *player;
-	cocos2d::Size playerSize;
-	/// angle: ÇÃ·¹ÀÌ¾î°¡ º¸°í ÀÖ´Â °¢µµ, pos: ÇÃ·¹ÀÌ¾î ÀÓ½Ã ÁÂÇ¥
+    /// ë²½ê³¼ ì¶©ëŒ í•  ë–„ ì“°ëŠ” ë°”ìš´ë”©ë°•ìŠ¤
+	cocos2d::Rect solidBB;
+	/// angle: Â«âˆšâˆ‘Ï€Â¿ÃƒÃ¦Ã“âˆÂ° âˆ«âˆâˆÃŒ Â¿Ã·Â¥Â¬ âˆÂ¢ÂµÂµ, pos: Â«âˆšâˆ‘Ï€Â¿ÃƒÃ¦Ã“ Â¿â€Î©âˆš Â¡Â¬Â«â€¢
     cocos2d::Vec2 angle, tempPosition;
 
     bool touchJoystick = false;
     float speed = 4.5f;
-	/// Å¸ÀÏ¸Ê¿¡¼­ÀÇ ÁÂÇ¥
+	/// â‰ˆâˆÂ¿Å“âˆÂ Ã¸Â°Âºâ‰ Â¿Â« Â¡Â¬Â«â€¢
 	int gX = 0, gY = 0;
     
 };

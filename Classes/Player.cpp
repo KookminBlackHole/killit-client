@@ -33,7 +33,7 @@ Player *Player::create(int sx, int sy) {
 bool Player::init() {
     setScale(2);
     
-    player = Sprite::create("res/player.png");
+    player = Sprite::create("res/player2.png");
     player->getTexture()->setAliasTexParameters();
     this->addChild(player);
 
@@ -42,8 +42,9 @@ bool Player::init() {
 	for (auto &i : this->getChildren()) {
 		i->setGlobalZOrder(ZORDER::PLAYER);
 	}
-
-	playerSize = Size(32, 32);
+    
+    /// Rect(-16, -16 - 24 + 16)
+	solidBB = Rect(-16, -24, 32, 32);
     
     scheduleUpdate();
     
@@ -94,18 +95,21 @@ void Player::move() {
 void Player::collision() {
 	HelloWorld *parent = (HelloWorld *)getParent();
     
-	/// ≪?¿A ¿ß?°∏¶ ±?¡y¿∏∑Œ 3x3?≠¿ª √Eμπ ∞AªA∏¶ ≪‘
-	for (int i = MAX(gY - 1, 0); i < MIN(gY + 2, parent->mapHeight); i++) {
+    /// ≪?¿A ¿ß?°∏¶ ±?¡y¿∏∑Œ 3x3?≠¿ª √Eμπ ∞AªA∏¶ ≪‘
+    /// 충돌 처리 시 벽에 끼이는 문제를 해결하기 위해 충돌 검사 순서를 가운데 - 위 - 아래 순으로 바꿈.
+    int order[3] = { 0, 1, -1 };
+    for (int k = 0; k < 3; k++) {
+        int i = clampf(gY + order[k], 0, parent->mapHeight - 1);
 		for (int j = MAX(gX - 1, 0); j < MIN(gX + 2, parent->mapWidth); j++) {
             if (i == gY && j == gX) continue;
             /// ∫Æ¿A≥™ πÆ¿A∏E
             if (parent->checkSolidObject(j, i)) {
                 /// ≪√∑π¿AæOøO ªU￥I √Eμπ√º¿≪ BoundingBox∏¶ ∞°¡Æø≫
-                auto playerBB = Rect(tempPosition - Size(playerSize.width / 2, playerSize.height), playerSize);
+                auto playerBB = Rect(tempPosition + solidBB.origin, solidBB.size);
                 auto otherBB = Rect(parent->mapTile[i][j]->getPosition() - Size(24, 24), Size(48, 48));
 				/// √Eμπ ∞AªA
 				if (playerBB.intersectsRect(otherBB)) {
-					parent->mapTile[i][j]->setColor(Color3B::RED);
+					parent->mapTile[i][j]->setColor(Color3B::MAGENTA);
 
 					/// 0: left, 1: right, 2: up, 3: down
 					int dir = 0;
@@ -127,13 +131,13 @@ void Player::collision() {
                         CameraUtil::getInstance()->fixedLayer->getChildByName<Label*>("debug1")->setString("down");
 
 					if (dir == 0) {
-						tempPosition.x = otherBB.getMinX() - playerSize.width / 2;
+						tempPosition.x = otherBB.getMinX() - solidBB.getMaxX();
 					} else if (dir == 1) {
-						tempPosition.x = otherBB.getMaxX() + playerSize.width / 2;
+						tempPosition.x = otherBB.getMaxX() - solidBB.getMinX();
 					} else if (dir == 2) {
-						tempPosition.y = otherBB.getMaxY() + playerSize.height;
+						tempPosition.y = otherBB.getMaxY() - solidBB.getMinY();
 					} else {
-						tempPosition.y = otherBB.getMinY() - playerSize.height / 2 + playerSize.height;
+                        tempPosition.y = otherBB.getMinY() - solidBB.getMaxY();
 					}
 				}
 			}
