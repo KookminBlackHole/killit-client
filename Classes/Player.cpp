@@ -33,7 +33,7 @@ Player *Player::create(int sx, int sy) {
 bool Player::init() {
     setScale(2);
     
-    player = Sprite::create("res/player2.png");
+    player = Sprite::create("res/player.png");
     player->getTexture()->setAliasTexParameters();
     this->addChild(player);
 
@@ -97,10 +97,11 @@ void Player::collision() {
     
     /// ≪?¿A ¿ß?°∏¶ ±?¡y¿∏∑Œ 3x3?≠¿ª √Eμπ ∞AªA∏¶ ≪‘
     /// 충돌 처리 시 벽에 끼이는 문제를 해결하기 위해 충돌 검사 순서를 가운데 - 위 - 아래 순으로 바꿈.
-    int order[3] = { 0, 1, -1 };
+    int yOrder[3] = { 0, 1, -1 }, xOrder[3] = { 0, 1, -1 };
     for (int k = 0; k < 3; k++) {
-        int i = clampf(gY + order[k], 0, parent->mapHeight - 1);
-		for (int j = MAX(gX - 1, 0); j < MIN(gX + 2, parent->mapWidth); j++) {
+        int i = clampf(gY + yOrder[k], 0, parent->mapHeight - 1);
+        for (int l = 0; l < 3; l++) {
+            int j = clampf(gX + xOrder[l], 0, parent->mapWidth - 1);
             if (i == gY && j == gX) continue;
             /// ∫Æ¿A≥™ πÆ¿A∏E
             if (parent->checkSolidObject(j, i)) {
