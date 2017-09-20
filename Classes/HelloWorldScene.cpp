@@ -219,6 +219,7 @@ void HelloWorld::update(float dt) {
     for (int i = max(pY - 9, 0); i < min(pY + 9, mapHeight); i++) {
         for (int j = max(pX - 14, 0); j < min(pX + 15, mapWidth); j++) {
             mapTile[i][j]->setVisible(true);
+            mapTile[i][j]->setOpacity(255);
             mapTile[i][j]->setColor(Color3B::WHITE);
             mapFog[i][j]->setVisible(true);
             if (mapObjects[i][j] != nullptr) mapObjects[i][j]->setVisible(true);
@@ -239,7 +240,7 @@ void HelloWorld::update(float dt) {
             
 			if (gY > mapHeight - 1 || gY < 0 || gX > mapWidth - 1 || gX < 0) continue;
 
-			if (checkSolidObject(gX, gY)) escape = true;
+			if (isSolidObject(gX, gY)) escape = true;
 
 			mapFog[gY][gX]->setOpacity(255 * MAX(((i - 12.0f) / 8.0f), 0));
 		}
@@ -248,11 +249,12 @@ void HelloWorld::update(float dt) {
 	player->updateZOrder();
 	player->move();
 	player->collision();
-	player->checkGameObjects();
+    player->checkGameObjects();
+//    player->checkSolidObjects();
 	player->updatePosition();
 }
 
-bool HelloWorld::checkSolidObject(int x, int y) {
+bool HelloWorld::isSolidObject(int x, int y) {
 	int value = mapData[y][x];
 	if (value <= 10) { /// 게임 오브젝트
 		if (value == 1) return true; /// 문

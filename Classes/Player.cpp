@@ -104,13 +104,13 @@ void Player::collision() {
             int j = clampf(gX + xOrder[l], 0, parent->mapWidth - 1);
             if (i == gY && j == gX) continue;
             /// ∫Æ¿A≥™ πÆ¿A∏E
-            if (parent->checkSolidObject(j, i)) {
+            if (parent->isSolidObject(j, i)) {
                 /// ≪√∑π¿AæOøO ªU￥I √Eμπ√º¿≪ BoundingBox∏¶ ∞°¡Æø≫
                 auto playerBB = Rect(tempPosition + solidBB.origin, solidBB.size);
                 auto otherBB = Rect(parent->mapTile[i][j]->getPosition() - Size(24, 24), Size(48, 48));
 				/// √Eμπ ∞AªA
 				if (playerBB.intersectsRect(otherBB)) {
-					parent->mapTile[i][j]->setColor(Color3B::MAGENTA);
+//					parent->mapTile[i][j]->setColor(Color3B::MAGENTA);
 
 					/// 0: left, 1: right, 2: up, 3: down
 					int dir = 0;
@@ -180,7 +180,7 @@ void Player::checkGameObjects() {
 	case 1:
 		parent->mapTile[yy][xx]->setColor(Color3B::GREEN);
 		//state = 1;
-		break;
+        break;
 	case 2:
 		parent->mapTile[yy][xx]->setColor(Color3B::YELLOW);
 		//state = 2;
@@ -188,3 +188,15 @@ void Player::checkGameObjects() {
 	}
 }
 
+void Player::checkSolidObjects() {
+    HelloWorld *parent = (HelloWorld *)getParent();
+    Vec2 origin = Director::getInstance()->getVisibleSize() / 2;
+    
+    if (gY > 0) {
+        for (int i = MAX(gX - 1, 0); i < MIN(gX + 2, parent->mapWidth - 1); i++) {
+            if (parent->isSolidObject(i, gY - 1)) {
+                parent->mapTile[gY - 1][i]->setOpacity(255 * 0.5f);
+            }
+        }
+    }
+}

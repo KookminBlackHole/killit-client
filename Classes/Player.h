@@ -35,6 +35,8 @@ public:
 	void updateZOrder();
 	void updatePosition();
 	void checkGameObjects();
+    /// 벽이 밑에 있는지 체크하고 있으면 투명도를 조절해주는 함수
+    void checkSolidObjects();
     
 public:
     cocos2d::Sprite *player;
