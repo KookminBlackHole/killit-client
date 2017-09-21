@@ -162,7 +162,7 @@ void Player::updatePosition() {
 	/// ∞EªIμ≫ ≪√∑π¿AæO ¿ß?° Ω≪¡¶ ¿˚øI
 	this->setPosition(tempPosition);
     
-	CameraUtil::getInstance()->setPosition(this->getPosition());
+	CameraUtil::getInstance()->setPosition(int(this->getPositionX()), int(this->getPositionY()));
 }
 
 void Player::checkGameObjects() {

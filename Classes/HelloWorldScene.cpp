@@ -91,6 +91,7 @@ bool HelloWorld::init() {
 					mapObjects[i][j]->getTexture()->setAliasTexParameters();
 					mapObjects[i][j]->setScale(2);
 					mapObjects[i][j]->setPosition(pos);
+					mapObjects[i][j]->setAnchorPoint(Vec2(0.5f, 0.25f));
 					mapObjects[i][j]->setVisible(false);
 					this->addChild(mapObjects[i][j]);
 				case 0: /// 바닥
@@ -105,7 +106,7 @@ bool HelloWorld::init() {
 				mapTile[i][j]->setAnchorPoint(Vec2(0.5f, 0.25f));
 				mapTile[i][j]->setGlobalZOrder(zorder);
 
-				mapTile[i][j]->setTextureRect(Rect(24 * (idx % 4), 48 * (idx / 4), 24 ,48));
+				mapTile[i][j]->setTextureRect(Rect(24 * (idx % 7), 48 * (idx / 7), 24 ,48));
 			}
             
             mapTile[i][j]->getTexture()->setAliasTexParameters();
@@ -115,7 +116,7 @@ bool HelloWorld::init() {
             this->addChild(mapTile[i][j]);
 
             /// 맵 시야 생성
-            mapFog[i][j] = Sprite::create("res/tile5.png");
+            mapFog[i][j] = Sprite::create("res/tile4.png");
             mapFog[i][j]->setGlobalZOrder(ZORDER::FOG);
             mapFog[i][j]->getTexture()->setAliasTexParameters();
             mapFog[i][j]->setScale(2);
