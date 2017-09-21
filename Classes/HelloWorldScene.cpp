@@ -115,7 +115,7 @@ bool HelloWorld::init() {
             this->addChild(mapTile[i][j]);
 
             /// 맵 시야 생성
-            mapFog[i][j] = Sprite::create("res/tile4.png");
+            mapFog[i][j] = Sprite::create("res/tile5.png");
             mapFog[i][j]->setGlobalZOrder(ZORDER::FOG);
             mapFog[i][j]->getTexture()->setAliasTexParameters();
             mapFog[i][j]->setScale(2);
@@ -209,7 +209,7 @@ void HelloWorld::update(float dt) {
 	player->updateZOrder();
 	player->move();
 	player->collision();
-    player->checkGameObjects();
+//    player->checkGameObjects();
     player->checkSolidObjects();
 	player->updatePosition();
 }

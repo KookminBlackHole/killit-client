@@ -4,7 +4,7 @@
 #include "cocos2d.h"
 
 #include "Joystick.h"
-#include "Button.h"
+#include "ActionButton.h"
 
 class UIManager : public cocos2d::Node {
 public:
@@ -20,7 +20,7 @@ public:
 	cocos2d::EventListenerTouchAllAtOnce *listener;
     
     Joystick *joystick;
-    Button *actionButton;
+    ActionButton *actionButton;
     
 };
 

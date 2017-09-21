@@ -13,12 +13,10 @@
 
 class Button : public cocos2d::Sprite {
 public:
-    static Button *create(const std::string &filename);
+    virtual void initialize() {};
     
-	void initialize();
-    
-//    virtual void onPressed() = 0;
-//    virtual void onReleased() = 0;
+    virtual void onPressed() = 0;
+    virtual void onReleased() = 0;
 
 public:
     void onTouchBegan(const cocos2d::Vec2 &position, int id);

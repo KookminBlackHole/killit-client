@@ -173,18 +173,13 @@ void Player::checkGameObjects() {
     int xx = (check.x + (24 * (parent->mapWidth - 1) - origin.x)) / 48 + 1;
 	int yy = (check.y + (24 * (parent->mapHeight - 1) - origin.y)) / 48 + 1;
 
-//	parent->mapTile[yy][xx]->setColor(Color3B::BLUE);
-
-	//state = 0;
 	switch (parent->mapData[yy][xx]) {
-	case 1:
-		parent->mapTile[yy][xx]->setColor(Color3B::GREEN);
-		//state = 1;
-        break;
-	case 2:
-		parent->mapTile[yy][xx]->setColor(Color3B::YELLOW);
-		//state = 2;
-		break;
+        case 1:
+            parent->mapData[yy][xx] = 3;
+            break;
+        case 3:
+            parent->mapData[yy][xx] = 1;
+            break;
 	}
 }
 

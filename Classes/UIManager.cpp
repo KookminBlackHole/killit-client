@@ -33,12 +33,8 @@ bool UIManager::init(Scene *parent) {
     joystick->bind(parentScene->player);
     this->addChild(joystick);
     
-    actionButton = Button::create("res/interaction.png");
-    actionButton->setScale(2);
+    actionButton = ActionButton::create(parentScene->player);
     actionButton->setPosition(Vec2(visibleSize.width - actionButton->getContentSize().width - 36, actionButton->getContentSize().height + 36));
-    actionButton->setOpacity(255 * 0.25f);
-    actionButton->getTexture()->setAliasTexParameters();
-    actionButton->setGlobalZOrder(ZORDER::UI);
     this->addChild(actionButton);
 
 	return true;
