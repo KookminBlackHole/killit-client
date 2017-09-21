@@ -43,7 +43,7 @@ bool Joystick::init() {
     pad->getTexture()->setAliasTexParameters();
     this->addChild(pad);
     
-    stick = Sprite::create("res/joystick.png");
+    stick = Sprite::create("res/interaction.png");
     stick->getTexture()->setAliasTexParameters();
     this->addChild(stick);
     

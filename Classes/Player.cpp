@@ -161,6 +161,7 @@ void Player::updateZOrder() {
 void Player::updatePosition() {
 	/// ∞EªIμ≫ ≪√∑π¿AæO ¿ß?° Ω≪¡¶ ¿˚øI
 	this->setPosition(tempPosition);
+    
 	CameraUtil::getInstance()->setPosition(this->getPosition());
 }
 
