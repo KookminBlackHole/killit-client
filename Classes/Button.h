@@ -16,11 +16,15 @@ public:
     static Button *create(const std::string &filename);
     
 	void initialize();
+    
+//    virtual void onPressed() = 0;
+//    virtual void onReleased() = 0;
 
 public:
-	void onTouchBegan(std::function<void()>);
-
-	std::function<void()> callback;
+    void onTouchBegan(const cocos2d::Vec2 &position, int id);
+    void onTouchEnded(const cocos2d::Vec2 &position, int id);
+    
+    int id = -1;
     
 };
 

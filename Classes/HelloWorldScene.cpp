@@ -26,8 +26,7 @@ HelloWorld::~HelloWorld() {
 }
 
 // on "init" you need to initialize your instance
-bool HelloWorld::init()
-{
+bool HelloWorld::init() {
     auto visibleSize = Director::getInstance()->getVisibleSize();
     Vec2 origin = visibleSize / 2;
     
@@ -143,52 +142,13 @@ bool HelloWorld::init()
 //        lb->setString("x: " + to_string(player->gX) + " y: " + to_string(player->gY));
 //    }, "debug");
 
-	auto uim = UIManager::create();
+	auto uim = UIManager::create(this);
 	CameraUtil::getInstance()->addUIChild(uim);
-    
-    auto joystick = Joystick::create(Vec2::ZERO);
-    joystick->setPosition(joystick->pad->getContentSize().width + 36, joystick->pad->getContentSize().height + 36);
-    joystick->bind(player);
-    joystick->setName("joystick");
-	uim->addChild(joystick);
-    
-//    auto interaction = MenuItemImage::create("res/interaction.png", "res/interaction.png");
-//    interaction->getNormalImage()->setGlobalZOrder(ZORDER::UI);
-//    interaction->getSelectedImage()->setGlobalZOrder(ZORDER::UI);
-//    ((Sprite*)interaction->getNormalImage())->getTexture()->setAliasTexParameters();
-//    ((Sprite*)interaction->getSelectedImage())->getTexture()->setAliasTexParameters();
-//    interaction->setOpacity(255 * 0.5f);
-//    interaction->setPosition(Vec2(visibleSize.width - interaction->getContentSize().width - 36, interaction->getContentSize().height + 36) / 2);
-//    interaction->setCallback([&](Ref *r) {
-//        switch(state) {
-//            case 0:
-//                break;
-//            case 2:
-//                map
-//                break;
-//            case 3:
-//                
-//                break;
-//        }
-//    });
 
     auto dn = DrawNode::create(4);
     dn->setName("debug2");
     dn->setGlobalZOrder(ZORDER::UI);
     this->addChild(dn);
-    
-    interactButton = Button::create("res/interaction.png");
-	interactButton->setScale(2);
-	interactButton->setPosition(Vec2(visibleSize.width - interactButton->getContentSize().width - 36, interactButton->getContentSize().height + 36));
-	interactButton->setOpacity(255 * 0.5f);
-	interactButton->getTexture()->setAliasTexParameters();
-	interactButton->setGlobalZOrder(ZORDER::UI);
-	uim->addChild(interactButton);
-    
-    joystick->setGlobalZOrder(ZORDER::UI);
-    for (auto &i : joystick->getChildren()) {
-        i->setGlobalZOrder(ZORDER::UI);
-    }
     
     this->scheduleUpdate();
     
@@ -250,7 +210,7 @@ void HelloWorld::update(float dt) {
 	player->move();
 	player->collision();
     player->checkGameObjects();
-//    player->checkSolidObjects();
+    player->checkSolidObjects();
 	player->updatePosition();
 }
 

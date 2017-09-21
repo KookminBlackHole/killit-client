@@ -20,19 +20,18 @@ public:
     
     bool init() override;
     void bind(Player *player);
-    void update(float dt) override;
+//    void update(float dt) override;
     
-protected:
-    void onTouchesBegan(const std::vector<cocos2d::Touch*>&, cocos2d::Event*);
-    void onTouchesMoved(const std::vector<cocos2d::Touch*>&, cocos2d::Event*);
-    void onTouchesEnded(const std::vector<cocos2d::Touch*>&, cocos2d::Event*);
+public:
+    void onTouchBegan(const cocos2d::Vec2 &, int id);
+    void onTouchMoved(const cocos2d::Vec2 &, int id);
+    void onTouchEnded(const cocos2d::Vec2 &, int id);
     
 public:
     cocos2d::Sprite *pad, *stick;
     /// 변수 이름 바꿔야 함..
     Player *bnd = nullptr;
-    cocos2d::EventListenerTouchAllAtOnce *listener;
-    int touchId = -1;
+    int id = -1;
     
     cocos2d::Vec2 pos;
     

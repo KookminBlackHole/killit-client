@@ -24,19 +24,14 @@ Button *Button::create(const string &filename) {
 }
 
 void Button::initialize() {
-	//auto listener = EventListenerTouchAllAtOnce::create();
-	//listener->onTouchesBegan = [&](const vector<Touch *> &t, Event *e) {
-	//	//MessageBoxA(0, 0, 0, 0);c
-	//	callback();
-	//	/*if (getBoundingBox().containsPoint(t.front()->getLocation())) {
-
-	//	}*/
-	//};
-	//
-	//this->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listener, this);
+    
 }
 
-void Button::onTouchBegan(std::function<void()> callback) {
-	this->callback = callback;
+void Button::onTouchBegan(const cocos2d::Vec2 &position, int id) {
+    this->id = id;
+    MessageBox("", "");
 }
 
+void Button::onTouchEnded(const cocos2d::Vec2 &position, int id) {
+    this->id = -1;
+}

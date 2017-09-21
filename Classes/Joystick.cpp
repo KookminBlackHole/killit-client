@@ -9,6 +9,7 @@
 #include "Joystick.h"
 #include "Player.h"
 #include "CameraUtil.h"
+#include "ZOrder.h"
 
 USING_NS_CC;
 using namespace std;
@@ -35,7 +36,7 @@ Joystick *Joystick::create(float x, float y) {
 
 bool Joystick::init() {
     this->setCascadeOpacityEnabled(true);
-    this->setOpacity(255 * 0.5f);
+    this->setOpacity(255 * 0.25f);
     this->setScale(2);
     
     pad = Sprite::create("res/joystickPad.png");
@@ -46,48 +47,40 @@ bool Joystick::init() {
     stick->getTexture()->setAliasTexParameters();
     this->addChild(stick);
     
-    listener = EventListenerTouchAllAtOnce::create();
-    listener->onTouchesBegan = CC_CALLBACK_2(Joystick::onTouchesBegan, this);
-    listener->onTouchesMoved = CC_CALLBACK_2(Joystick::onTouchesMoved, this);
-    listener->onTouchesEnded = CC_CALLBACK_2(Joystick::onTouchesEnded, this);
-    this->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listener, this);
+    this->setGlobalZOrder(ZORDER::UI);
+    for (auto &i : this->getChildren()) {
+        i->setGlobalZOrder(ZORDER::UI);
+    }
     
-    scheduleUpdate();
+//    scheduleUpdate();
     
     return true;
 }
 
-void Joystick::onTouchesBegan(const vector<Touch *> &touches, Event *e) {
-    for (auto &t : touches) {
-        auto bb = pad->getBoundingBox();
-        if (Rect(bb.origin, bb.size + Size(20, 20)).containsPoint(this->convertToNodeSpace(t->getLocation() + CameraUtil::getInstance()->getPosition()))) {
-            if (touchId == -1) {
-                touchId = t->getID();
-
-				pos = this->convertToNodeSpace(t->getLocation() + CameraUtil::getInstance()->getPosition());
-                int radius = pad->getContentSize().width / 2;
-                if (pos.getLengthSq() > radius * radius) pos = pos.getNormalized() * radius;
-                stick->setPosition(pos);
-                bnd->onStickBegan(pos.getNormalized(), this);
-            }
-        }
-    }
+void Joystick::onTouchBegan(const cocos2d::Vec2 &position, int id) {
+    this->id = id;
+    
+    pos = position;
+    
+    int radius = pad->getContentSize().width / 2;
+    if (pos.getLengthSq() > radius * radius) pos = pos.getNormalized() * radius;
+   
+    stick->setPosition(pos);
+    bnd->onStickBegan(pos.getNormalized(), this);
 }
 
-void Joystick::onTouchesMoved(const vector<Touch *> &touches, Event *e) {
-    for (auto &t : touches) {
-        if (touchId == t->getID()) {
-            pos = this->convertToNodeSpace(t->getLocation() + CameraUtil::getInstance()->getPosition());
-            int radius = pad->getContentSize().width / 2;
-            if (pos.getLengthSq() > radius * radius) pos = pos.getNormalized() * radius;
-            stick->setPosition(pos);
-            bnd->onStickMoved(pos.getNormalized(), this);
-        }
-    }
+void Joystick::onTouchMoved(const cocos2d::Vec2 &position, int id) {
+    pos = position;
+    
+    int radius = pad->getContentSize().width / 2;
+    if (pos.getLengthSq() > radius * radius) pos = pos.getNormalized() * radius;
+    
+    stick->setPosition(pos);
+    bnd->onStickMoved(pos.getNormalized(), this);
 }
 
-void Joystick::onTouchesEnded(const vector<Touch *> &touches, Event *e) {
-    touchId = -1;
+void Joystick::onTouchEnded(const cocos2d::Vec2 &position, int id) {
+    this->id = -1;
     stick->setPosition(Vec2::ZERO);
     bnd->onStickEnded(pos.getNormalized(), this);
 }
@@ -96,5 +89,5 @@ void Joystick::bind(Player *player) {
     bnd = player;
 }
 
-void Joystick::update(float dt) {
-}
+//void Joystick::update(float dt) {
+//}

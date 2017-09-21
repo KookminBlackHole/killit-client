@@ -3,11 +3,14 @@
 
 #include "cocos2d.h"
 
+#include "Joystick.h"
+#include "Button.h"
+
 class UIManager : public cocos2d::Node {
 public:
-	static UIManager *create();
+    static UIManager *create(cocos2d::Scene *parent);
 
-	bool init() override;
+    bool init(cocos2d::Scene *parent);
 
 	void onTouchesBegan(const std::vector<cocos2d::Touch*> &, cocos2d::Event *);
 	void onTouchesMoved(const std::vector<cocos2d::Touch*> &, cocos2d::Event *);
@@ -15,6 +18,10 @@ public:
 
 public:
 	cocos2d::EventListenerTouchAllAtOnce *listener;
+    
+    Joystick *joystick;
+    Button *actionButton;
+    
 };
 
 #endif

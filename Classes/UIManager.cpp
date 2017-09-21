@@ -1,11 +1,15 @@
 #include "UIManager.h"
 
+#include "CameraUtil.h"
+#include "HelloWorldScene.h"
+#include "ZOrder.h"
+
 USING_NS_CC;
 using namespace std;
 
-UIManager *UIManager::create() {
+UIManager *UIManager::create(Scene *parent) {
 	UIManager *ret = new (std::nothrow) UIManager();
-	if (ret && ret->init()) {
+	if (ret && ret->init(parent)) {
 		ret->autorelease();
 		return ret;
 	} else {
@@ -14,19 +18,78 @@ UIManager *UIManager::create() {
 	}
 }
 
-bool UIManager::init() {
+bool UIManager::init(Scene *parent) {
+    auto parentScene = (HelloWorld *)parent;
+    auto visibleSize = Director::getInstance()->getVisibleSize();
+    
 	listener = EventListenerTouchAllAtOnce::create();
-	listener->onTouchesBegan = CC_CALLBACK_2(UIManager::onTouchesBegan, this);
+    listener->onTouchesBegan = CC_CALLBACK_2(UIManager::onTouchesBegan, this);
+    listener->onTouchesMoved = CC_CALLBACK_2(UIManager::onTouchesMoved, this);
+    listener->onTouchesEnded = CC_CALLBACK_2(UIManager::onTouchesEnded, this);
 	this->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listener, this);
+    
+    joystick = Joystick::create(Vec2::ZERO);
+    joystick->setPosition(joystick->pad->getContentSize().width + 36, joystick->pad->getContentSize().height + 36);
+    joystick->bind(parentScene->player);
+    this->addChild(joystick);
+    
+    actionButton = Button::create("res/interaction.png");
+    actionButton->setScale(2);
+    actionButton->setPosition(Vec2(visibleSize.width - actionButton->getContentSize().width - 36, actionButton->getContentSize().height + 36));
+    actionButton->setOpacity(255 * 0.25f);
+    actionButton->getTexture()->setAliasTexParameters();
+    actionButton->setGlobalZOrder(ZORDER::UI);
+    this->addChild(actionButton);
 
 	return true;
 }
 
-void UIManager::onTouchesBegan(const vector<Touch*>&, Event *) {
+void UIManager::onTouchesBegan(const vector<Touch*> &touches, Event *) {
+    for (auto &t : touches) {
+        Vec2 pos = t->getLocation() + CameraUtil::getInstance()->getPosition();
+        int id = t->getID();
+        
+        if (joystick->id == -1) {
+            auto bb = joystick->pad->getBoundingBox();
+            auto cp = joystick->convertToNodeSpace(pos);
+            if (Rect(bb.origin, bb.size + Size(20, 20)).containsPoint(cp)) {
+                joystick->onTouchBegan(cp, id);
+            }
+        }
+        if (actionButton->id == -1) {
+            auto bb = actionButton->getBoundingBox();
+            auto cp = this->convertToNodeSpace(pos);
+            if (Rect(bb.origin, bb.size + Size(20, 20)).containsPoint(cp)) {
+                actionButton->onTouchBegan(cp, id);
+            }
+        }
+    }
 }
 
-void UIManager::onTouchesMoved(const vector<Touch*>&, Event *) {
+void UIManager::onTouchesMoved(const vector<Touch*> &touches, Event *) {
+    for (auto &t : touches) {
+        Vec2 pos = t->getLocation() + CameraUtil::getInstance()->getPosition();
+        int id = t->getID();
+        
+        if (joystick->id == id) {
+            auto cp = joystick->convertToNodeSpace(pos);
+            joystick->onTouchMoved(cp, id);
+        }
+    }
 }
 
-void UIManager::onTouchesEnded(const vector<Touch*>&, Event *) {
+void UIManager::onTouchesEnded(const vector<Touch*> &touches, Event *) {
+    for (auto &t : touches) {
+        Vec2 pos = t->getLocation() + CameraUtil::getInstance()->getPosition();
+        int id = t->getID();
+        
+        if (joystick->id == id) {
+            auto cp = joystick->convertToNodeSpace(pos);
+            joystick->onTouchEnded(cp, id);
+        }
+        if (actionButton->id == id) {
+            auto cp = this->convertToNodeSpace(pos);
+            actionButton->onTouchEnded(cp, id);
+        }
+    }
 }

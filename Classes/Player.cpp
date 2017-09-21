@@ -33,7 +33,7 @@ Player *Player::create(int sx, int sy) {
 bool Player::init() {
     setScale(2);
     
-    player = Sprite::create("res/player.png");
+    player = Sprite::create("res/player2.png");
     player->getTexture()->setAliasTexParameters();
     this->addChild(player);
 
@@ -192,7 +192,7 @@ void Player::checkSolidObjects() {
     HelloWorld *parent = (HelloWorld *)getParent();
     Vec2 origin = Director::getInstance()->getVisibleSize() / 2;
     
-    if (gY > 0) {
+    if (gY > 0 && parent->isSolidObject(gX, gY - 1)) {
         for (int i = MAX(gX - 1, 0); i < MIN(gX + 2, parent->mapWidth - 1); i++) {
             if (parent->isSolidObject(i, gY - 1)) {
                 parent->mapTile[gY - 1][i]->setOpacity(255 * 0.5f);
