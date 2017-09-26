@@ -34,6 +34,8 @@ public:
     cocos2d::Sprite ***mapTile, ***mapObjects, ***mapFog;
     
     Player *player;
+    std::vector<Player*> otherPlayers;
+    
 	Button * interactButton;
     
     SIOClient *client;
