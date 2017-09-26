@@ -8,7 +8,11 @@
 #include "UIManager.h"
 #include "Utils.h"
 
+#include "json/rapidjson.h"
+#include "json/document.h"
+
 USING_NS_CC;
+using namespace network;
 using namespace std;
 
 HelloWorld::~HelloWorld() {
@@ -34,6 +38,8 @@ bool HelloWorld::init() {
     
     auto bg = LayerColor::create(Color4B::BLACK);
     this->addChild(bg);
+    
+    client = SocketIO::connect("http://localhost:8000", *this);
     
 	/// 맵 파일 읽음
     auto mapFileString = FileUtils::getInstance()->getStringFromFile("res/map.txt");
@@ -223,4 +229,21 @@ bool HelloWorld::isSolidObject(int x, int y) {
 		return true;
 	}
 	return false;
+}
+
+
+void HelloWorld::onConnect(SIOClient *client) {
+    
+}
+
+void HelloWorld::onMessage(SIOClient *client, const std::string &data) {
+    
+}
+
+void HelloWorld::onClose(SIOClient *client) {
+    
+}
+
+void HelloWorld::onError(SIOClient *client, const std::string &data) {
+    
 }
