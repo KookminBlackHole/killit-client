@@ -41,6 +41,10 @@ bool HelloWorld::init() {
     
     client = SocketIO::connect("http://localhost:8000", *this);
     
+    client->on("set-position", [&](SIOClient *c, const string &data) {
+//        MessageBox(data.c_str(), "");
+    });
+    
 	/// 맵 파일 읽음
     auto mapFileString = FileUtils::getInstance()->getStringFromFile("res/map.txt");
     int **tempData, idx = -1;
@@ -219,6 +223,13 @@ void HelloWorld::update(float dt) {
 //    player->checkGameObjects();
     player->checkSolidObjects();
 	player->updatePosition();
+    
+    auto data = "[{\"x\":\"" + to_string(player->getPositionX()) + "\",\"y\":\"" + to_string(player->getPositionY()) + "\"}]";
+    client->emit("player-position", data);
+    
+    client->on("other-player", [&](SIOClient *c, const string &data) {
+        CameraUtil::getInstance()->fixedLayer->getChildByName<Label*>("debug1")->setString(data);
+    });
 }
 
 bool HelloWorld::isSolidObject(int x, int y) {
