@@ -7,6 +7,10 @@
 
 #include "Button.h"
 
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
+#pragma execution_character_set("utf-8")
+#endif
+
 using namespace cocos2d::network;
 
 class Player;
@@ -28,6 +32,8 @@ public:
     void onMessage(SIOClient *client, const std::string &data) override;
     void onClose(SIOClient *client) override;
     void onError(SIOClient *client, const std::string &data) override;
+
+	void createGame(float x, float y);
     
 public:
     int **mapData, mapWidth, mapHeight;
