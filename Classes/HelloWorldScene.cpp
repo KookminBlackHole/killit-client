@@ -51,6 +51,11 @@ bool HelloWorld::init() {
 
 	client->on("start", [&](SIOClient *client, const std::string &data) {
 		client->emit("start", "");
+        client->on("create-this-player", [&](SIOClient *c, const string &data) {
+            auto otherPlayer = Player::create(2, 2);
+            otherPlayers.push_back(otherPlayer);
+            this->addChild(otherPlayer);
+        });
 		createGame(0, 0);
 	});
 
@@ -144,7 +149,7 @@ void HelloWorld::createGame(float x, float y) {
 			this->addChild(mapTile[i][j]);
 
 			/// 맵 시야 생성
-			mapFog[i][j] = Sprite::create("res/tile4.png");
+			mapFog[i][j] = Sprite::create("res/tile5.png");
 			mapFog[i][j]->setGlobalZOrder(ZORDER::FOG);
 			mapFog[i][j]->getTexture()->setAliasTexParameters();
 			mapFog[i][j]->setScale(2);
@@ -240,11 +245,20 @@ void HelloWorld::update(float dt) {
 	player->checkSolidObjects();
 	player->updatePosition();
 
-	auto data = "[{\"x\":\"" + to_string(player->getPositionX()) + "\",\"y\":\"" + to_string(player->getPositionY()) + "\"}]";
+	auto data = "[{\"x\":" + to_string(player->getPositionX()) + ",\"y\":" + to_string(player->getPositionY()) + "}]";
 	client->emit("player-position", data);
 
 	client->on("other-player", [&](SIOClient *c, const string &data) {
-		CameraUtil::getInstance()->fixedLayer->getChildByName<Label*>("debug1")->setString(data);
+        if (otherPlayers.size() > 0) {
+            rapidjson::Document doc;
+            doc.Parse(data.c_str());
+            float x = doc["x"].GetDouble();
+            float y = doc["y"].GetDouble();
+        
+            otherPlayers.front()->setPosition(x, y);
+
+            CameraUtil::getInstance()->fixedLayer->getChildByName<Label*>("debug1")->setString(to_string(x) + ", " + to_string(y));
+        }
 	});
 }
 
