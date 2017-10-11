@@ -43,10 +43,10 @@ public:
     /// 벽과 충돌 할 떄 쓰는 바운딩박스
 	cocos2d::Rect solidBB;
 	/// angle: «√∑π¿ÃæÓ∞° ∫∏∞Ì ¿÷¥¬ ∞¢µµ, pos: «√∑π¿ÃæÓ ¿”Ω√ ¡¬«•
-    cocos2d::Vec2 angle, tempPosition;
+    cocos2d::Vec2 direction, tempPosition;
 
     bool touchJoystick = false;
-    float speed = 3.0f;
+    float speed = 3.0f, angle = 0;
 	/// ≈∏¿œ∏ ø°º≠¿« ¡¬«•
 	int gX = 0, gY = 0;
     

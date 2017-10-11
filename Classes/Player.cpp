@@ -33,7 +33,7 @@ Player *Player::create(int sx, int sy) {
 bool Player::init() {
     setScale(2);
     
-    player = Sprite::create("res/player2.png");
+    player = Sprite::create("res/player.png");
     player->getTexture()->setAliasTexParameters();
     this->addChild(player);
 
@@ -52,24 +52,24 @@ bool Player::init() {
 }
 
 void Player::update(float dt) {
-	float pAngle = CC_RADIANS_TO_DEGREES(angle.getAngle());
-	if (pAngle > 90 || pAngle <= -90) { /// ø?￢?
+	angle = CC_RADIANS_TO_DEGREES(direction.getAngle());
+	if (angle > 90 || angle <= -90) { /// ø?￢?
 		player->setFlippedX(true);
 	} else {
 		player->setFlippedX(false);
 	}
 }
 
-void Player::onStickBegan(Vec2 angle, Ref *pSender) {
-    this->angle = angle;
+void Player::onStickBegan(Vec2 direction, Ref *pSender) {
+    this->direction = direction;
     touchJoystick = true;
 }
 
-void Player::onStickMoved(Vec2 angle, Ref *pSender) {
-    this->angle = angle;
+void Player::onStickMoved(Vec2 direction, Ref *pSender) {
+    this->direction = direction;
 }
 
-void Player::onStickEnded(Vec2 angle, Ref *pSender) {
+void Player::onStickEnded(Vec2 direction, Ref *pSender) {
     touchJoystick = false;
 }
 
@@ -88,7 +88,7 @@ void Player::gridCoordUpdate(int mapWidth, int mapHeight) {
 void Player::move() {
 	/// ≪√∑π¿AæO∞° ¡∂¿AΩ∫?Ω ?O?°≪?¿ª ∂ß ≪y￥A πE≪?¿∏∑Œ ¿Aμø
 	if (touchJoystick) {
-		tempPosition = getPosition() + angle * speed;
+		tempPosition = getPosition() + direction * speed;
 	}
 }
 
@@ -169,7 +169,7 @@ void Player::checkGameObjects() {
 	HelloWorld *parent = (HelloWorld *)getParent();
 	Vec2 origin = Director::getInstance()->getVisibleSize() / 2;
 
-	Vec2 check = this->getPosition() + angle * 48;
+	Vec2 check = this->getPosition() + direction * 48;
 
     int xx = (check.x + (24 * (parent->mapWidth - 1) - origin.x)) / 48 + 1;
 	int yy = (check.y + (24 * (parent->mapHeight - 1) - origin.y)) / 48 + 1;
