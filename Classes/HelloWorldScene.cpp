@@ -245,7 +245,7 @@ void HelloWorld::update(float dt) {
 	player->checkSolidObjects();
 	player->updatePosition();
 
-	auto data = "[{\"x\":" + to_string(player->getPositionX()) + ",\"y\":" + to_string(player->getPositionY()) + ", \"angle\":" + to_string(player->direction.getAngle()) + "}]";
+	auto data = "[{\"x\":" + to_string(player->getPositionX()) + ",\"y\":" + to_string(player->getPositionY()) + ", \"angle\":" + to_string(player->angle) + "}]";
 	client->emit("player-position", data);
 
 	client->on("other-player", [&](SIOClient *c, const string &data) {
@@ -259,7 +259,7 @@ void HelloWorld::update(float dt) {
             otherPlayers.front()->setPosition(x, y);
 			otherPlayers.front()->angle = angle;
 
-            CameraUtil::getInstance()->fixedLayer->getChildByName<Label*>("debug1")->setString(to_string(x) + ", " + to_string(y));
+            CameraUtil::getInstance()->fixedLayer->getChildByName<Label*>("debug1")->setString(to_string(x) + ", " + to_string(y) + ", " + to_string(angle));
         }
 	});
 }

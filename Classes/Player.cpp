@@ -33,7 +33,7 @@ Player *Player::create(int sx, int sy) {
 bool Player::init() {
     setScale(2);
     
-    player = Sprite::create("res/player.png");
+    player = Sprite::create("res/player2.png");
     player->getTexture()->setAliasTexParameters();
     this->addChild(player);
 
@@ -52,7 +52,6 @@ bool Player::init() {
 }
 
 void Player::update(float dt) {
-	angle = CC_RADIANS_TO_DEGREES(direction.getAngle());
 	if (angle > 90 || angle <= -90) { /// ø?￢?
 		player->setFlippedX(true);
 	} else {
@@ -61,11 +60,13 @@ void Player::update(float dt) {
 }
 
 void Player::onStickBegan(Vec2 direction, Ref *pSender) {
+    angle = CC_RADIANS_TO_DEGREES(direction.getAngle());
     this->direction = direction;
     touchJoystick = true;
 }
 
 void Player::onStickMoved(Vec2 direction, Ref *pSender) {
+    angle = CC_RADIANS_TO_DEGREES(direction.getAngle());
     this->direction = direction;
 }
 
@@ -96,7 +97,7 @@ void Player::collision() {
 	HelloWorld *parent = (HelloWorld *)getParent();
     
     /// ≪?¿A ¿ß?°∏¶ ±?¡y¿∏∑Œ 3x3?≠¿ª √Eμπ ∞AªA∏¶ ≪‘
-    /// 충돌 처리 시 벽에 끼이는 문제를 해결하기 위해 충돌 검사 순서를 가운데 - 위 - 아래 순으로 바꿈.
+    /// 충돌 처리 시 벽에 끼이는 문제를 해결하기 위해 충돌 검사 순서를 아래 - 위 - 가운데 순으로 바꿈.
     int yOrder[3] = { 0, 1, -1 }, xOrder[3] = { 0, 1, -1 };
     for (int k = 0; k < 3; k++) {
         int i = clampf(gY + yOrder[k], 0, parent->mapHeight - 1);
@@ -162,7 +163,7 @@ void Player::updatePosition() {
 	/// ∞EªIμ≫ ≪√∑π¿AæO ¿ß?° Ω≪¡¶ ¿˚øI
 	this->setPosition(tempPosition);
     
-	CameraUtil::getInstance()->setPosition(int(this->getPositionX()), int(this->getPositionY()));
+	CameraUtil::getInstance()->setPosition((this->getPositionX()), (this->getPositionY()));
 }
 
 void Player::checkGameObjects() {
