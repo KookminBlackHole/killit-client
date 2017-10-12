@@ -33,19 +33,25 @@ Player *Player::create(int sx, int sy) {
 bool Player::init() {
     setScale(2);
     
+    /// Rect(-16, -16 - 24 + 16)
+    solidBB = Rect(-16, -24, 32, 32);
+    
     player = Sprite::create("res/player2.png");
     player->getTexture()->setAliasTexParameters();
     this->addChild(player);
+    
+    debugHP = DrawNode::create();
+    debugHP->setPositionY(solidBB.getMaxY() + 4 + 4);
+    this->addChild(debugHP);
+    
+    debugAttack = DrawNode::create();
+    this->addChild(debugAttack);
 
 	/// ≪√∑π¿AæO zorder º≥¡§
 	this->setGlobalZOrder(ZORDER::PLAYER);
 	for (auto &i : this->getChildren()) {
 		i->setGlobalZOrder(ZORDER::PLAYER);
 	}
-    
-    /// Rect(-16, -16 - 24 + 16)
-	solidBB = Rect(-16, -24, 32, 32);
-    
     scheduleUpdate();
     
     return true;
@@ -57,6 +63,9 @@ void Player::update(float dt) {
 	} else {
 		player->setFlippedX(false);
 	}
+    
+    debugHP->clear();
+    debugHP->drawSolidRect(Vec2(-16, -2), Vec2(16, 2), Color4F::GREEN);
 }
 
 void Player::onStickBegan(Vec2 direction, Ref *pSender) {
@@ -166,7 +175,7 @@ void Player::updatePosition() {
 	CameraUtil::getInstance()->setPosition((this->getPositionX()), (this->getPositionY()));
 }
 
-void Player::checkGameObjects() {
+bool Player::checkGameObjects() {
 	HelloWorld *parent = (HelloWorld *)getParent();
 	Vec2 origin = Director::getInstance()->getVisibleSize() / 2;
 
@@ -182,7 +191,11 @@ void Player::checkGameObjects() {
         case 3:
             parent->mapData[yy][xx] = 1;
             break;
+        default:
+            return false;
 	}
+    
+    return true;
 }
 
 void Player::checkSolidObjects() {
@@ -196,4 +209,12 @@ void Player::checkSolidObjects() {
             }
         }
     }
+}
+
+void Player::attack() {
+    debugAttack->clear();
+    debugAttack->drawLine(Vec2(0, 0), direction * 100, Color4F::BLUE);
+    scheduleOnce([&](float dt) {
+        debugAttack->clear();
+    }, 1.0f, "attackDebug");
 }

@@ -34,9 +34,11 @@ public:
 	void collision();
 	void updateZOrder();
 	void updatePosition();
-	void checkGameObjects();
+	bool checkGameObjects();
     /// 벽이 밑에 있는지 체크하고 있으면 투명도를 조절해주는 함수
     void checkSolidObjects();
+    
+    void attack();
     
 public:
     cocos2d::Sprite *player;
@@ -44,11 +46,15 @@ public:
 	cocos2d::Rect solidBB;
 	/// angle: «√∑π¿ÃæÓ∞° ∫∏∞Ì ¿÷¥¬ ∞¢µµ, pos: «√∑π¿ÃæÓ ¿”Ω√ ¡¬«•
     cocos2d::Vec2 direction, tempPosition;
+    
+    cocos2d::DrawNode *debugHP, *debugAttack;
 
     bool touchJoystick = false;
     float speed = 3.0f, angle = 0;
 	/// ≈∏¿œ∏ ø°º≠¿« ¡¬«•
 	int gX = 0, gY = 0;
+    
+    int hp = 100;
     
 };
 

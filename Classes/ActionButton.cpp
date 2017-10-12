@@ -10,6 +10,8 @@
 
 #include "ZOrder.h"
 
+USING_NS_CC;
+
 ActionButton *ActionButton::create(Player *player) {
     ActionButton *ret = new (std::nothrow) ActionButton();
     if (ret && ret->initWithFile("res/interaction.png")) {
@@ -30,7 +32,9 @@ void ActionButton::initialize() {
 }
 
 void ActionButton::onPressed() {
-    player->checkGameObjects();
+    if (!player->checkGameObjects()) {
+        player->attack();
+    }
 }
 
 void ActionButton::onReleased() {
