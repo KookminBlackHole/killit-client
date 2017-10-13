@@ -11,6 +11,7 @@
 #include "HelloWorldScene.h"
 #include "ZOrder.h"
 #include "CameraUtil.h"
+#include "Definitions.h"
 
 USING_NS_CC;
 
@@ -34,14 +35,14 @@ bool Player::init() {
     setScale(2);
     
     /// Rect(-16, -16 - 24 + 16)
-    solidBB = Rect(-16, -24, 32, 32);
+    solidBB = Rect(-PLAYER_WIDTH, -PLAYER_HEIGHT, PLAYER_WIDTH * DEFAULT_SCALE, PLAYER_WIDTH * DEFAULT_SCALE);
     
     player = Sprite::create("res/player2.png");
     player->getTexture()->setAliasTexParameters();
     this->addChild(player);
     
     debugHP = DrawNode::create();
-    debugHP->setPositionY(solidBB.getMaxY() + 4 + 4);
+//    debugHP->setPositionY(solidBB.getMaxY() + 4 + 4);
     this->addChild(debugHP);
     
     debugAttack = DrawNode::create();
@@ -64,8 +65,9 @@ void Player::update(float dt) {
 		player->setFlippedX(false);
 	}
     
-    debugHP->clear();
-    debugHP->drawSolidRect(Vec2(-16, -2), Vec2(16, 2), Color4F::GREEN);
+//    debugHP->clear();
+//    debugHP->drawSolidRect(Vec2(-16, -2), Vec2(16, 2), Color4F::GREEN);
+//    debugHP->drawRect(solidBB.origin, solidBB.origin + solidBB.size / 2, Color4F::GREEN);
 }
 
 void Player::onStickBegan(Vec2 direction, Ref *pSender) {
@@ -85,13 +87,13 @@ void Player::onStickEnded(Vec2 direction, Ref *pSender) {
 
 void Player::calculateGridCoord(int mapWidth, int mapHeight) {
 	Vec2 origin = Director::getInstance()->getVisibleSize() / 2;
-	gX = (this->getPositionX() + (24 * (mapWidth - 1) - origin.x)) / 48 + 1;
-	gY = (this->getPositionY() + (24 * (mapHeight - 1) - origin.y)) / 48 + 1;
+	gX = (this->getPositionX() + (TILE_SIZE_HALF * (mapWidth - 1) - origin.x)) / TILE_SIZE + 1;
+	gY = (this->getPositionY() + (TILE_SIZE_HALF * (mapHeight - 1) - origin.y)) / TILE_SIZE + 1;
 }
 
 void Player::gridCoordUpdate(int mapWidth, int mapHeight) {
 	Vec2 origin = Director::getInstance()->getVisibleSize() / 2;
-    tempPosition = Vec2(48 * gX - (24 * mapWidth - origin.x), 48 * gY - (24 * mapHeight - origin.y));
+    tempPosition = Vec2(TILE_SIZE * gX - (TILE_SIZE_HALF * mapWidth - origin.x), TILE_SIZE * gY - (TILE_SIZE_HALF * mapHeight - origin.y));
 	this->setPosition(tempPosition);
 }
 
@@ -117,7 +119,7 @@ void Player::collision() {
             if (parent->isSolidObject(j, i)) {
                 /// ≪√∑π¿AæOøO ªU￥I √Eμπ√º¿≪ BoundingBox∏¶ ∞°¡Æø≫
                 auto playerBB = Rect(tempPosition + solidBB.origin, solidBB.size);
-                auto otherBB = Rect(parent->mapTile[i][j]->getPosition() - Size(24, 24), Size(48, 48));
+                auto otherBB = Rect(parent->mapTile[i][j]->getPosition() - Size(TILE_SIZE_HALF, TILE_SIZE_HALF), Size(TILE_SIZE, TILE_SIZE));
 				/// √Eμπ ∞AªA
 				if (playerBB.intersectsRect(otherBB)) {
 //					parent->mapTile[i][j]->setColor(Color3B::MAGENTA);
@@ -179,10 +181,10 @@ bool Player::checkGameObjects() {
 	HelloWorld *parent = (HelloWorld *)getParent();
 	Vec2 origin = Director::getInstance()->getVisibleSize() / 2;
 
-	Vec2 check = this->getPosition() + direction * 48;
+	Vec2 check = this->getPosition() + direction * TILE_SIZE;
 
-    int xx = (check.x + (24 * (parent->mapWidth - 1) - origin.x)) / 48 + 1;
-	int yy = (check.y + (24 * (parent->mapHeight - 1) - origin.y)) / 48 + 1;
+    int xx = (check.x + (TILE_SIZE_HALF * (parent->mapWidth - 1) - origin.x)) / TILE_SIZE + 1;
+	int yy = (check.y + (TILE_SIZE_HALF * (parent->mapHeight - 1) - origin.y)) / TILE_SIZE + 1;
 
 	switch (parent->mapData[yy][xx]) {
         case 1:

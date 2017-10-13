@@ -7,6 +7,7 @@
 #include "ZOrder.h"
 #include "UIManager.h"
 #include "Utils.h"
+#include "Definitions.h"
 
 #include "json/rapidjson.h"
 #include "json/document.h"
@@ -37,27 +38,29 @@ bool HelloWorld::init() {
     auto bg = LayerColor::create(Color4B::BLACK);
     this->addChild(bg);
 
-	auto waitLabel = Label::createWithTTF("상대방을 기다리는 중입니다", "res/NanumGothic.ttf", 24);
-	waitLabel->setPosition(origin);
-	this->addChild(waitLabel);
-
-	waitLabel->runAction(RepeatForever::create(Sequence::create(CallFunc::create([=] {waitLabel->setString("상대방을 기다리는 중입니다"); }), DelayTime::create(0.5f), CallFunc::create([=] {waitLabel->setString("상대방을 기다리는 중입니다.");}), DelayTime::create(0.5f), CallFunc::create([=] {waitLabel->setString("상대방을 기다리는 중입니다.."); }), DelayTime::create(0.5f), CallFunc::create([=] {waitLabel->setString("상대방을 기다리는 중입니다..."); }), DelayTime::create(0.5f), NULL)));
+//	auto waitLabel = Label::createWithTTF("상대방을 기다리는 중입니다", "res/NanumGothic.ttf", 24);
+//	waitLabel->setPosition(origin);
+//	this->addChild(waitLabel);
+//
+//	waitLabel->runAction(RepeatForever::create(Sequence::create(CallFunc::create([=] {waitLabel->setString("상대방을 기다리는 중입니다"); }), DelayTime::create(0.5f), CallFunc::create([=] {waitLabel->setString("상대방을 기다리는 중입니다.");}), DelayTime::create(0.5f), CallFunc::create([=] {waitLabel->setString("상대방을 기다리는 중입니다.."); }), DelayTime::create(0.5f), CallFunc::create([=] {waitLabel->setString("상대방을 기다리는 중입니다..."); }), DelayTime::create(0.5f), NULL)));
+//    
+//	client = SocketIO::connect("http://localhost:8000", *this);
+//
+//	client->on("connected", [&](SIOClient *client, const std::string &data) {
+//		client->emit("player-ready", "");
+//	});
+//
+//	client->on("start", [&](SIOClient *client, const std::string &data) {
+//		client->emit("start", "");
+//        client->on("create-this-player", [&](SIOClient *c, const string &data) {
+//            auto otherPlayer = Player::create(2, 2);
+//            otherPlayers.push_back(otherPlayer);
+//            this->addChild(otherPlayer);
+//        });
+//		createGame(0, 0);
+//	});
     
-	client = SocketIO::connect("http://localhost:8000", *this);
-
-	client->on("connected", [&](SIOClient *client, const std::string &data) {
-		client->emit("player-ready", "");
-	});
-
-	client->on("start", [&](SIOClient *client, const std::string &data) {
-		client->emit("start", "");
-        client->on("create-this-player", [&](SIOClient *c, const string &data) {
-            auto otherPlayer = Player::create(2, 2);
-            otherPlayers.push_back(otherPlayer);
-            this->addChild(otherPlayer);
-        });
-		createGame(0, 0);
-	});
+    createGame(0, 0);
 
     return true;
 }
@@ -110,9 +113,8 @@ void HelloWorld::createGame(float x, float y) {
 		mapObjects[i] = new Sprite*[mapWidth];
 		mapFog[i] = new Sprite*[mapWidth];
 		for (int j = 0; j < mapWidth; j++) {
-			int tileSize = 24 * 2;
-			Vec2 pos = Vec2(j * tileSize + origin.x - tileSize * mapWidth * 0.5,
-				i * tileSize + origin.y - tileSize * mapHeight * 0.5);
+			Vec2 pos = Vec2(j * TILE_SIZE + origin.x - TILE_SIZE * mapWidth * 0.5,
+				i * TILE_SIZE + origin.y - TILE_SIZE * mapHeight * 0.5);
 
 			mapObjects[i][j] = nullptr;
 			if (mapData[i][j] <= 10) { /// 게임 오브젝트 및 바닥
@@ -139,7 +141,7 @@ void HelloWorld::createGame(float x, float y) {
 				mapTile[i][j]->setAnchorPoint(Vec2(0.5f, 0.25f));
 				mapTile[i][j]->setGlobalZOrder(zorder);
 
-				mapTile[i][j]->setTextureRect(Rect(24 * (idx % 7), 48 * (idx / 7), 24, 48));
+				mapTile[i][j]->setTextureRect(Rect(REAL_TILE_WIDTH * (idx % 7), REAL_TILE_HEIGHT * (idx / 7), REAL_TILE_WIDTH, REAL_TILE_HEIGHT));
 			}
 
 			mapTile[i][j]->getTexture()->setAliasTexParameters();
@@ -153,7 +155,7 @@ void HelloWorld::createGame(float x, float y) {
 			mapFog[i][j]->setGlobalZOrder(ZORDER::FOG);
 			mapFog[i][j]->getTexture()->setAliasTexParameters();
 			mapFog[i][j]->setScale(2);
-			mapFog[i][j]->setPosition(pos.x, pos.y + 24 * 2);
+			mapFog[i][j]->setPosition(pos.x, pos.y + TILE_SIZE);
 			mapFog[i][j]->setVisible(false);
 			this->addChild(mapFog[i][j]);
 		}
@@ -224,11 +226,11 @@ void HelloWorld::update(float dt) {
 		for (int i = 0; i < 20; i++) {
 			if (escape) break;
 
-			float x = player->getPositionX() + cos(CC_DEGREES_TO_RADIANS(r)) * i * 24;
-			float y = player->getPositionY() + sin(CC_DEGREES_TO_RADIANS(r)) * i * 24;
+			float x = player->getPositionX() + cos(CC_DEGREES_TO_RADIANS(r)) * i * TILE_SIZE_HALF;
+			float y = player->getPositionY() + sin(CC_DEGREES_TO_RADIANS(r)) * i * TILE_SIZE_HALF;
 
-			int gX = (x + (24 * (mapWidth - 1) - origin.x)) / 48 + 1;
-			int gY = (y + (24 * (mapHeight - 1) - origin.y)) / 48 + 1;
+			int gX = (x + (TILE_SIZE_HALF * (mapWidth - 1) - origin.x)) / TILE_SIZE + 1;
+			int gY = (y + (TILE_SIZE_HALF * (mapHeight - 1) - origin.y)) / TILE_SIZE + 1;
 
 			if (gY > mapHeight - 1 || gY < 0 || gX > mapWidth - 1 || gX < 0) continue;
 
@@ -241,27 +243,26 @@ void HelloWorld::update(float dt) {
 	player->updateZOrder();
 	player->move();
 	player->collision();
-	//    player->checkGameObjects();
 	player->checkSolidObjects();
 	player->updatePosition();
 
-	auto data = "[{\"x\":" + to_string(player->getPositionX()) + ",\"y\":" + to_string(player->getPositionY()) + ", \"angle\":" + to_string(player->angle) + "}]";
-	client->emit("player-position", data);
-
-	client->on("other-player", [&](SIOClient *c, const string &data) {
-        if (otherPlayers.size() > 0) {
-            rapidjson::Document doc;
-            doc.Parse(data.c_str());
-            float x = doc["x"].GetDouble();
-            float y = doc["y"].GetDouble();
-			float angle = doc["angle"].GetDouble();
-        
-            otherPlayers.front()->setPosition(x, y);
-			otherPlayers.front()->angle = angle;
-
-            CameraUtil::getInstance()->fixedLayer->getChildByName<Label*>("debug1")->setString(to_string(x) + ", " + to_string(y) + ", " + to_string(angle));
-        }
-	});
+//	auto data = "[{\"x\":" + to_string(player->getPositionX()) + ",\"y\":" + to_string(player->getPositionY()) + ", \"angle\":" + to_string(player->angle) + "}]";
+//	client->emit("player-position", data);
+//
+//	client->on("other-player", [&](SIOClient *c, const string &data) {
+//        if (otherPlayers.size() > 0) {
+//            rapidjson::Document doc;
+//            doc.Parse(data.c_str());
+//            float x = doc["x"].GetDouble();
+//            float y = doc["y"].GetDouble();
+//			float angle = doc["angle"].GetDouble();
+//        
+//            otherPlayers.front()->setPosition(x, y);
+//			otherPlayers.front()->angle = angle;
+//
+//            CameraUtil::getInstance()->fixedLayer->getChildByName<Label*>("debug1")->setString(to_string(x) + ", " + to_string(y) + ", " + to_string(angle));
+//        }
+//	});
 }
 
 bool HelloWorld::isSolidObject(int x, int y) {
