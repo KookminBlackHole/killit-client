@@ -18,7 +18,7 @@
 #define TILE_SIZE 72
 #define TILE_SIZE_HALF 36
 
-#define PLAYER_WIDTH 32
-#define PLAYER_HEIGHT 48
+#define PLAYER_WIDTH 20
+#define PLAYER_HEIGHT 20
 
 #endif /* Definitions_h */

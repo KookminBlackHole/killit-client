@@ -34,8 +34,7 @@ Player *Player::create(int sx, int sy) {
 bool Player::init() {
     setScale(2);
     
-    /// Rect(-16, -16 - 24 + 16)
-    solidBB = Rect(-PLAYER_WIDTH, -PLAYER_HEIGHT, PLAYER_WIDTH * DEFAULT_SCALE, PLAYER_WIDTH * DEFAULT_SCALE);
+	solidBB = Rect(-PLAYER_WIDTH, -36 * 2 / 2, PLAYER_WIDTH * DEFAULT_SCALE, PLAYER_HEIGHT * DEFAULT_SCALE);
     
     player = Sprite::create("res/player2.png");
     player->getTexture()->setAliasTexParameters();
@@ -65,9 +64,9 @@ void Player::update(float dt) {
 		player->setFlippedX(false);
 	}
     
-//    debugHP->clear();
+    debugHP->clear();
 //    debugHP->drawSolidRect(Vec2(-16, -2), Vec2(16, 2), Color4F::GREEN);
-//    debugHP->drawRect(solidBB.origin, solidBB.origin + solidBB.size / 2, Color4F::GREEN);
+    debugHP->drawRect(solidBB.origin / 2, (solidBB.origin + solidBB.size) / 2, Color4F::GREEN);
 }
 
 void Player::onStickBegan(Vec2 direction, Ref *pSender) {
@@ -87,8 +86,8 @@ void Player::onStickEnded(Vec2 direction, Ref *pSender) {
 
 void Player::calculateGridCoord(int mapWidth, int mapHeight) {
 	Vec2 origin = Director::getInstance()->getVisibleSize() / 2;
-	gX = (this->getPositionX() + (TILE_SIZE_HALF * (mapWidth - 1) - origin.x)) / TILE_SIZE + 1;
-	gY = (this->getPositionY() + (TILE_SIZE_HALF * (mapHeight - 1) - origin.y)) / TILE_SIZE + 1;
+	gX = ((this->getPositionX()) + (TILE_SIZE_HALF * (mapWidth - 1) - origin.x)) / TILE_SIZE + 1;
+	gY = ((this->getPositionY()) + (TILE_SIZE_HALF * (mapHeight - 1) - origin.y)) / TILE_SIZE + 1;
 }
 
 void Player::gridCoordUpdate(int mapWidth, int mapHeight) {
@@ -107,22 +106,20 @@ void Player::move() {
 void Player::collision() {
 	HelloWorld *parent = (HelloWorld *)getParent();
     
-    /// ≪?¿A ¿ß?°∏¶ ±?¡y¿∏∑Œ 3x3?≠¿ª √Eμπ ∞AªA∏¶ ≪‘
     /// 충돌 처리 시 벽에 끼이는 문제를 해결하기 위해 충돌 검사 순서를 아래 - 위 - 가운데 순으로 바꿈.
     int yOrder[3] = { 0, 1, -1 }, xOrder[3] = { 0, 1, -1 };
     for (int k = 0; k < 3; k++) {
         int i = clampf(gY + yOrder[k], 0, parent->mapHeight - 1);
         for (int l = 0; l < 3; l++) {
             int j = clampf(gX + xOrder[l], 0, parent->mapWidth - 1);
-            if (i == gY && j == gX) continue;
-            /// ∫Æ¿A≥™ πÆ¿A∏E
+            //if (i == gY && j == gX) continue;
             if (parent->isSolidObject(j, i)) {
                 /// ≪√∑π¿AæOøO ªU￥I √Eμπ√º¿≪ BoundingBox∏¶ ∞°¡Æø≫
                 auto playerBB = Rect(tempPosition + solidBB.origin, solidBB.size);
                 auto otherBB = Rect(parent->mapTile[i][j]->getPosition() - Size(TILE_SIZE_HALF, TILE_SIZE_HALF), Size(TILE_SIZE, TILE_SIZE));
 				/// √Eμπ ∞AªA
 				if (playerBB.intersectsRect(otherBB)) {
-//					parent->mapTile[i][j]->setColor(Color3B::MAGENTA);
+					parent->mapTile[i][j]->setColor(Color3B::MAGENTA);
 
 					/// 0: left, 1: right, 2: up, 3: down
 					int dir = 0;
@@ -133,15 +130,6 @@ void Player::collision() {
 					else if (angle > 45 && angle <= 135) dir = 2;
 					else if ((angle > 135 && angle <= 180) || (angle < -135 && angle >= -180)) dir = 0;
 					else dir = 3;
-                    
-                    if (dir == 0)
-                        CameraUtil::getInstance()->fixedLayer->getChildByName<Label*>("debug1")->setString("left");
-                    if (dir == 1)
-                        CameraUtil::getInstance()->fixedLayer->getChildByName<Label*>("debug1")->setString("right");
-                    if (dir == 2)
-                        CameraUtil::getInstance()->fixedLayer->getChildByName<Label*>("debug1")->setString("up");
-                    if (dir == 3)
-                        CameraUtil::getInstance()->fixedLayer->getChildByName<Label*>("debug1")->setString("down");
 
 					if (dir == 0) {
 						tempPosition.x = otherBB.getMinX() - solidBB.getMaxX();

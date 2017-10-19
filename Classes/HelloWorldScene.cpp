@@ -195,8 +195,8 @@ void HelloWorld::update(float dt) {
 	int pX = player->gX, pY = player->gY;
 
 	/// 이전에 그려진 맵 지우기
-	for (int i = max(pY - 9, 0); i < min(pY + 9, mapHeight); i++) {
-		for (int j = max(pX - 14, 0); j < min(pX + 15, mapWidth); j++) {
+	for (int i = max(pY - 6, 0); i < min(pY + 6, mapHeight); i++) {
+		for (int j = max(pX - 9, 0); j < min(pX + 10, mapWidth); j++) {
 			mapTile[i][j]->setVisible(false);
 			mapFog[i][j]->setVisible(false);
 			mapFog[i][j]->setOpacity(255 * 1.0f);
@@ -210,35 +210,35 @@ void HelloWorld::update(float dt) {
 	pY = player->gY;
 
 	/// 현재 위치에서 맵 그리기
-	for (int i = max(pY - 9, 0); i < min(pY + 9, mapHeight); i++) {
-		for (int j = max(pX - 14, 0); j < min(pX + 15, mapWidth); j++) {
+	for (int i = max(pY - 6, 0); i < min(pY + 6, mapHeight); i++) {
+		for (int j = max(pX - 9, 0); j < min(pX + 10, mapWidth); j++) {
 			mapTile[i][j]->setVisible(true);
 			mapTile[i][j]->setOpacity(255);
 			mapTile[i][j]->setColor(Color3B::WHITE);
-			mapFog[i][j]->setVisible(true);
+			//mapFog[i][j]->setVisible(true);
 			if (mapObjects[i][j] != nullptr) mapObjects[i][j]->setVisible(true);
 		}
 	}
 
 	/// 안개 투명도 설정
-	for (float r = 0; r < 360; r += 0.5f) {
-		bool escape = false;
-		for (int i = 0; i < 20; i++) {
-			if (escape) break;
+	//for (float r = 0; r < 360; r += 0.5f) {
+	//	bool escape = false;
+	//	for (int i = 0; i < 20; i++) {
+	//		if (escape) break;
 
-			float x = player->getPositionX() + cos(CC_DEGREES_TO_RADIANS(r)) * i * TILE_SIZE_HALF;
-			float y = player->getPositionY() + sin(CC_DEGREES_TO_RADIANS(r)) * i * TILE_SIZE_HALF;
+	//		float x = player->getPositionX() + cos(CC_DEGREES_TO_RADIANS(r)) * i * TILE_SIZE_HALF;
+	//		float y = player->getPositionY() + sin(CC_DEGREES_TO_RADIANS(r)) * i * TILE_SIZE_HALF;
 
-			int gX = (x + (TILE_SIZE_HALF * (mapWidth - 1) - origin.x)) / TILE_SIZE + 1;
-			int gY = (y + (TILE_SIZE_HALF * (mapHeight - 1) - origin.y)) / TILE_SIZE + 1;
+	//		int gX = (x + (TILE_SIZE_HALF * (mapWidth - 1) - origin.x)) / TILE_SIZE + 1;
+	//		int gY = (y + (TILE_SIZE_HALF * (mapHeight - 1) - origin.y)) / TILE_SIZE + 1;
 
-			if (gY > mapHeight - 1 || gY < 0 || gX > mapWidth - 1 || gX < 0) continue;
+	//		if (gY > mapHeight - 1 || gY < 0 || gX > mapWidth - 1 || gX < 0) continue;
 
-			if (isSolidObject(gX, gY)) escape = true;
+	//		if (isSolidObject(gX, gY)) escape = true;
 
-			mapFog[gY][gX]->setOpacity(255 * MAX(((i - 12.0f) / 8.0f), 0));
-		}
-	}
+	//		mapFog[gY][gX]->setOpacity(255 * MAX(((i - 12.0f) / 8.0f), 0));
+	//	}
+	//}
 
 	player->updateZOrder();
 	player->move();
