@@ -45,6 +45,8 @@ public:
 	Button * interactButton;
     
     SIOClient *client;
+    
+    float deltaTime = 0, prevDeltaTime;
 };
 
 #endif // __HELLOWORLD_SCENE_H__

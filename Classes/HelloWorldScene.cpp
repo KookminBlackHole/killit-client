@@ -52,11 +52,32 @@ bool HelloWorld::init() {
 
 	client->on("start", [&](SIOClient *client, const std::string &data) {
 		client->emit("start", "");
+        
         client->on("create-this-player", [&](SIOClient *c, const string &data) {
             auto otherPlayer = Player::create(2, 2);
             otherPlayers.push_back(otherPlayer);
             this->addChild(otherPlayer);
         });
+        
+        client->on("other-player", [&](SIOClient *c, const string &data) {
+            if (otherPlayers.size() > 0) {
+                rapidjson::Document doc;
+                doc.Parse(data.c_str());
+                float x = doc["x"].GetDouble();
+                float y = doc["y"].GetDouble();
+                float dx = doc["dirX"].GetDouble();
+                float dy = doc["dirY"].GetDouble();
+//                Vec2 pos = Vec2(x, y), dir = Vec2(dx, dy);
+                float angle = doc["angle"].GetDouble();
+                
+                auto lerpPos = Vec2(MathUtil::lerp(x, x + dx, deltaTime), MathUtil::lerp(y, y + dy, deltaTime));
+                otherPlayers.front()->setPosition(lerpPos);
+                otherPlayers.front()->angle = angle;
+                
+                otherPlayers.front()->updateZOrder();
+            }
+        });
+        
 		createGame(0, 0);
 	});
 
@@ -244,25 +265,16 @@ void HelloWorld::update(float dt) {
 	player->checkSolidObjects();
 	player->updatePosition();
 
-    auto data = createData("x", to_string(player->getPositionX()).c_str(), "y", to_string(player->getPositionY()).c_str(), "angle", to_string(player->angle).c_str(), "");
-	client->emit("player-position", data);
-
-	client->on("other-player", [&](SIOClient *c, const string &data) {
-        if (otherPlayers.size() > 0) {
-            rapidjson::Document doc;
-            doc.Parse(data.c_str());
-            float x = doc["x"].GetDouble();
-            float y = doc["y"].GetDouble();
-			float angle = doc["angle"].GetDouble();
-        
-            otherPlayers.front()->setPosition(x, y);
-			otherPlayers.front()->angle = angle;
-            
-            otherPlayers.front()->updateZOrder();
-
-            CameraUtil::getInstance()->fixedLayer->getChildByName<Label*>("debug1")->setString(to_string(x) + ", " + to_string(y) + ", " + to_string(angle));
-        }
-	});
+    auto data = createData("x", to_string(player->getPositionX()).c_str(),
+                           "y", to_string(player->getPositionY()).c_str(),
+                           "dirX", to_string((player->direction * player->speed).x).c_str(),
+                           "dirY", to_string((player->direction * player->speed).y).c_str(),
+                           "angle", to_string(player->angle).c_str(), "");
+    client->emit("player-position", data);
+    
+    deltaTime = dt;
+    
+    CameraUtil::getInstance()->fixedLayer->getChildByName<Label*>("debug1")->setString(to_string(deltaTime));
 }
 
 bool HelloWorld::isSolidObject(int x, int y) {
