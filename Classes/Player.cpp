@@ -36,7 +36,7 @@ bool Player::init() {
     
 	solidBB = Rect(-PLAYER_WIDTH, -36 * 2 / 2, PLAYER_WIDTH * DEFAULT_SCALE, PLAYER_HEIGHT * DEFAULT_SCALE);
     
-    player = Sprite::create("res/player2.png");
+    player = Sprite::create("res/player.png");
     player->getTexture()->setAliasTexParameters();
     this->addChild(player);
     
@@ -64,9 +64,9 @@ void Player::update(float dt) {
 		player->setFlippedX(false);
 	}
     
-    debugHP->clear();
+//    debugHP->clear();
 //    debugHP->drawSolidRect(Vec2(-16, -2), Vec2(16, 2), Color4F::GREEN);
-    debugHP->drawRect(solidBB.origin / 2, (solidBB.origin + solidBB.size) / 2, Color4F::GREEN);
+//    debugHP->drawRect(solidBB.origin / 2, (solidBB.origin + solidBB.size) / 2, Color4F::GREEN);
 }
 
 void Player::onStickBegan(Vec2 direction, Ref *pSender) {

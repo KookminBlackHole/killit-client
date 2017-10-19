@@ -38,29 +38,27 @@ bool HelloWorld::init() {
     auto bg = LayerColor::create(Color4B::BLACK);
     this->addChild(bg);
 
-//	auto waitLabel = Label::createWithTTF("상대방을 기다리는 중입니다", "res/NanumGothic.ttf", 24);
-//	waitLabel->setPosition(origin);
-//	this->addChild(waitLabel);
-//
-//	waitLabel->runAction(RepeatForever::create(Sequence::create(CallFunc::create([=] {waitLabel->setString("상대방을 기다리는 중입니다"); }), DelayTime::create(0.5f), CallFunc::create([=] {waitLabel->setString("상대방을 기다리는 중입니다.");}), DelayTime::create(0.5f), CallFunc::create([=] {waitLabel->setString("상대방을 기다리는 중입니다.."); }), DelayTime::create(0.5f), CallFunc::create([=] {waitLabel->setString("상대방을 기다리는 중입니다..."); }), DelayTime::create(0.5f), NULL)));
-//    
-//	client = SocketIO::connect("http://localhost:8000", *this);
-//
-//	client->on("connected", [&](SIOClient *client, const std::string &data) {
-//		client->emit("player-ready", "");
-//	});
-//
-//	client->on("start", [&](SIOClient *client, const std::string &data) {
-//		client->emit("start", "");
-//        client->on("create-this-player", [&](SIOClient *c, const string &data) {
-//            auto otherPlayer = Player::create(2, 2);
-//            otherPlayers.push_back(otherPlayer);
-//            this->addChild(otherPlayer);
-//        });
-//		createGame(0, 0);
-//	});
+	auto waitLabel = Label::createWithTTF("상대방을 기다리는 중입니다", "res/NanumGothic.ttf", 24);
+	waitLabel->setPosition(origin);
+	this->addChild(waitLabel);
+
+	waitLabel->runAction(RepeatForever::create(Sequence::create(CallFunc::create([=] {waitLabel->setString("상대방을 기다리는 중입니다"); }), DelayTime::create(0.5f), CallFunc::create([=] {waitLabel->setString("상대방을 기다리는 중입니다.");}), DelayTime::create(0.5f), CallFunc::create([=] {waitLabel->setString("상대방을 기다리는 중입니다.."); }), DelayTime::create(0.5f), CallFunc::create([=] {waitLabel->setString("상대방을 기다리는 중입니다..."); }), DelayTime::create(0.5f), NULL)));
     
-    createGame(0, 0);
+	client = SocketIO::connect("http://104.131.125.14:8000", *this);
+
+	client->on("connected", [&](SIOClient *client, const std::string &data) {
+		client->emit("player-ready", "");
+	});
+
+	client->on("start", [&](SIOClient *client, const std::string &data) {
+		client->emit("start", "");
+        client->on("create-this-player", [&](SIOClient *c, const string &data) {
+            auto otherPlayer = Player::create(2, 2);
+            otherPlayers.push_back(otherPlayer);
+            this->addChild(otherPlayer);
+        });
+		createGame(0, 0);
+	});
 
     return true;
 }
@@ -215,30 +213,30 @@ void HelloWorld::update(float dt) {
 			mapTile[i][j]->setVisible(true);
 			mapTile[i][j]->setOpacity(255);
 			mapTile[i][j]->setColor(Color3B::WHITE);
-			//mapFog[i][j]->setVisible(true);
+			mapFog[i][j]->setVisible(true);
 			if (mapObjects[i][j] != nullptr) mapObjects[i][j]->setVisible(true);
 		}
 	}
 
-	/// 안개 투명도 설정
-	//for (float r = 0; r < 360; r += 0.5f) {
-	//	bool escape = false;
-	//	for (int i = 0; i < 20; i++) {
-	//		if (escape) break;
+//	안개 투명도 설정
+	for (float r = 0; r < 360; r += 0.5f) {
+		bool escape = false;
+		for (int i = 0; i < 20; i++) {
+			if (escape) break;
 
-	//		float x = player->getPositionX() + cos(CC_DEGREES_TO_RADIANS(r)) * i * TILE_SIZE_HALF;
-	//		float y = player->getPositionY() + sin(CC_DEGREES_TO_RADIANS(r)) * i * TILE_SIZE_HALF;
+			float x = player->getPositionX() + cos(CC_DEGREES_TO_RADIANS(r)) * i * TILE_SIZE_HALF;
+			float y = player->getPositionY() + sin(CC_DEGREES_TO_RADIANS(r)) * i * TILE_SIZE_HALF;
 
-	//		int gX = (x + (TILE_SIZE_HALF * (mapWidth - 1) - origin.x)) / TILE_SIZE + 1;
-	//		int gY = (y + (TILE_SIZE_HALF * (mapHeight - 1) - origin.y)) / TILE_SIZE + 1;
+			int gX = (x + (TILE_SIZE_HALF * (mapWidth - 1) - origin.x)) / TILE_SIZE + 1;
+			int gY = (y + (TILE_SIZE_HALF * (mapHeight - 1) - origin.y)) / TILE_SIZE + 1;
 
-	//		if (gY > mapHeight - 1 || gY < 0 || gX > mapWidth - 1 || gX < 0) continue;
+			if (gY > mapHeight - 1 || gY < 0 || gX > mapWidth - 1 || gX < 0) continue;
 
-	//		if (isSolidObject(gX, gY)) escape = true;
+			if (isSolidObject(gX, gY)) escape = true;
 
-	//		mapFog[gY][gX]->setOpacity(255 * MAX(((i - 12.0f) / 8.0f), 0));
-	//	}
-	//}
+			mapFog[gY][gX]->setOpacity(255 * MAX(((i - 12.0f) / 8.0f), 0));
+		}
+	}
 
 	player->updateZOrder();
 	player->move();
@@ -246,23 +244,25 @@ void HelloWorld::update(float dt) {
 	player->checkSolidObjects();
 	player->updatePosition();
 
-//	auto data = "[{\"x\":" + to_string(player->getPositionX()) + ",\"y\":" + to_string(player->getPositionY()) + ", \"angle\":" + to_string(player->angle) + "}]";
-//	client->emit("player-position", data);
-//
-//	client->on("other-player", [&](SIOClient *c, const string &data) {
-//        if (otherPlayers.size() > 0) {
-//            rapidjson::Document doc;
-//            doc.Parse(data.c_str());
-//            float x = doc["x"].GetDouble();
-//            float y = doc["y"].GetDouble();
-//			float angle = doc["angle"].GetDouble();
-//        
-//            otherPlayers.front()->setPosition(x, y);
-//			otherPlayers.front()->angle = angle;
-//
-//            CameraUtil::getInstance()->fixedLayer->getChildByName<Label*>("debug1")->setString(to_string(x) + ", " + to_string(y) + ", " + to_string(angle));
-//        }
-//	});
+    auto data = createData("x", to_string(player->getPositionX()).c_str(), "y", to_string(player->getPositionY()).c_str(), "angle", to_string(player->angle).c_str(), "");
+	client->emit("player-position", data);
+
+	client->on("other-player", [&](SIOClient *c, const string &data) {
+        if (otherPlayers.size() > 0) {
+            rapidjson::Document doc;
+            doc.Parse(data.c_str());
+            float x = doc["x"].GetDouble();
+            float y = doc["y"].GetDouble();
+			float angle = doc["angle"].GetDouble();
+        
+            otherPlayers.front()->setPosition(x, y);
+			otherPlayers.front()->angle = angle;
+            
+            otherPlayers.front()->updateZOrder();
+
+            CameraUtil::getInstance()->fixedLayer->getChildByName<Label*>("debug1")->setString(to_string(x) + ", " + to_string(y) + ", " + to_string(angle));
+        }
+	});
 }
 
 bool HelloWorld::isSolidObject(int x, int y) {

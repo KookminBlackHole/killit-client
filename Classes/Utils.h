@@ -41,4 +41,35 @@ int toInt(const std::string &txt) {
     return ret;
 }
 
+const std::string createData(const std::string &tag, ...) {
+    va_list args;
+    va_start(args, tag);
+    
+    std::string ret = "[{";
+    
+    ret += "\"" + tag + "\"";
+    ret += ":";
+    
+    auto item = va_arg(args, char *);
+    std::string str = item;
+    int i = 0;
+    while (str != "") {
+        if (i % 2 == 0) { // 데이터 값인 경우
+            ret += str + ",";
+        } else { // 태그인 경우
+            ret += "\"" + str + "\"" + ":";
+        }
+        item = va_arg(args, char *);
+        str = item;
+        i++;
+    }
+    
+    ret = ret.substr(0, ret.length() - 1); // 마지막 , 지워줌
+    ret += "}]";
+    
+    va_end(args);
+    
+    return ret;
+}
+
 #endif /* Utils_h */
