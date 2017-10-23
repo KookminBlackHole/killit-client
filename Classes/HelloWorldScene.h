@@ -35,6 +35,8 @@ public:
 
 	void createGame(float x, float y);
     
+    void updatePosition(float dt);
+    
 public:
     int **mapData, mapWidth, mapHeight;
     cocos2d::Sprite ***mapTile, ***mapObjects, ***mapFog;
@@ -46,7 +48,8 @@ public:
     
     SIOClient *client;
     
-    float deltaTime = 0, prevDeltaTime;
+    cocos2d::Vec2 syncPosition, syncVelocity;
+    float time = 0, lastTime, delay = 0;
 };
 
 #endif // __HELLOWORLD_SCENE_H__

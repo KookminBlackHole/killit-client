@@ -72,4 +72,8 @@ const std::string createData(const std::string &tag, ...) {
     return ret;
 }
 
+cocos2d::Vec2 lerp(const cocos2d::Vec2 &from, const cocos2d::Vec2 &to, float alpha) {
+    return cocos2d::Vec2(cocos2d::MathUtil::lerp(from.x, to.x, alpha), cocos2d::MathUtil::lerp(from.y, to.y, alpha));
+}
+
 #endif /* Utils_h */

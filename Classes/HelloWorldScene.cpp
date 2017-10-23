@@ -70,11 +70,17 @@ bool HelloWorld::init() {
 //                Vec2 pos = Vec2(x, y), dir = Vec2(dx, dy);
                 float angle = doc["angle"].GetDouble();
                 
-                auto lerpPos = Vec2(MathUtil::lerp(x, x + dx, deltaTime), MathUtil::lerp(y, y + dy, deltaTime));
-                otherPlayers.front()->setPosition(lerpPos);
+//                auto lerpPos = Vec2(MathUtil::lerp(x, x + dx, deltaTime), MathUtil::lerp(y, y + dy, deltaTime));
+//                auto lerpPos = Vec2(x, y);
+//                otherPlayers.front()->setPosition(lerpPos);
                 otherPlayers.front()->angle = angle;
                 
-                otherPlayers.front()->updateZOrder();
+                delay = time - lastTime;
+                lastTime = time;
+                time = 0;
+                
+                syncPosition = Vec2(x, y);
+                syncVelocity = Vec2(dx, dy) * otherPlayers.front()->speed;
             }
         });
         
@@ -272,9 +278,22 @@ void HelloWorld::update(float dt) {
                            "angle", to_string(player->angle).c_str(), "");
     client->emit("player-position", data);
     
-    deltaTime = dt;
-    
-    CameraUtil::getInstance()->fixedLayer->getChildByName<Label*>("debug1")->setString(to_string(deltaTime));
+    time += dt;
+
+    updatePosition(dt);
+}
+
+void HelloWorld::updatePosition(float dt) {
+    if (otherPlayers.size() > 0) {
+        otherPlayers.front()->updateZOrder();
+        float d = time / delay;
+        CameraUtil::getInstance()->fixedLayer->getChildByName<Label*>("debug1")->setString(to_string(time) + ", " + to_string(delay) + ", " + to_string(d));
+//        CameraUtil::getInstance()->fixedLayer->getChildByName<Label*>("debug1")->setScale(d);
+        
+        auto pos = lerp(otherPlayers.front()->getPosition(), syncPosition, 0.5);
+//        auto pos = syncPosition;
+        otherPlayers.front()->setPosition(pos);
+    }
 }
 
 bool HelloWorld::isSolidObject(int x, int y) {
