@@ -15,13 +15,14 @@
 
 USING_NS_CC;
 
-Player *Player::create(int sx, int sy) {
+Player *Player::create(int sx, int sy, bool owner) {
     Player *ret = new (std::nothrow) Player();
     if (ret && ret->init())
     {
         ret->autorelease();
 		ret->gX = sx;
 		ret->gY = sy;
+        ret->owner = owner;
         return ret;
     }
     else
@@ -64,7 +65,8 @@ void Player::update(float dt) {
 		player->setFlippedX(false);
 	}
     
-//    debugHP->clear();
+    debugHP->clear();
+    if (owner) debugHP->drawTriangle(Vec2(-3, 0 + PLAYER_HEIGHT + 5), Vec2(0, -5 + PLAYER_HEIGHT + 5), Vec2(3, 0 + PLAYER_HEIGHT + 5), Color4F::RED);
 //    debugHP->drawSolidRect(Vec2(-16, -2), Vec2(16, 2), Color4F::GREEN);
 //    debugHP->drawRect(solidBB.origin / 2, (solidBB.origin + solidBB.size) / 2, Color4F::GREEN);
 }
@@ -103,6 +105,7 @@ void Player::move() {
 	}
 }
 
+// 충돌 범위가 정사각형이 아닌 경우 제대로 동작하지 않음
 void Player::collision() {
 	HelloWorld *parent = (HelloWorld *)getParent();
     

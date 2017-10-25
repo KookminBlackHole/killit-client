@@ -54,7 +54,7 @@ bool HelloWorld::init() {
 		client->emit("start", "");
         
         client->on("create-this-player", [&](SIOClient *c, const string &data) {
-            auto otherPlayer = Player::create(2, 2);
+            auto otherPlayer = Player::create(2, 2, false);
             otherPlayers.push_back(otherPlayer);
             this->addChild(otherPlayer);
         });
@@ -63,16 +63,10 @@ bool HelloWorld::init() {
             if (otherPlayers.size() > 0) {
                 rapidjson::Document doc;
                 doc.Parse(data.c_str());
-                float x = doc["x"].GetDouble();
-                float y = doc["y"].GetDouble();
-                float dx = doc["dirX"].GetDouble();
-                float dy = doc["dirY"].GetDouble();
-//                Vec2 pos = Vec2(x, y), dir = Vec2(dx, dy);
+                float x = doc["x"].GetDouble(), y = doc["y"].GetDouble();
+                float dx = doc["dirX"].GetDouble(), dy = doc["dirY"].GetDouble();
                 float angle = doc["angle"].GetDouble();
                 
-//                auto lerpPos = Vec2(MathUtil::lerp(x, x + dx, deltaTime), MathUtil::lerp(y, y + dy, deltaTime));
-//                auto lerpPos = Vec2(x, y);
-//                otherPlayers.front()->setPosition(lerpPos);
                 otherPlayers.front()->angle = angle;
                 
                 delay = time - lastTime;
@@ -172,22 +166,26 @@ void HelloWorld::createGame(float x, float y) {
 			mapTile[i][j]->getTexture()->setAliasTexParameters();
 			mapTile[i][j]->setScale(2);
 			mapTile[i][j]->setPosition(pos);
-			mapTile[i][j]->setVisible(false);
-			this->addChild(mapTile[i][j]);
 
-			/// 맵 시야 생성
+
+			mapTile[i][j]->setVisible(false);
+			this->addChild(mapTile[i][j]);			/// 맵 시야 생성
 			mapFog[i][j] = Sprite::create("res/tile5.png");
 			mapFog[i][j]->setGlobalZOrder(ZORDER::FOG);
 			mapFog[i][j]->getTexture()->setAliasTexParameters();
 			mapFog[i][j]->setScale(2);
 			mapFog[i][j]->setPosition(pos.x, pos.y + TILE_SIZE);
 			mapFog[i][j]->setVisible(false);
+            
+//            ccBlendFunc bf = { GL_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA };
+//            mapFog[i][j]->setBlendFunc(bf);
+            
 			this->addChild(mapFog[i][j]);
 		}
 		zorder -= 1;
 	}
 
-	player = Player::create(2, 2);
+	player = Player::create(2, 2, true);
 	player->gridCoordUpdate(mapWidth, mapHeight);
 	this->addChild(player);
 
@@ -198,10 +196,6 @@ void HelloWorld::createGame(float x, float y) {
 	lb->setName("debug1");
 	lb->setGlobalZOrder(ZORDER::UI);
 	CameraUtil::getInstance()->addUIChild(lb);
-
-	//    this->schedule([=](float dt){
-	//        lb->setString("x: " + to_string(player->gX) + " y: " + to_string(player->gY));
-	//    }, "debug");
 
 	auto uim = UIManager::create(this);
 	CameraUtil::getInstance()->addUIChild(uim);
@@ -290,8 +284,8 @@ void HelloWorld::updatePosition(float dt) {
         CameraUtil::getInstance()->fixedLayer->getChildByName<Label*>("debug1")->setString(to_string(time) + ", " + to_string(delay) + ", " + to_string(d));
 //        CameraUtil::getInstance()->fixedLayer->getChildByName<Label*>("debug1")->setScale(d);
         
-        auto pos = lerp(otherPlayers.front()->getPosition(), syncPosition, 0.5);
-//        auto pos = syncPosition;
+//        auto pos = lerp(otherPlayers.front()->getPosition(), syncPosition, 0.5);
+        auto pos = syncPosition;
         otherPlayers.front()->setPosition(pos);
     }
 }

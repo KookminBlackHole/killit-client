@@ -13,8 +13,8 @@
 
 class Player : public cocos2d::Node {
 public:
-	/// Ω√¿€ x¡¬«•, Ω√¿€ y¡¬«•
-    static Player *create(int sx, int sy);
+	// sx, sy: 플레이어의 타일맵 좌표, player: 현재 플레이어 구분 
+    static Player *create(int sx, int sy, bool owner);
     
     bool init() override;
     void update(float dt) override;
@@ -49,7 +49,7 @@ public:
     
     cocos2d::DrawNode *debugHP, *debugAttack;
 
-    bool touchJoystick = false;
+    bool touchJoystick = false, owner = false;
     float speed = 3.0f, angle = 0;
 	/// ≈∏¿œ∏ ø°º≠¿« ¡¬«•
 	int gX = 0, gY = 0;
