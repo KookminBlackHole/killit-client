@@ -1,4 +1,4 @@
-﻿//
+//
 //  Player.cpp
 //  Killit
 //
@@ -12,6 +12,7 @@
 #include "ZOrder.h"
 #include "CameraUtil.h"
 #include "Definitions.h"
+#include "Raycast.h"
 
 USING_NS_CC;
 
@@ -69,6 +70,8 @@ void Player::update(float dt) {
     if (owner) debugHP->drawTriangle(Vec2(-3, 0 + PLAYER_HEIGHT + 5), Vec2(0, -5 + PLAYER_HEIGHT + 5), Vec2(3, 0 + PLAYER_HEIGHT + 5), Color4F::RED);
 //    debugHP->drawSolidRect(Vec2(-16, -2), Vec2(16, 2), Color4F::GREEN);
 //    debugHP->drawRect(solidBB.origin / 2, (solidBB.origin + solidBB.size) / 2, Color4F::GREEN);
+    
+    attack();
 }
 
 void Player::onStickBegan(Vec2 direction, Ref *pSender) {
@@ -109,7 +112,7 @@ void Player::move() {
 void Player::collision() {
 	HelloWorld *parent = (HelloWorld *)getParent();
     
-    /// 충돌 처리 시 벽에 끼이는 문제를 해결하기 위해 충돌 검사 순서를 아래 - 위 - 가운데 순으로 바꿈.
+    /// 충돌 처리 시 벽에 끼이는 문제를 해결하기 위해 충돌 검사 순서를 가운데 - 위 - 아래 순으로 바꿈.
     int yOrder[3] = { 0, 1, -1 }, xOrder[3] = { 0, 1, -1 };
     for (int k = 0; k < 3; k++) {
         int i = clampf(gY + yOrder[k], 0, parent->mapHeight - 1);
@@ -205,9 +208,14 @@ void Player::checkSolidObjects() {
 }
 
 void Player::attack() {
-    debugAttack->clear();
-    debugAttack->drawLine(Vec2(0, 0), direction * 100, Color4F::BLUE);
-    scheduleOnce([&](float dt) {
-        debugAttack->clear();
-    }, 1.0f, "attackDebug");
+    static float ang = 0;
+    
+    HelloWorld *parent = (HelloWorld *)getParent();
+    auto dot = raycast(parent->mapSolid, getPosition(), ang, 500);
+    
+    parent->getChildByName<DrawNode*>("debug2")->clear();
+    parent->getChildByName<DrawNode*>("debug2")->drawLine(getPosition(), dot, Color4F::BLACK);
+    parent->getChildByName<DrawNode*>("debug2")->drawDot(dot, 4, Color4F::RED);
+    
+    ang += 0.25f;
 }

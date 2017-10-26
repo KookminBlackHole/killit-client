@@ -21,4 +21,7 @@
 #define PLAYER_WIDTH 20
 #define PLAYER_HEIGHT 20
 
+#define MAP_WIDTH 64
+#define MAP_HEIGHT 64
+
 #endif /* Definitions_h */

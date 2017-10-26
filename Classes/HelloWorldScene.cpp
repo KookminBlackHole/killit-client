@@ -1,4 +1,4 @@
-﻿#include "HelloWorldScene.h"
+#include "HelloWorldScene.h"
 #include "SimpleAudioEngine.h"
 #include "Joystick.h"
 #include "Button.h"
@@ -28,6 +28,12 @@ HelloWorld::~HelloWorld() {
     
     for (int i = 0; i < mapHeight; i++) delete[] mapFog[i];
     delete[] mapFog;
+    
+    for (int i = 0; i < mapHeight; i++) {
+        for (int j = 0; j < mapWidth; j++) delete mapSolid[i][j];
+        delete[] mapSolid[i];
+    }
+    delete[] mapSolid;
 }
 
 // on "init" you need to initialize your instance
@@ -38,48 +44,50 @@ bool HelloWorld::init() {
     auto bg = LayerColor::create(Color4B::BLACK);
     this->addChild(bg);
 
-	auto waitLabel = Label::createWithTTF("상대방을 기다리는 중입니다", "res/NanumGothic.ttf", 24);
-	waitLabel->setPosition(origin);
-	this->addChild(waitLabel);
-
-	waitLabel->runAction(RepeatForever::create(Sequence::create(CallFunc::create([=] {waitLabel->setString("상대방을 기다리는 중입니다"); }), DelayTime::create(0.5f), CallFunc::create([=] {waitLabel->setString("상대방을 기다리는 중입니다.");}), DelayTime::create(0.5f), CallFunc::create([=] {waitLabel->setString("상대방을 기다리는 중입니다.."); }), DelayTime::create(0.5f), CallFunc::create([=] {waitLabel->setString("상대방을 기다리는 중입니다..."); }), DelayTime::create(0.5f), NULL)));
+//    auto waitLabel = Label::createWithTTF("상대방을 기다리는 중입니다", "res/NanumGothic.ttf", 24);
+//    waitLabel->setPosition(origin);
+//    this->addChild(waitLabel);
+//
+//    waitLabel->runAction(RepeatForever::create(Sequence::create(CallFunc::create([=] {waitLabel->setString("상대방을 기다리는 중입니다"); }), DelayTime::create(0.5f), CallFunc::create([=] {waitLabel->setString("상대방을 기다리는 중입니다.");}), DelayTime::create(0.5f), CallFunc::create([=] {waitLabel->setString("상대방을 기다리는 중입니다.."); }), DelayTime::create(0.5f), CallFunc::create([=] {waitLabel->setString("상대방을 기다리는 중입니다..."); }), DelayTime::create(0.5f), NULL)));
+//
+//    client = SocketIO::connect("http://104.131.125.14:8000", *this);
+//
+//    client->on("connected", [&](SIOClient *client, const std::string &data) {
+//        client->emit("player-ready", "");
+//    });
+//
+//    client->on("start", [&](SIOClient *client, const std::string &data) {
+//        client->emit("start", "");
+//
+//        client->on("create-this-player", [&](SIOClient *c, const string &data) {
+//            auto otherPlayer = Player::create(2, 2, false);
+//            otherPlayers.push_back(otherPlayer);
+//            this->addChild(otherPlayer);
+//        });
+//
+//        client->on("other-player", [&](SIOClient *c, const string &data) {
+//            if (otherPlayers.size() > 0) {
+//                rapidjson::Document doc;
+//                doc.Parse(data.c_str());
+//                float x = doc["x"].GetDouble(), y = doc["y"].GetDouble();
+//                float dx = doc["dirX"].GetDouble(), dy = doc["dirY"].GetDouble();
+//                float angle = doc["angle"].GetDouble();
+//
+//                otherPlayers.front()->angle = angle;
+//
+//                delay = time - lastTime;
+//                lastTime = time;
+//                time = 0;
+//
+//                syncPosition = Vec2(x, y);
+//                syncVelocity = Vec2(dx, dy) * otherPlayers.front()->speed;
+//            }
+//        });
+//
+//        createGame(0, 0);
+//    });
     
-	client = SocketIO::connect("http://104.131.125.14:8000", *this);
-
-	client->on("connected", [&](SIOClient *client, const std::string &data) {
-		client->emit("player-ready", "");
-	});
-
-	client->on("start", [&](SIOClient *client, const std::string &data) {
-		client->emit("start", "");
-        
-        client->on("create-this-player", [&](SIOClient *c, const string &data) {
-            auto otherPlayer = Player::create(2, 2, false);
-            otherPlayers.push_back(otherPlayer);
-            this->addChild(otherPlayer);
-        });
-        
-        client->on("other-player", [&](SIOClient *c, const string &data) {
-            if (otherPlayers.size() > 0) {
-                rapidjson::Document doc;
-                doc.Parse(data.c_str());
-                float x = doc["x"].GetDouble(), y = doc["y"].GetDouble();
-                float dx = doc["dirX"].GetDouble(), dy = doc["dirY"].GetDouble();
-                float angle = doc["angle"].GetDouble();
-                
-                otherPlayers.front()->angle = angle;
-                
-                delay = time - lastTime;
-                lastTime = time;
-                time = 0;
-                
-                syncPosition = Vec2(x, y);
-                syncVelocity = Vec2(dx, dy) * otherPlayers.front()->speed;
-            }
-        });
-        
-		createGame(0, 0);
-	});
+    createGame(0, 0);
 
     return true;
 }
@@ -127,15 +135,17 @@ void HelloWorld::createGame(float x, float y) {
 	mapTile = new Sprite**[mapHeight];
 	mapObjects = new Sprite**[mapHeight];
 	mapFog = new Sprite**[mapHeight];
+    mapSolid = new Rect**[mapHeight];
 	for (int i = 0; i < mapHeight; i++) {
 		mapTile[i] = new Sprite*[mapWidth];
 		mapObjects[i] = new Sprite*[mapWidth];
 		mapFog[i] = new Sprite*[mapWidth];
+        mapSolid[i] = new Rect*[mapWidth];
 		for (int j = 0; j < mapWidth; j++) {
 			Vec2 pos = Vec2(j * TILE_SIZE + origin.x - TILE_SIZE * mapWidth * 0.5,
 				i * TILE_SIZE + origin.y - TILE_SIZE * mapHeight * 0.5);
-
 			mapObjects[i][j] = nullptr;
+            mapSolid[i][j] = nullptr;
 			if (mapData[i][j] <= 10) { /// 게임 오브젝트 및 바닥
 									   /// 게임 오브젝트 생성
 				switch (mapData[i][j]) {
@@ -148,6 +158,9 @@ void HelloWorld::createGame(float x, float y) {
 					mapObjects[i][j]->setAnchorPoint(Vec2(0.5f, 0.25f));
 					mapObjects[i][j]->setVisible(false);
 					this->addChild(mapObjects[i][j]);
+                        
+                    // 레이캐스트용 사각형 객체 생성
+                    mapSolid[i][j] = new Rect(pos - Size(TILE_SIZE_HALF, TILE_SIZE_HALF), { TILE_SIZE, TILE_SIZE });
 				case 0: /// 바닥
 					mapTile[i][j] = Sprite::create("res/tile0.png");
 					mapTile[i][j]->setGlobalZOrder(zorder - 1000);
@@ -161,6 +174,9 @@ void HelloWorld::createGame(float x, float y) {
 				mapTile[i][j]->setGlobalZOrder(zorder);
 
 				mapTile[i][j]->setTextureRect(Rect(REAL_TILE_WIDTH * (idx % 7), REAL_TILE_HEIGHT * (idx / 7), REAL_TILE_WIDTH, REAL_TILE_HEIGHT));
+                
+                // 레이캐스트용 사각형 객체 생성
+                mapSolid[i][j] = new Rect(pos - Size(TILE_SIZE_HALF, TILE_SIZE_HALF), { TILE_SIZE, TILE_SIZE });
 			}
 
 			mapTile[i][j]->getTexture()->setAliasTexParameters();
@@ -265,12 +281,12 @@ void HelloWorld::update(float dt) {
 	player->checkSolidObjects();
 	player->updatePosition();
 
-    auto data = createData("x", to_string(player->getPositionX()).c_str(),
-                           "y", to_string(player->getPositionY()).c_str(),
-                           "dirX", to_string((player->direction * player->speed).x).c_str(),
-                           "dirY", to_string((player->direction * player->speed).y).c_str(),
-                           "angle", to_string(player->angle).c_str(), "");
-    client->emit("player-position", data);
+//    auto data = createData("x", to_string(player->getPositionX()).c_str(),
+//                           "y", to_string(player->getPositionY()).c_str(),
+//                           "dirX", to_string((player->direction * player->speed).x).c_str(),
+//                           "dirY", to_string((player->direction * player->speed).y).c_str(),
+//                           "angle", to_string(player->angle).c_str(), "");
+//    client->emit("player-position", data);
     
     time += dt;
 
