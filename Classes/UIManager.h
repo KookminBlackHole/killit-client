@@ -5,6 +5,7 @@
 
 #include "Joystick.h"
 #include "ActionButton.h"
+#include "Dial.h"
 
 class UIManager : public cocos2d::Node {
 public:
@@ -21,6 +22,7 @@ public:
     
     Joystick *joystick;
     ActionButton *actionButton;
+    Dial *dial;
     
 };
 

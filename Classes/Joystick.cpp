@@ -88,6 +88,3 @@ void Joystick::onTouchEnded(const cocos2d::Vec2 &position, int id) {
 void Joystick::bind(Player *player) {
     bnd = player;
 }
-
-//void Joystick::update(float dt) {
-//}
