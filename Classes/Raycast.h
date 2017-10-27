@@ -41,6 +41,6 @@
 // 폴리곤을 지원하는 레이캐스트
 //cocos2d::Vec2 raycast(const std::vector<Rectangle> &rects, const cocos2d::Vec2 &start, float angle, float length);
 // 사각형만 지원하는 레이캐스트에서 최적화를 조금 함
-cocos2d::Vec2 raycast(cocos2d::Rect ***rects, const cocos2d::Vec2 &start, float angle, float length);
+bool raycast(cocos2d::Rect ***rects, const cocos2d::Vec2 &start, float angle, float length, cocos2d::Vec2 &out);
 
 #endif /* Raycast_h */

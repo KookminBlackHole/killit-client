@@ -40,18 +40,19 @@ public:
     
     void attack();
     
+    bool raycast(cocos2d::Rect ***rects, float angle, float length, cocos2d::Vec2 &out);
+    
 public:
     cocos2d::Sprite *player;
     /// 벽과 충돌 할 떄 쓰는 바운딩박스
 	cocos2d::Rect solidBB;
-	/// angle: «√∑π¿ÃæÓ∞° ∫∏∞Ì ¿÷¥¬ ∞¢µµ, pos: «√∑π¿ÃæÓ ¿”Ω√ ¡¬«•
     cocos2d::Vec2 direction, tempPosition;
     
-    cocos2d::DrawNode *debugHP, *debugAttack;
+    cocos2d::DrawNode *debugHP, *debugAttack, *debugAngle;
 
     bool touchJoystick = false, owner = false;
     float speed = 3.0f, angle = 0;
-	/// ≈∏¿œ∏ ø°º≠¿« ¡¬«•
+    
 	int gX = 0, gY = 0;
     
     int hp = 100;

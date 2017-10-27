@@ -15,6 +15,7 @@
 #include "Raycast.h"
 
 USING_NS_CC;
+using namespace std;
 
 Player *Player::create(int sx, int sy, bool owner) {
     Player *ret = new (std::nothrow) Player();
@@ -38,7 +39,7 @@ bool Player::init() {
     
 	solidBB = Rect(-PLAYER_WIDTH, -36 * 2 / 2, PLAYER_WIDTH * DEFAULT_SCALE, PLAYER_HEIGHT * DEFAULT_SCALE);
     
-    player = Sprite::create("res/player.png");
+    player = Sprite::create("res/player2.png");
     player->getTexture()->setAliasTexParameters();
     this->addChild(player);
     
@@ -48,6 +49,9 @@ bool Player::init() {
     
     debugAttack = DrawNode::create();
     this->addChild(debugAttack);
+    
+    debugAngle = DrawNode::create();
+    this->addChild(debugAngle);
 
 	/// ≪√∑π¿AæO zorder º≥¡§
 	this->setGlobalZOrder(ZORDER::PLAYER);
@@ -66,22 +70,25 @@ void Player::update(float dt) {
 		player->setFlippedX(false);
 	}
     
-    debugHP->clear();
-    if (owner) debugHP->drawTriangle(Vec2(-3, 0 + PLAYER_HEIGHT + 5), Vec2(0, -5 + PLAYER_HEIGHT + 5), Vec2(3, 0 + PLAYER_HEIGHT + 5), Color4F::RED);
-//    debugHP->drawSolidRect(Vec2(-16, -2), Vec2(16, 2), Color4F::GREEN);
-//    debugHP->drawRect(solidBB.origin / 2, (solidBB.origin + solidBB.size) / 2, Color4F::GREEN);
+    debugAngle->setRotation(-angle);
     
-    attack();
+    if (owner) {
+        debugHP->clear();
+        debugHP->drawTriangle(Vec2(-3, 0 + PLAYER_HEIGHT + 5), Vec2(0, -5 + PLAYER_HEIGHT + 5), Vec2(3, 0 + PLAYER_HEIGHT + 5), Color4F::RED);
+        
+        debugAngle->clear();
+        debugAngle->drawLine(Vec2(24, 0), Vec2(48, 0), Color4F::RED);
+    }
 }
 
 void Player::onStickBegan(Vec2 direction, Ref *pSender) {
-    angle = CC_RADIANS_TO_DEGREES(direction.getAngle());
+//    angle = CC_RADIANS_TO_DEGREES(direction.getAngle());
     this->direction = direction;
     touchJoystick = true;
 }
 
 void Player::onStickMoved(Vec2 direction, Ref *pSender) {
-    angle = CC_RADIANS_TO_DEGREES(direction.getAngle());
+//    angle = CC_RADIANS_TO_DEGREES(direction.getAngle());
     this->direction = direction;
 }
 
@@ -208,14 +215,34 @@ void Player::checkSolidObjects() {
 }
 
 void Player::attack() {
-    static float ang = 0;
-    
     HelloWorld *parent = (HelloWorld *)getParent();
-    auto dot = raycast(parent->mapSolid, getPosition(), ang, 500);
+    Vec2 dot;
+    this->raycast(parent->mapSolid, angle, 500, dot);
     
     parent->getChildByName<DrawNode*>("debug2")->clear();
     parent->getChildByName<DrawNode*>("debug2")->drawLine(getPosition(), dot, Color4F::BLACK);
     parent->getChildByName<DrawNode*>("debug2")->drawDot(dot, 4, Color4F::RED);
+}
+
+bool Player::raycast(Rect ***rects, float angle, float length, Vec2 &out) {
+    Vec2 origin = Director::getInstance()->getVisibleSize() / 2;
+    auto ray = getPosition() - Vec2::forAngle(CC_DEGREES_TO_RADIANS(angle));
+    bool escape = false;
+    for (int i = 0; i < length && !escape; i += 4) {
+        ray += Vec2::forAngle(CC_DEGREES_TO_RADIANS(angle)) * 4;
+        
+        // 현재 문의 상태를 알 수 없어서 문에 무조건 충돌함.
+        int lim = floor(i / TILE_SIZE) + 1;
+        for (int k = max(gY - lim, 0); k < min(gY + lim + 1, 64) && !escape; k++) {
+            for (int l = max(gX - lim, 0); l < min(gX + lim + 1, 64) && !escape; l++) {
+                if (rects[k][l] != nullptr) {
+                    if (rects[k][l]->containsPoint(ray)) escape = true;
+                }
+            }
+        }
+    }
     
-    ang += 0.25f;
+    out = ray;
+    
+    return escape;
 }
