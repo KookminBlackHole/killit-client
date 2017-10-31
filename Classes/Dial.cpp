@@ -31,12 +31,19 @@ bool Dial::init() {
 }
 
 void Dial::onTouchBegan(const cocos2d::Vec2 &position, int id) {
+    this->id = id;
 }
 
 void Dial::onTouchMoved(const cocos2d::Vec2 &position, int id) {
+    Vec2 origin = Director::getInstance()->getVisibleSize() / 2;
+    
+    auto angle = CC_RADIANS_TO_DEGREES((origin - position).getAngle());
+    
+    bnd->angle = angle;
 }
 
 void Dial::onTouchEnded(const cocos2d::Vec2 &position, int id) {
+    this->id = -1;
 }
 
 void Dial::bind(Player *player) {

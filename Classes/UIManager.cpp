@@ -36,6 +36,10 @@ bool UIManager::init(Scene *parent) {
     actionButton = ActionButton::create(parentScene->player);
     actionButton->setPosition(Vec2(visibleSize.width - actionButton->getContentSize().width - 36, actionButton->getContentSize().height + 36));
     this->addChild(actionButton);
+    
+    dial = Dial::create();
+    dial->bind(parentScene->player);
+    this->addChild(dial);
 
 	return true;
 }
@@ -59,6 +63,13 @@ void UIManager::onTouchesBegan(const vector<Touch*> &touches, Event *) {
                 actionButton->onTouchBegan(cp, id);
             }
         }
+        if (dial->id == -1 &&
+            joystick->id != id &&
+            actionButton->id != id) {
+            
+            auto cp = dial->convertToNodeSpace(pos);
+            dial->onTouchBegan(cp, id);
+        }
     }
 }
 
@@ -70,6 +81,10 @@ void UIManager::onTouchesMoved(const vector<Touch*> &touches, Event *) {
         if (joystick->id == id) {
             auto cp = joystick->convertToNodeSpace(pos);
             joystick->onTouchMoved(cp, id);
+        }
+        if (dial->id == id) {
+            auto cp = dial->convertToNodeSpace(pos);
+            dial->onTouchMoved(cp, id);
         }
     }
 }
@@ -86,6 +101,10 @@ void UIManager::onTouchesEnded(const vector<Touch*> &touches, Event *) {
         if (actionButton->id == id) {
             auto cp = this->convertToNodeSpace(pos);
             actionButton->onTouchEnded(cp, id);
+        }
+        if (dial->id == id) {
+            auto cp = dial->convertToNodeSpace(pos);
+            dial->onTouchEnded(cp, id);
         }
     }
 }

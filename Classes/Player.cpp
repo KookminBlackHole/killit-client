@@ -65,12 +65,12 @@ bool Player::init() {
 
 void Player::update(float dt) {
 	if (angle > 90 || angle <= -90) { /// ø?￢?
-		player->setFlippedX(true);
-	} else {
 		player->setFlippedX(false);
+	} else {
+		player->setFlippedX(true);
 	}
     
-    debugAngle->setRotation(-angle);
+    debugAngle->setRotation(180 - angle);
     
     if (owner) {
         debugHP->clear();
