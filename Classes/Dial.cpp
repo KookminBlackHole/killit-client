@@ -32,14 +32,21 @@ bool Dial::init() {
 
 void Dial::onTouchBegan(const cocos2d::Vec2 &position, int id) {
     this->id = id;
+    
+    Vec2 origin = Director::getInstance()->getVisibleSize() / 2;
+    
+    prevAngle = CC_RADIANS_TO_DEGREES((position - origin).getAngle());
 }
 
 void Dial::onTouchMoved(const cocos2d::Vec2 &position, int id) {
     Vec2 origin = Director::getInstance()->getVisibleSize() / 2;
     
-    auto angle = CC_RADIANS_TO_DEGREES((origin - position).getAngle());
+    auto angle = CC_RADIANS_TO_DEGREES((position - origin).getAngle());
+    bnd->angle += clampf(angle - prevAngle, -10.0f, 10.0f) * 2.5f;
     
-    bnd->angle = angle;
+    CameraUtil::getInstance()->fixedLayer->getChildByName<Label*>("debug1")->setString("now: " + to_string(bnd->angle));
+    
+    prevAngle = angle;
 }
 
 void Dial::onTouchEnded(const cocos2d::Vec2 &position, int id) {

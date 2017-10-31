@@ -26,6 +26,7 @@ public:
     
 public:
     /// 변수 이름 바꿔야 함..
+    float prevAngle = 0;
     Player *bnd = nullptr;
     int id = -1;
     

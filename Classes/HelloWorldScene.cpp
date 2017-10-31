@@ -44,17 +44,27 @@ bool HelloWorld::init() {
     auto bg = LayerColor::create(Color4B::BLACK);
     this->addChild(bg);
 
-//    auto waitLabel = Label::createWithTTF("상대방을 기다리는 중입니다", "res/NanumGothic.ttf", 24);
-//    waitLabel->setPosition(origin);
-//    this->addChild(waitLabel);
-//
-//    waitLabel->runAction(RepeatForever::create(Sequence::create(CallFunc::create([=] {waitLabel->setString("상대방을 기다리는 중입니다"); }), DelayTime::create(0.5f), CallFunc::create([=] {waitLabel->setString("상대방을 기다리는 중입니다.");}), DelayTime::create(0.5f), CallFunc::create([=] {waitLabel->setString("상대방을 기다리는 중입니다.."); }), DelayTime::create(0.5f), CallFunc::create([=] {waitLabel->setString("상대방을 기다리는 중입니다..."); }), DelayTime::create(0.5f), NULL)));
-//
-//    client = SocketIO::connect("http://104.131.125.14:8000", *this);
-//
-//    client->on("connected", [&](SIOClient *client, const std::string &data) {
-//        client->emit("player-ready", "");
-//    });
+    auto waitLabel = Label::createWithTTF("상대방을 기다리는 중입니다", "res/NanumGothic.ttf", 24);
+    waitLabel->setPosition(origin);
+    this->addChild(waitLabel);
+
+    waitLabel->runAction(RepeatForever::create(Sequence::create(CallFunc::create([=] {waitLabel->setString("상대방을 기다리는 중입니다"); }), DelayTime::create(0.5f), CallFunc::create([=] {waitLabel->setString("상대방을 기다리는 중입니다.");}), DelayTime::create(0.5f), CallFunc::create([=] {waitLabel->setString("상대방을 기다리는 중입니다.."); }), DelayTime::create(0.5f), CallFunc::create([=] {waitLabel->setString("상대방을 기다리는 중입니다..."); }), DelayTime::create(0.5f), NULL)));
+
+    client = SocketIO::connect("http://10.30.117.37:8080", *this);
+
+    client->on("connected", [&](SIOClient *client, const std::string &data) {
+        auto send = createData("name", "\"nun\"", "");
+        client->emit("player-ready", send);
+    });
+    
+    // 디버그용 (R키를 누르면 재시작함)
+    auto listen = EventListenerKeyboard::create();
+    listen->onKeyPressed = [&](EventKeyboard::KeyCode keyCode, Event *e) {
+        if (keyCode == EventKeyboard::KeyCode::KEY_R) {
+            Director::getInstance()->replaceScene(HelloWorld::create());
+        }
+    };
+    this->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listen, this);
 //
 //    client->on("start", [&](SIOClient *client, const std::string &data) {
 //        client->emit("start", "");
@@ -87,7 +97,7 @@ bool HelloWorld::init() {
 //        createGame(0, 0);
 //    });
     
-    createGame(0, 0);
+//    createGame(0, 0);
 
     return true;
 }
