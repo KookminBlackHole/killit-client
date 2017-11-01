@@ -13,14 +13,24 @@
 class GameObject : public cocos2d::Node {
 public:
     static GameObject *create(const std::string &imagePath, int type);
+	static GameObject *create(cocos2d::SpriteFrame *sf, int type);
     
     bool init(const std::string &imagePath, int type);
+	bool initWithTexture(cocos2d::SpriteFrame *sf, int type);
+
+	void setSolidObject(bool solid);
+	void setSolidArea(const cocos2d::Rect &area);
+
+	void setZOrder(int zorder);
+
+	cocos2d::Rect getBoundingBox() const;
     
 public:
     cocos2d::Sprite *image;
     cocos2d::Rect collisionArea;
     
     int type = -1;
+	bool isSolid = false;
     
 };
 

@@ -5,7 +5,7 @@
 
 #include "network/SocketIO.h"
 
-#include "SolidObject.h"
+#include "GameObject.h"
 #include "Button.h"
 
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
