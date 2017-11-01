@@ -135,7 +135,7 @@ void Player::collision() {
                 auto otherBB = Rect(parent->mapTile[i][j]->getPosition() - Size(TILE_SIZE_HALF, TILE_SIZE_HALF), Size(TILE_SIZE, TILE_SIZE));
 				/// √Eμπ ∞AªA
 				if (playerBB.intersectsRect(otherBB)) {
-					parent->mapTile[i][j]->setColor(Color3B::MAGENTA);
+//                    parent->mapTile[i][j]->setColor(Color3B::MAGENTA);
 
 					/// 0: left, 1: right, 2: up, 3: down
 					int dir = 0;
@@ -228,6 +228,7 @@ void Player::attack() {
 }
 
 bool Player::raycast(Rect ***rects, float angle, float length, Vec2 &out) {
+    HelloWorld *parent = (HelloWorld *)getParent();
     Vec2 origin = Director::getInstance()->getVisibleSize() / 2;
     auto ray = getPosition() - Vec2::forAngle(CC_DEGREES_TO_RADIANS(angle));
     bool escape = false;
@@ -238,7 +239,7 @@ bool Player::raycast(Rect ***rects, float angle, float length, Vec2 &out) {
         int lim = floor(i / TILE_SIZE) + 1;
         for (int k = max(gY - lim, 0); k < min(gY + lim + 1, 64) && !escape; k++) {
             for (int l = max(gX - lim, 0); l < min(gX + lim + 1, 64) && !escape; l++) {
-                if (rects[k][l] != nullptr) {
+                if (rects[k][l] != nullptr && parent->isSolidObject(l, k)) {
                     if (rects[k][l]->containsPoint(ray)) escape = true;
                 }
             }

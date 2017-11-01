@@ -5,6 +5,7 @@
 
 #include "network/SocketIO.h"
 
+#include "SolidObject.h"
 #include "Button.h"
 
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
@@ -40,8 +41,11 @@ public:
 public:
     int **mapData, mapWidth, mapHeight;
     // 현재 맵 데이터와 충돌체, 레이캐스트 용 충돌체가 나뉘어 있지만, 세 개를 합쳐야 할듯.
-    cocos2d::Sprite ***mapTile, ***mapObjects, ***mapFog;
-    cocos2d::Rect ***mapSolid;
+//    cocos2d::Sprite ***mapTile, ***mapObjects, ***mapFog;
+    cocos2d::Sprite ***mapFog;
+    GameObject ***t_mapTile;
+    
+//    cocos2d::Rect ***mapSolid;
     
     Player *player;
     std::vector<Player*> otherPlayers;

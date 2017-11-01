@@ -32,9 +32,9 @@ void ActionButton::initialize() {
 }
 
 void ActionButton::onPressed() {
-    if (!player->checkGameObjects()) {
-        player->attack();
-    }
+//    if (!player->checkGameObjects()) {
+    player->attack();
+//    }
 }
 
 void ActionButton::onReleased() {

@@ -20,20 +20,23 @@ HelloWorld::~HelloWorld() {
     for (int i = 0; i < mapHeight; i++) delete[] mapData[i];
     delete[] mapData;
     
-    for (int i = 0; i < mapHeight; i++) delete[] mapTile[i];
-    delete[] mapTile;
+//    for (int i = 0; i < mapHeight; i++) delete[] mapTile[i];
+//    delete[] mapTile;
     
-    for (int i = 0; i < mapHeight; i++) delete[] mapObjects[i];
-    delete[] mapObjects;
+    for (int i = 0; i < mapHeight; i++) delete[] t_mapTile[i];
+    delete[] t_mapTile;
+    
+//    for (int i = 0; i < mapHeight; i++) delete[] mapObjects[i];
+//    delete[] mapObjects;
     
     for (int i = 0; i < mapHeight; i++) delete[] mapFog[i];
     delete[] mapFog;
     
-    for (int i = 0; i < mapHeight; i++) {
-        for (int j = 0; j < mapWidth; j++) delete mapSolid[i][j];
-        delete[] mapSolid[i];
-    }
-    delete[] mapSolid;
+//    for (int i = 0; i < mapHeight; i++) {
+//        for (int j = 0; j < mapWidth; j++) delete mapSolid[i][j];
+//        delete[] mapSolid[i];
+//    }
+//    delete[] mapSolid;
 }
 
 // on "init" you need to initialize your instance
@@ -50,10 +53,10 @@ bool HelloWorld::init() {
 //
 //    waitLabel->runAction(RepeatForever::create(Sequence::create(CallFunc::create([=] {waitLabel->setString("상대방을 기다리는 중입니다"); }), DelayTime::create(0.5f), CallFunc::create([=] {waitLabel->setString("상대방을 기다리는 중입니다.");}), DelayTime::create(0.5f), CallFunc::create([=] {waitLabel->setString("상대방을 기다리는 중입니다.."); }), DelayTime::create(0.5f), CallFunc::create([=] {waitLabel->setString("상대방을 기다리는 중입니다..."); }), DelayTime::create(0.5f), NULL)));
 //
-//    client = SocketIO::connect("http://10.30.117.37:8080", *this);
+//    client = SocketIO::connect("http://104.131.125.14:8080", *this);
 //
 //    client->on("connected", [&](SIOClient *client, const std::string &data) {
-//        auto send = createData("name", "\"nun\"", "");
+//        auto send = createData("name", "\"Ho\"", "");
 //        client->emit("player-ready", send);
 //    });
 //
@@ -146,69 +149,72 @@ void HelloWorld::createGame(float x, float y) {
 	int zorder = ZORDER::WALL;
 
 	/// 맵 타일 초기화 및 맵 데이터 매핑
-	mapTile = new Sprite**[mapHeight];
-	mapObjects = new Sprite**[mapHeight];
+//    mapTile = new Sprite**[mapHeight];
+    t_mapTile = new GameObject**[mapHeight];
+//    mapObjects = new Sprite**[mapHeight];
 	mapFog = new Sprite**[mapHeight];
-    mapSolid = new Rect**[mapHeight];
+//    mapSolid = new Rect**[mapHeight];
 	for (int i = 0; i < mapHeight; i++) {
-		mapTile[i] = new Sprite*[mapWidth];
-		mapObjects[i] = new Sprite*[mapWidth];
+//        mapTile[i] = new Sprite*[mapWidth];
+//        mapObjects[i] = new Sprite*[mapWidth];
+        t_mapTile[i] = new GameObject*[mapWidth];
 		mapFog[i] = new Sprite*[mapWidth];
-        mapSolid[i] = new Rect*[mapWidth];
+//        mapSolid[i] = new Rect*[mapWidth];
 		for (int j = 0; j < mapWidth; j++) {
 			Vec2 pos = Vec2(j * TILE_SIZE + origin.x - TILE_SIZE * mapWidth * 0.5,
 				i * TILE_SIZE + origin.y - TILE_SIZE * mapHeight * 0.5);
-			mapObjects[i][j] = nullptr;
-            mapSolid[i][j] = nullptr;
+//            mapObjects[i][j] = nullptr;
+//            mapSolid[i][j] = nullptr;
 			if (mapData[i][j] <= 10) { /// 게임 오브젝트 및 바닥
 									   /// 게임 오브젝트 생성
 				switch (mapData[i][j]) {
-				case 1: /// 문 (오브젝트 밑에도 바닥이 필요해서 break 안씀)
-					mapObjects[i][j] = Sprite::create("res/tile2.png");
-					mapObjects[i][j]->setGlobalZOrder(zorder);
-					mapObjects[i][j]->getTexture()->setAliasTexParameters();
-					mapObjects[i][j]->setScale(2);
-					mapObjects[i][j]->setPosition(pos);
-					mapObjects[i][j]->setAnchorPoint(Vec2(0.5f, 0.25f));
-					mapObjects[i][j]->setVisible(false);
-					this->addChild(mapObjects[i][j]);
-                        
-                    // 레이캐스트용 사각형 객체 생성
-                    mapSolid[i][j] = new Rect(pos - Size(TILE_SIZE_HALF, TILE_SIZE_HALF), { TILE_SIZE, TILE_SIZE });
+//                case 1: /// 문 (오브젝트 밑에도 바닥이 필요해서 break 안씀)
+//                    mapObjects[i][j] = Sprite::create("res/tile2.png");
+//                    mapObjects[i][j]->setGlobalZOrder(zorder);
+//                    mapObjects[i][j]->getTexture()->setAliasTexParameters();
+//                    mapObjects[i][j]->setScale(2);
+//                    mapObjects[i][j]->setPosition(pos);
+//                    mapObjects[i][j]->setAnchorPoint(Vec2(0.5f, 0.25f));
+//                    mapObjects[i][j]->setVisible(false);
+//                    this->addChild(mapObjects[i][j]);
+//
+//                    // 레이캐스트용 사각형 객체 생성
+//                    mapSolid[i][j] = new Rect(pos - Size(TILE_SIZE_HALF, TILE_SIZE_HALF), { TILE_SIZE, TILE_SIZE });
 				case 0: /// 바닥
-					mapTile[i][j] = Sprite::create("res/tile0.png");
-					mapTile[i][j]->setGlobalZOrder(zorder - 1000);
+//                    mapTile[i][j] = Sprite::create("res/tile0.png");
+//                    mapTile[i][j]->setGlobalZOrder(zorder - 1000);
+                        t_mapTile[i][j] = GameObject::create("res/tile0.png", mapData[i][j]);
+                        //t_mapTile[i][j]->setGlobalZOrder(zorder - 1000);
 					break;
 				}
 			} else { /// 맵 타일
 				int idx = mapData[i][j] - 11;
 
-				mapTile[i][j] = Sprite::create("res/tileset_wall2.png");
-				mapTile[i][j]->setAnchorPoint(Vec2(0.5f, 0.25f));
-				mapTile[i][j]->setGlobalZOrder(zorder);
+//                mapTile[i][j] = Sprite::create("res/tileset_wall2.png");
+//                mapTile[i][j]->setAnchorPoint(Vec2(0.5f, 0.25f));
+//                mapTile[i][j]->setGlobalZOrder(zorder);
+//                t_mapTile[i][j] = 
 
-				mapTile[i][j]->setTextureRect(Rect(REAL_TILE_WIDTH * (idx % 7), REAL_TILE_HEIGHT * (idx / 7), REAL_TILE_WIDTH, REAL_TILE_HEIGHT));
+//                mapTile[i][j]->setTextureRect(Rect(REAL_TILE_WIDTH * (idx % 7), REAL_TILE_HEIGHT * (idx / 7), REAL_TILE_WIDTH, REAL_TILE_HEIGHT));
                 
                 // 레이캐스트용 사각형 객체 생성
-                mapSolid[i][j] = new Rect(pos - Size(TILE_SIZE_HALF, TILE_SIZE_HALF), { TILE_SIZE, TILE_SIZE });
+//                mapSolid[i][j] = new Rect(pos - Size(TILE_SIZE_HALF, TILE_SIZE_HALF), { TILE_SIZE, TILE_SIZE });
 			}
 
-			mapTile[i][j]->getTexture()->setAliasTexParameters();
-			mapTile[i][j]->setScale(2);
-			mapTile[i][j]->setPosition(pos);
+//            mapTile[i][j]->getTexture()->setAliasTexParameters();
+//            mapTile[i][j]->setScale(2);
+//            mapTile[i][j]->setPosition(pos);
 
 
-			mapTile[i][j]->setVisible(false);
-			this->addChild(mapTile[i][j]);			/// 맵 시야 생성
+//            mapTile[i][j]->setVisible(false);
+//            this->addChild(mapTile[i][j]);
+            /// 맵 시야 생성
 			mapFog[i][j] = Sprite::create("res/tile5.png");
 			mapFog[i][j]->setGlobalZOrder(ZORDER::FOG);
 			mapFog[i][j]->getTexture()->setAliasTexParameters();
 			mapFog[i][j]->setScale(2);
 			mapFog[i][j]->setPosition(pos.x, pos.y + TILE_SIZE);
 			mapFog[i][j]->setVisible(false);
-            
-//            ccBlendFunc bf = { GL_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA };
-//            mapFog[i][j]->setBlendFunc(bf);
             
 			this->addChild(mapFog[i][j]);
 		}
