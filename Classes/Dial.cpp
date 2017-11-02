@@ -41,20 +41,22 @@ void Dial::onTouchBegan(const cocos2d::Vec2 &position, int id) {
     Vec2 origin = size / 2;
     
     prevAngle = CC_RADIANS_TO_DEGREES((position - origin).getAngle());
-    GameObject *contactObject;
-    Vec2 vv;
-    if (raycast(parent->mapTile, bnd->getPosition(), prevAngle, 200, vv, contactObject)) {
-        if (contactObject->type == 1) MessageBox("", "");
+    
+    // 1. 터치한 좌표에 문이 있는지 확인
+    // 2. 문이 있으면 레이캐스트로 벽 뒤에서 문을 열진 않았는지 확인
+    int fx = (bnd->getPositionX() + position.x - size.width + TILE_SIZE_HALF * (parent->mapWidth - 1)) / TILE_SIZE + 1;
+    int fy = (bnd->getPositionY() + position.y - size.height + TILE_SIZE_HALF * (parent->mapHeight - 1)) / TILE_SIZE + 1;
+    
+    if (parent->mapTile[fy][fx]->type > 0 && parent->mapTile[fy][fx]->type < 11) {
+        GameObject *contactObject;
+        Vec2 trash;
+        if (raycast(parent->mapTile, bnd->getPosition(), prevAngle, 100, trash, contactObject)) {
+            if (contactObject->type == 1) { // 문 오브젝트를 클릭했을 때
+                contactObject->setSolidObject(!contactObject->isSolidObject());
+            }
+            
+        }
     }
-    
-//    int fx = (bnd->getPositionX() + position.x - size.width + TILE_SIZE_HALF * (parent->mapWidth - 1)) / TILE_SIZE + 1;
-//    int fy = (bnd->getPositionY() + position.y - size.height + TILE_SIZE_HALF * (parent->mapHeight - 1)) / TILE_SIZE + 1;
-    
-//    if (parent->isSolidObject(fx, fy)) {
-//        MessageBox("", "");
-//    }
-    
-    CameraUtil::getInstance()->fixedLayer->getChildByName<Label*>("debug1")->setString("now: " + to_string(prevAngle));
 }
 
 void Dial::onTouchMoved(const cocos2d::Vec2 &position, int id) {

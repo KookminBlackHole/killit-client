@@ -61,7 +61,7 @@ using namespace std;
 //    return ray;
 //}
 
-bool raycast(GameObject ***objects, const Vec2 &start, float angle, float length, Vec2 &contactPosition, GameObject *contactObject) {
+bool raycast(GameObject ***objects, const Vec2 &start, float angle, float length, Vec2 &contactPosition, GameObject *&contactObject) {
     Vec2 origin = Director::getInstance()->getVisibleSize() / 2;
     auto ray = start - Vec2::forAngle(CC_DEGREES_TO_RADIANS(angle));
     for (int i = 0; i < length; i += 4) {
@@ -72,12 +72,13 @@ bool raycast(GameObject ***objects, const Vec2 &start, float angle, float length
         int lim = floor(i / TILE_SIZE) + 1;
         for (int k = max(gY - lim, 0); k < min(gY + lim + 1, 64); k++) {
             for (int l = max(gX - lim, 0); l < min(gX + lim + 1, 64); l++) {
-                if (objects[k][l]->isSolidObject() &&
-                    objects[k][l]->getBoundingBox().containsPoint(ray)) {
-                    
-                    contactObject = objects[k][l];
-                    contactPosition = ray;
-                    return true;
+                // 솔리드 오브젝트이거나 상호작용 오브젝트인 경우에 충돌 감지
+                if (objects[k][l]->isSolidObject() || (objects[k][l]->type >= 0 && objects[k][l]->type < 10)) {
+                    if (objects[k][l]->getBoundingBox().containsPoint(ray)) {
+                        contactObject = objects[k][l];
+                        contactPosition = ray;
+                        return true;
+                    }
                 }
             }
         }

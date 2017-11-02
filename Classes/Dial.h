@@ -32,6 +32,7 @@ public:
     Player *bnd = nullptr;
     int id = -1;
     
+    // 문을 여는 행동과 조준하는 행동을 겹치지 않게 하기 위한 변수
     bool findObject = false;
     
 };
