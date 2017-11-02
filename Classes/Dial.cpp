@@ -12,6 +12,7 @@
 #include "ZOrder.h"
 #include "Definitions.h"
 #include "HelloWorldScene.h"
+#include "Raycast.h"
 
 USING_NS_CC;
 using namespace std;
@@ -39,6 +40,13 @@ void Dial::onTouchBegan(const cocos2d::Vec2 &position, int id) {
     auto size = Director::getInstance()->getVisibleSize();
     Vec2 origin = size / 2;
     
+    prevAngle = CC_RADIANS_TO_DEGREES((position - origin).getAngle());
+    GameObject *contactObject;
+    Vec2 vv;
+    if (raycast(parent->mapTile, bnd->getPosition(), prevAngle, 200, vv, contactObject)) {
+        if (contactObject->type == 1) MessageBox("", "");
+    }
+    
 //    int fx = (bnd->getPositionX() + position.x - size.width + TILE_SIZE_HALF * (parent->mapWidth - 1)) / TILE_SIZE + 1;
 //    int fy = (bnd->getPositionY() + position.y - size.height + TILE_SIZE_HALF * (parent->mapHeight - 1)) / TILE_SIZE + 1;
     
@@ -46,7 +54,7 @@ void Dial::onTouchBegan(const cocos2d::Vec2 &position, int id) {
 //        MessageBox("", "");
 //    }
     
-    prevAngle = CC_RADIANS_TO_DEGREES((position - origin).getAngle());
+    CameraUtil::getInstance()->fixedLayer->getChildByName<Label*>("debug1")->setString("now: " + to_string(prevAngle));
 }
 
 void Dial::onTouchMoved(const cocos2d::Vec2 &position, int id) {
@@ -55,7 +63,6 @@ void Dial::onTouchMoved(const cocos2d::Vec2 &position, int id) {
     auto angle = CC_RADIANS_TO_DEGREES((position - origin).getAngle());
     bnd->angle += clampf(angle - prevAngle, -10.0f, 10.0f) * sensitivity;
     
-    CameraUtil::getInstance()->fixedLayer->getChildByName<Label*>("debug1")->setString("now: " + to_string(bnd->angle));
     
     prevAngle = angle;
 }

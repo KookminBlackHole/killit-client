@@ -132,7 +132,7 @@ void Player::collision() {
             if (parent->isSolidObject(j, i)) {
                 /// ≪√∑π¿AæOøO ªU￥I √Eμπ√º¿≪ BoundingBox∏¶ ∞°¡Æø≫
                 auto playerBB = Rect(tempPosition + solidBB.origin, solidBB.size);
-				auto otherBB = parent->t_mapTile[i][j]->getBoundingBox();//Rect(parent->mapTile[i][j]->getPosition() - Size(TILE_SIZE_HALF, TILE_SIZE_HALF), Size(TILE_SIZE, TILE_SIZE));
+				auto otherBB = parent->mapTile[i][j]->getBoundingBox();//Rect(parent->mapTile[i][j]->getPosition() - Size(TILE_SIZE_HALF, TILE_SIZE_HALF), Size(TILE_SIZE, TILE_SIZE));
 				/// √Eμπ ∞AªA
 				if (playerBB.intersectsRect(otherBB)) {
 //                    parent->mapTile[i][j]->setColor(Color3B::MAGENTA);
@@ -167,11 +167,11 @@ void Player::updateZOrder() {
 	HelloWorld *parent = (HelloWorld *)getParent();
 
 	/// ≪√∑π¿AæO z-order ∫Ø∞E
-	//int zorder = parent->mapTile[int(clampf(gY, 0, parent->mapHeight - 1))][int(clampf(gX, 0, parent->mapWidth - 1))]->getGlobalZOrder() + 1000;
-	//this->setGlobalZOrder(zorder);
-	//for (auto &i : this->getChildren()) {
-		//i->setGlobalZOrder(zorder);
-	//}
+    int zorder = parent->mapTile[int(clampf(gY, 0, parent->mapHeight - 1))][int(clampf(gX, 0, parent->mapWidth - 1))]->getGlobalZOrder() + 1000;
+    this->setGlobalZOrder(zorder);
+    for (auto &i : this->getChildren()) {
+        i->setGlobalZOrder(zorder);
+    }
 }
 
 void Player::updatePosition() {
@@ -205,30 +205,29 @@ bool Player::checkGameObjects() {
 }
 
 void Player::checkSolidObjects() {
-    //HelloWorld *parent = (HelloWorld *)getParent();
-    //Vec2 origin = Director::getInstance()->getVisibleSize() / 2;
-    //
-    //if (gY > 0 && parent->isSolidObject(gX, gY - 1)) {
-    //    for (int i = MAX(gX - 1, 0); i < MIN(gX + 2, parent->mapWidth - 1); i++) {
-    //        if (parent->isSolidObject(i, gY - 1)) {
-    //            //parent->mapTile[gY - 1][i]->setOpacity(255 * 0.5f);
-    //        }
-    //    }
-    //}
+    HelloWorld *parent = (HelloWorld *)getParent();
+    Vec2 origin = Director::getInstance()->getVisibleSize() / 2;
+    
+    if (gY > 0 && parent->isSolidObject(gX, gY - 1)) {
+        for (int i = MAX(gX - 1, 0); i < MIN(gX + 2, parent->mapWidth - 1); i++) {
+            if (parent->isSolidObject(i, gY - 1)) {
+                parent->mapTile[gY - 1][i]->setOpacity(255 * 0.5f);
+            }
+        }
+    }
 }
 
 void Player::attack() {
     HelloWorld *parent = (HelloWorld *)getParent();
     Vec2 dot;
-    //this->raycast(parent->mapSolid, angle, 500, dot);
+    this->raycast(parent->mapTile, angle, 500, dot);
     
     parent->getChildByName<DrawNode*>("debug2")->clear();
     parent->getChildByName<DrawNode*>("debug2")->drawLine(getPosition(), dot, Color4F::BLACK);
     parent->getChildByName<DrawNode*>("debug2")->drawDot(dot, 4, Color4F::RED);
 }
 
-bool Player::raycast(Rect ***rects, float angle, float length, Vec2 &out) {
-    HelloWorld *parent = (HelloWorld *)getParent();
+bool Player::raycast(GameObject ***objects, float angle, float length, Vec2 &out) {
     Vec2 origin = Director::getInstance()->getVisibleSize() / 2;
     auto ray = getPosition() - Vec2::forAngle(CC_DEGREES_TO_RADIANS(angle));
     bool escape = false;
@@ -239,8 +238,8 @@ bool Player::raycast(Rect ***rects, float angle, float length, Vec2 &out) {
         int lim = floor(i / TILE_SIZE) + 1;
         for (int k = max(gY - lim, 0); k < min(gY + lim + 1, 64) && !escape; k++) {
             for (int l = max(gX - lim, 0); l < min(gX + lim + 1, 64) && !escape; l++) {
-                if (rects[k][l] != nullptr && parent->isSolidObject(l, k)) {
-                    if (rects[k][l]->containsPoint(ray)) escape = true;
+                if (objects[k][l]->isSolidObject()) {
+                    if (objects[k][l]->getBoundingBox().containsPoint(ray)) escape = true;
                 }
             }
         }

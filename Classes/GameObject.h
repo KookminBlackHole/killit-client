@@ -21,6 +21,8 @@ public:
 	void setSolidObject(bool solid);
 	void setSolidArea(const cocos2d::Rect &area);
 
+    bool isSolidObject() const;
+    
 	void setZOrder(int zorder);
 
 	cocos2d::Rect getBoundingBox() const;

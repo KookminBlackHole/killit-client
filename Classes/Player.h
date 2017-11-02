@@ -11,6 +11,8 @@
 
 #include "cocos2d.h"
 
+#include "GameObject.h"
+
 class Player : public cocos2d::Node {
 public:
 	// sx, sy: 플레이어의 타일맵 좌표, player: 현재 플레이어 구분 
@@ -40,7 +42,7 @@ public:
     
     void attack();
     
-    bool raycast(cocos2d::Rect ***rects, float angle, float length, cocos2d::Vec2 &out);
+    bool raycast(GameObject ***objects, float angle, float length, cocos2d::Vec2 &out);
     
 public:
     cocos2d::Sprite *player;

@@ -20,23 +20,11 @@ HelloWorld::~HelloWorld() {
     for (int i = 0; i < mapHeight; i++) delete[] mapData[i];
     delete[] mapData;
     
-//    for (int i = 0; i < mapHeight; i++) delete[] mapTile[i];
-//    delete[] mapTile;
-    
-    for (int i = 0; i < mapHeight; i++) delete[] t_mapTile[i];
-    delete[] t_mapTile;
-    
-//    for (int i = 0; i < mapHeight; i++) delete[] mapObjects[i];
-//    delete[] mapObjects;
+    for (int i = 0; i < mapHeight; i++) delete[] mapTile[i];
+    delete[] mapTile;
     
     for (int i = 0; i < mapHeight; i++) delete[] mapFog[i];
     delete[] mapFog;
-    
-//    for (int i = 0; i < mapHeight; i++) {
-//        for (int j = 0; j < mapWidth; j++) delete mapSolid[i][j];
-//        delete[] mapSolid[i];
-//    }
-//    delete[] mapSolid;
 }
 
 // on "init" you need to initialize your instance
@@ -149,82 +137,44 @@ void HelloWorld::createGame(float x, float y) {
 	int zorder = ZORDER::WALL;
 
 	/// 맵 타일 초기화 및 맵 데이터 매핑
-//    mapTile = new Sprite**[mapHeight];
-    t_mapTile = new GameObject**[mapHeight];
-//    mapObjects = new Sprite**[mapHeight];
+    mapTile = new GameObject**[mapHeight];
 	mapFog = new Sprite**[mapHeight];
-//    mapSolid = new Rect**[mapHeight];
 	for (int i = 0; i < mapHeight; i++) {
-//        mapTile[i] = new Sprite*[mapWidth];
-//        mapObjects[i] = new Sprite*[mapWidth];
-        t_mapTile[i] = new GameObject*[mapWidth];
+        mapTile[i] = new GameObject*[mapWidth];
 		mapFog[i] = new Sprite*[mapWidth];
-//        mapSolid[i] = new Rect*[mapWidth];
 		for (int j = 0; j < mapWidth; j++) {
 			Vec2 pos = Vec2(j * TILE_SIZE + origin.x - TILE_SIZE * mapWidth * 0.5,
 				i * TILE_SIZE + origin.y - TILE_SIZE * mapHeight * 0.5);
-//            mapObjects[i][j] = nullptr;
-//            mapSolid[i][j] = nullptr;
-			if (mapData[i][j] <= 10) { /// 게임 오브젝트 및 바닥
-									   /// 게임 오브젝트 생성
-				t_mapTile[i][j] = GameObject::create("res/tile0.png", mapData[i][j]);
-				t_mapTile[i][j]->setSolidObject(false);
-				t_mapTile[i][j]->setZOrder(zorder - 1000);
+			if (mapData[i][j] <= 10) {/// 게임 오브젝트 생성
+				mapTile[i][j] = GameObject::create("res/tile0.png", mapData[i][j]);
+				mapTile[i][j]->setSolidObject(false);
+                mapTile[i][j]->setZOrder(zorder - 1000);
 				if (mapData[i][j] == 1) {
 					auto door = Sprite::create("res/tile2.png");
 					door->getTexture()->setAliasTexParameters();
-					t_mapTile[i][j]->addChild(door);
-				}
-				switch (mapData[i][j]) {
-                case 1: /// 문 (오브젝트 밑에도 바닥이 필요해서 break 안씀)
-//                    mapObjects[i][j] = Sprite::create("res/tile2.png");
-//                    mapObjects[i][j]->setGlobalZOrder(zorder);
-//                    mapObjects[i][j]->getTexture()->setAliasTexParameters();
-//                    mapObjects[i][j]->setScale(2);
-//                    mapObjects[i][j]->setPosition(pos);
-//                    mapObjects[i][j]->setAnchorPoint(Vec2(0.5f, 0.25f));
-//                    mapObjects[i][j]->setVisible(false);
-//                    this->addChild(mapObjects[i][j]);
-//
-//                    // 레이캐스트용 사각형 객체 생성
-//                    mapSolid[i][j] = new Rect(pos - Size(TILE_SIZE_HALF, TILE_SIZE_HALF), { TILE_SIZE, TILE_SIZE });
-					break;
-				case 0: /// 바닥
-//                    mapTile[i][j] = Sprite::create("res/tile0.png");
-//                    mapTile[i][j]->setGlobalZOrder(zorder - 1000);
-                        //t_mapTile[i][j]->setGlobalZOrder(zorder - 1000);
-					break;
+                    door->setAnchorPoint(Vec2(0.5f, 0.25f));
+                    door->setGlobalZOrder(zorder);
+					mapTile[i][j]->addChild(door);
+                    
+                    mapTile[i][j]->setSolidObject(true);
+                    mapTile[i][j]->setSolidArea(Rect(-Vec2(TILE_SIZE_HALF, TILE_SIZE_HALF), { TILE_SIZE, TILE_SIZE }));
+                    mapTile[i][j]->type = mapData[i][j];
 				}
 			} else { /// 맵 타일
 				int idx = mapData[i][j] - 11;
 
-//                mapTile[i][j] = Sprite::create("res/tileset_wall2.png");
-//                mapTile[i][j]->setAnchorPoint(Vec2(0.5f, 0.25f));
-//                mapTile[i][j]->setGlobalZOrder(zorder);
 				auto sf = SpriteFrame::create("res/tileset_wall2.png", Rect(REAL_TILE_WIDTH * (idx % 7), REAL_TILE_HEIGHT * (idx / 7), REAL_TILE_WIDTH, REAL_TILE_HEIGHT));
 
-				t_mapTile[i][j] = GameObject::create(sf, mapData[i][j]);
-				t_mapTile[i][j]->setSolidObject(true);
-				t_mapTile[i][j]->setSolidArea(Rect(-Vec2(TILE_SIZE_HALF, TILE_SIZE), { TILE_SIZE, TILE_SIZE }));
-				t_mapTile[i][j]->setAnchorPoint(Vec2(0.5f, 0.25f));
-				t_mapTile[i][j]->setZOrder(zorder);
-
-//                mapTile[i][j]->setTextureRect(Rect(REAL_TILE_WIDTH * (idx % 7), REAL_TILE_HEIGHT * (idx / 7), REAL_TILE_WIDTH, REAL_TILE_HEIGHT));
-                
-                // 레이캐스트용 사각형 객체 생성
-//                mapSolid[i][j] = new Rect(pos - Size(TILE_SIZE_HALF, TILE_SIZE_HALF), { TILE_SIZE, TILE_SIZE });
+				mapTile[i][j] = GameObject::create(sf, mapData[i][j]);
+				mapTile[i][j]->setSolidObject(true);
+				mapTile[i][j]->setSolidArea(Rect(-Vec2(TILE_SIZE_HALF, TILE_SIZE_HALF), { TILE_SIZE, TILE_SIZE }));
+				mapTile[i][j]->image->setAnchorPoint(Vec2(0.5f, 0.25f));
+				mapTile[i][j]->setZOrder(zorder);
 			}
 
-//            mapTile[i][j]->getTexture()->setAliasTexParameters();
-//            mapTile[i][j]->setScale(2);
-//            mapTile[i][j]->setPosition(pos);
-			t_mapTile[i][j]->setPosition(pos);
-
-
-//            mapTile[i][j]->setVisible(false);
-//            this->addChild(mapTile[i][j]);
-			t_mapTile[i][j]->setVisible(false);
-			this->addChild(t_mapTile[i][j]);
+            mapTile[i][j]->setPosition(pos);
+			mapTile[i][j]->setVisible(false);
+			this->addChild(mapTile[i][j]);
 
             /// 맵 시야 생성
 			mapFog[i][j] = Sprite::create("res/tile5.png");
@@ -270,11 +220,9 @@ void HelloWorld::update(float dt) {
 	/// 이전에 그려진 맵 지우기
 	for (int i = max(pY - 6, 0); i < min(pY + 6, mapHeight); i++) {
 		for (int j = max(pX - 9, 0); j < min(pX + 10, mapWidth); j++) {
-			//mapTile[i][j]->setVisible(false);
-			t_mapTile[i][j]->setVisible(true);
+			mapTile[i][j]->setVisible(false);
 			mapFog[i][j]->setVisible(false);
 			mapFog[i][j]->setOpacity(255 * 1.0f);
-			//if (mapObjects[i][j] != nullptr) mapObjects[i][j]->setVisible(false);
 		}
 	}
 
@@ -286,12 +234,9 @@ void HelloWorld::update(float dt) {
 	/// 현재 위치에서 맵 그리기
 	for (int i = max(pY - 6, 0); i < min(pY + 6, mapHeight); i++) {
 		for (int j = max(pX - 9, 0); j < min(pX + 10, mapWidth); j++) {
-			//mapTile[i][j]->setVisible(true);
-			//mapTile[i][j]->setOpacity(255);
-			//mapTile[i][j]->setColor(Color3B::WHITE);
-			t_mapTile[i][j]->setVisible(true);
+            mapTile[i][j]->setOpacity(255);
+			mapTile[i][j]->setVisible(true);
 			mapFog[i][j]->setVisible(true);
-			//if (mapObjects[i][j] != nullptr) mapObjects[i][j]->setVisible(true);
 		}
 	}
 
@@ -347,13 +292,7 @@ void HelloWorld::updatePosition(float dt) {
 }
 
 bool HelloWorld::isSolidObject(int x, int y) {
-	int value = mapData[y][x];
-	if (value <= 10) { /// 게임 오브젝트
-		if (value == 1) return true; /// 문
-	} else { /// 블록 타일
-		return true;
-	}
-	return false;
+    return mapTile[y][x]->isSolidObject();
 }
 
 void HelloWorld::onConnect(SIOClient *client) {

@@ -34,6 +34,7 @@ GameObject *GameObject::create(SpriteFrame *sf, int type) {
 
 bool GameObject::init(const string &imagePath, int type) {
 	setScale(2);
+    setCascadeOpacityEnabled(true);
 
     if (imagePath != "") {
         image = Sprite::create(imagePath);
@@ -48,6 +49,7 @@ bool GameObject::init(const string &imagePath, int type) {
 
 bool GameObject::initWithTexture(SpriteFrame *sf, int type) {
 	setScale(2);
+    setCascadeOpacityEnabled(true);
 
 	image = Sprite::createWithSpriteFrame(sf);
 	image->getTexture()->setAliasTexParameters();
@@ -65,6 +67,10 @@ void GameObject::setSolidObject(bool solid) {
 
 void GameObject::setSolidArea(const Rect &area) {
 	collisionArea = area;
+}
+
+bool GameObject::isSolidObject() const {
+    return isSolid;
 }
 
 void GameObject::setZOrder(int zorder) {
