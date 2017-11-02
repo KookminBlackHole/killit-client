@@ -35,31 +35,31 @@ bool HelloWorld::init() {
     auto bg = LayerColor::create(Color4B::BLACK);
     this->addChild(bg);
 
-//    auto waitLabel = Label::createWithTTF("상대방을 기다리는 중입니다", "res/NanumGothic.ttf", 24);
-//    waitLabel->setPosition(origin);
-//    this->addChild(waitLabel);
+    auto waitLabel = Label::createWithTTF("상대방을 기다리는 중입니다", "res/NanumGothic.ttf", 24);
+    waitLabel->setPosition(origin);
+    this->addChild(waitLabel);
+
+    waitLabel->runAction(RepeatForever::create(Sequence::create(CallFunc::create([=] {waitLabel->setString("상대방을 기다리는 중입니다"); }), DelayTime::create(0.5f), CallFunc::create([=] {waitLabel->setString("상대방을 기다리는 중입니다.");}), DelayTime::create(0.5f), CallFunc::create([=] {waitLabel->setString("상대방을 기다리는 중입니다.."); }), DelayTime::create(0.5f), CallFunc::create([=] {waitLabel->setString("상대방을 기다리는 중입니다..."); }), DelayTime::create(0.5f), NULL)));
+
+    client = SocketIO::connect("http://localhost:8080", *this);
+	//client = SocketIO::connect("http://104.131.125.14:8080", *this);
+    client->on("lobby:connected", [&](SIOClient *client, const std::string &data) {
+		auto send = createData({ "name", "\"Hi\"" });
+        client->emit("lobby:player-ready", send);
+    });
+
+    client->on("game:start", [&](SIOClient *client, const std::string &data) {
+        //MessageBox(data.c_str(), "");
+    });
 //
-//    waitLabel->runAction(RepeatForever::create(Sequence::create(CallFunc::create([=] {waitLabel->setString("상대방을 기다리는 중입니다"); }), DelayTime::create(0.5f), CallFunc::create([=] {waitLabel->setString("상대방을 기다리는 중입니다.");}), DelayTime::create(0.5f), CallFunc::create([=] {waitLabel->setString("상대방을 기다리는 중입니다.."); }), DelayTime::create(0.5f), CallFunc::create([=] {waitLabel->setString("상대방을 기다리는 중입니다..."); }), DelayTime::create(0.5f), NULL)));
-//
-//    client = SocketIO::connect("http://104.131.125.14:8080", *this);
-//
-//    client->on("connected", [&](SIOClient *client, const std::string &data) {
-//        auto send = createData("name", "\"Ho\"", "");
-//        client->emit("player-ready", send);
-//    });
-//
-//    client->on("game:start", [&](SIOClient *client, const std::string &data) {
-//        MessageBox(data.c_str(), "");
-//    });
-//
-//    // 디버그용 (R키를 누르면 재시작함)
-//    auto listen = EventListenerKeyboard::create();
-//    listen->onKeyPressed = [&](EventKeyboard::KeyCode keyCode, Event *e) {
-//        if (keyCode == EventKeyboard::KeyCode::KEY_R) {
-//            Director::getInstance()->replaceScene(HelloWorld::create());
-//        }
-//    };
-//    this->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listen, this);
+    // 디버그용 (R키를 누르면 재시작함)
+    auto listen = EventListenerKeyboard::create();
+    listen->onKeyPressed = [&](EventKeyboard::KeyCode keyCode, Event *e) {
+        if (keyCode == EventKeyboard::KeyCode::KEY_R) {
+            Director::getInstance()->replaceScene(HelloWorld::create());
+        }
+    };
+    this->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listen, this);
 //
 //    client->on("start", [&](SIOClient *client, const std::string &data) {
 //        client->emit("start", "");
@@ -92,7 +92,7 @@ bool HelloWorld::init() {
 //        createGame(0, 0);
 //    });
     
-    createGame(0, 0);
+    //createGame(0, 0);
 
     return true;
 }
