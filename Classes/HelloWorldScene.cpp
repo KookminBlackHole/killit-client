@@ -32,34 +32,46 @@ bool HelloWorld::init() {
     auto visibleSize = Director::getInstance()->getVisibleSize();
     Vec2 origin = visibleSize / 2;
     
-    auto bg = LayerColor::create(Color4B::BLACK);
+    auto bg = LayerColor::create(Color4B::WHITE);
     this->addChild(bg);
-
-    auto waitLabel = Label::createWithTTF("상대방을 기다리는 중입니다", "res/NanumGothic.ttf", 24);
-    waitLabel->setPosition(origin);
-    this->addChild(waitLabel);
-
-    waitLabel->runAction(RepeatForever::create(Sequence::create(CallFunc::create([=] {waitLabel->setString("상대방을 기다리는 중입니다"); }), DelayTime::create(0.5f), CallFunc::create([=] {waitLabel->setString("상대방을 기다리는 중입니다.");}), DelayTime::create(0.5f), CallFunc::create([=] {waitLabel->setString("상대방을 기다리는 중입니다.."); }), DelayTime::create(0.5f), CallFunc::create([=] {waitLabel->setString("상대방을 기다리는 중입니다..."); }), DelayTime::create(0.5f), NULL)));
-
-    client = SocketIO::connect("http://localhost:8080", *this);
-	//client = SocketIO::connect("http://104.131.125.14:8080", *this);
-    client->on("lobby:connected", [&](SIOClient *client, const std::string &data) {
-		auto send = createData({ "name", "\"Hi\"" });
-        client->emit("lobby:player-ready", send);
-    });
-
-    client->on("game:start", [&](SIOClient *client, const std::string &data) {
-        //MessageBox(data.c_str(), "");
-    });
+    
+//    auto lobbyTitle = Label::createWithSystemFont("Lobby", "", 32);
+//    lobbyTitle->setPosition(origin.x, visibleSize.height - 72);
+//    lobbyTitle->setTextColor(Color4B::BLACK);
+//    this->addChild(lobbyTitle);
 //
-    // 디버그용 (R키를 누르면 재시작함)
-    auto listen = EventListenerKeyboard::create();
-    listen->onKeyPressed = [&](EventKeyboard::KeyCode keyCode, Event *e) {
-        if (keyCode == EventKeyboard::KeyCode::KEY_R) {
-            Director::getInstance()->replaceScene(HelloWorld::create());
-        }
-    };
-    this->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listen, this);
+//    auto nicknameField = TextFieldTTF::textFieldWithPlaceHolder("nickname", Size(200, 28), TextHAlignment::LEFT, "fonts/NanumGothic.ttf", 24);
+//    nicknameField->setPosition(origin.x, origin.y);
+//    this->addChild(nicknameField);
+//
+//    auto startButton = MenuItemFont::create("Start", [&](Ref *r) {
+//        MessageBox("", "");
+//    });
+//    startButton->setFontNameObj("fonts/NanumGothic.ttf");
+//    startButton->setColor(Color3B::BLACK);
+//
+//    auto menu = Menu::createWithItem(startButton);
+//    menu->setPosition(origin.x, origin.y - 200);
+//    this->addChild(menu);
+
+//    client = SocketIO::connect("http://104.131.125.14:8080", *this);
+//    client->on("lobby:connected", [&](SIOClient *client, const std::string &data) {
+//        auto send = createData({ "name", "\"Hi\"" });
+//        client->emit("lobby:player-ready", send);
+//    });
+//
+//    client->on("game:start", [&](SIOClient *client, const std::string &data) {
+//        //MessageBox(data.c_str(), "");
+//    });
+////
+//    // 디버그용 (R키를 누르면 재시작함)
+//    auto listen = EventListenerKeyboard::create();
+//    listen->onKeyPressed = [&](EventKeyboard::KeyCode keyCode, Event *e) {
+//        if (keyCode == EventKeyboard::KeyCode::KEY_R) {
+//            Director::getInstance()->replaceScene(HelloWorld::create());
+//        }
+//    };
+//    this->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listen, this);
 //
 //    client->on("start", [&](SIOClient *client, const std::string &data) {
 //        client->emit("start", "");
@@ -92,7 +104,7 @@ bool HelloWorld::init() {
 //        createGame(0, 0);
 //    });
     
-    //createGame(0, 0);
+    createGame(0, 0);
 
     return true;
 }
