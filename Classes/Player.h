@@ -32,7 +32,7 @@ public:
 	void gridCoordUpdate(int mapWidth, int mapHeight);
 
 	/// ∞ËªÍ Ω√¡°¿ª ∏Ì»Æ»˜ «ÿæﬂ«ÿº≠ µ˚∑Œ ∏∏µÁ «‘ºˆµÈ
-	void move();
+	void move(float dt);
 	void collision();
 	void updateZOrder();
 	void updatePosition();

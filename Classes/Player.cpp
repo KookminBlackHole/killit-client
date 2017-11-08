@@ -111,10 +111,10 @@ void Player::gridCoordUpdate(int mapWidth, int mapHeight) {
 	this->setPosition(tempPosition);
 }
 
-void Player::move() {
+void Player::move(float dt) {
 	/// ≪√∑π¿AæO∞° ¡∂¿AΩ∫?Ω ?O?°≪?¿ª ∂ß ≪y￥A πE≪?¿∏∑Œ ¿Aμø
 	if (touchJoystick) {
-		tempPosition = getPosition() + direction * speed;
+		tempPosition = getPosition() + direction * speed * (dt * 60);
 	}
 }
 

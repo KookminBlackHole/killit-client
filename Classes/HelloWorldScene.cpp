@@ -53,15 +53,11 @@ bool HelloWorld::init() {
 //    auto menu = Menu::createWithItem(startButton);
 //    menu->setPosition(origin.x, origin.y - 200);
 //    this->addChild(menu);
-
+//
 //    client = SocketIO::connect("http://104.131.125.14:8080", *this);
 //    client->on("lobby:connected", [&](SIOClient *client, const std::string &data) {
 //        auto send = createData({ "name", "\"Hi\"" });
 //        client->emit("lobby:player-ready", send);
-//    });
-//
-//    client->on("game:start", [&](SIOClient *client, const std::string &data) {
-//        //MessageBox(data.c_str(), "");
 //    });
 ////
 //    // 디버그용 (R키를 누르면 재시작함)
@@ -73,36 +69,36 @@ bool HelloWorld::init() {
 //    };
 //    this->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listen, this);
 //
-//    client->on("start", [&](SIOClient *client, const std::string &data) {
-//        client->emit("start", "");
+//    client->on("game:start", [&](SIOClient *client, const std::string &data) {
+//    client->emit("start", "");
 //
-//        client->on("create-this-player", [&](SIOClient *c, const string &data) {
-//            auto otherPlayer = Player::create(2, 2, false);
-//            otherPlayers.push_back(otherPlayer);
-//            this->addChild(otherPlayer);
-//        });
-//
-//        client->on("other-player", [&](SIOClient *c, const string &data) {
-//            if (otherPlayers.size() > 0) {
-//                rapidjson::Document doc;
-//                doc.Parse(data.c_str());
-//                float x = doc["x"].GetDouble(), y = doc["y"].GetDouble();
-//                float dx = doc["dirX"].GetDouble(), dy = doc["dirY"].GetDouble();
-//                float angle = doc["angle"].GetDouble();
-//
-//                otherPlayers.front()->angle = angle;
-//
-//                delay = time - lastTime;
-//                lastTime = time;
-//                time = 0;
-//
-//                syncPosition = Vec2(x, y);
-//                syncVelocity = Vec2(dx, dy) * otherPlayers.front()->speed;
-//            }
-//        });
-//
-//        createGame(0, 0);
+//    client->on("create-this-player", [&](SIOClient *c, const string &data) {
+//        auto otherPlayer = Player::create(2, 2, false);
+//        otherPlayers.push_back(otherPlayer);
+//        this->addChild(otherPlayer);
 //    });
+//
+//    client->on("other-player", [&](SIOClient *c, const string &data) {
+//        if (otherPlayers.size() > 0) {
+//            rapidjson::Document doc;
+//            doc.Parse(data.c_str());
+//            float x = doc["x"].GetDouble(), y = doc["y"].GetDouble();
+//            float dx = doc["dirX"].GetDouble(), dy = doc["dirY"].GetDouble();
+//            float angle = doc["angle"].GetDouble();
+//
+//            otherPlayers.front()->angle = angle;
+//
+//            delay = time - lastTime;
+//            lastTime = time;
+//            time = 0;
+//
+//            syncPosition = Vec2(x, y);
+//            syncVelocity = Vec2(dx, dy) * otherPlayers.front()->speed;
+//        }
+//    });
+//
+//    createGame(0, 0);
+//});
     
     createGame(0, 0);
 
@@ -273,17 +269,21 @@ void HelloWorld::update(float dt) {
 	}
 
 	player->updateZOrder();
-	player->move();
+	player->move(dt);
 	player->collision();
 	player->checkSolidObjects();
 	player->updatePosition();
 
-//    auto data = createData("x", to_string(player->getPositionX()).c_str(),
-//                           "y", to_string(player->getPositionY()).c_str(),
-//                           "dirX", to_string((player->direction * player->speed).x).c_str(),
-//                           "dirY", to_string((player->direction * player->speed).y).c_str(),
-//                           "angle", to_string(player->angle).c_str(), "");
-//    client->emit("player-position", data);
+//    auto send = createData(
+//    {
+//        "uuid", "",
+//        "x", to_string(player->getPositionX()).c_str(),
+//        "y", to_string(player->getPositionY()).c_str(),
+//        "dirX", to_string((player->direction * player->speed).x).c_str(),
+//        "dirY", to_string((player->direction * player->speed).y).c_str(),
+//        "angle", to_string(player->angle).c_str()
+//    });
+//    client->emit("game:update-player-position", send);
     
     time += dt;
 
