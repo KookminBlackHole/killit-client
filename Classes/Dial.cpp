@@ -47,6 +47,8 @@ void Dial::onTouchBegan(const cocos2d::Vec2 &position, int id) {
     int fx = (bnd->getPositionX() + position.x - size.width + TILE_SIZE_HALF * (parent->mapWidth - 1)) / TILE_SIZE + 1;
     int fy = (bnd->getPositionY() + position.y - size.height + TILE_SIZE_HALF * (parent->mapHeight - 1)) / TILE_SIZE + 1;
     
+    if (fx < 0 || fx > parent->mapWidth -1 || fy < 0 || fy > parent->mapHeight - 1) return;
+    
     if (parent->mapTile[fy][fx]->type > 0 && parent->mapTile[fy][fx]->type < 11) {
         GameObject *contactObject;
         Vec2 trash;
