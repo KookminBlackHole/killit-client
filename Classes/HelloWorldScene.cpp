@@ -249,31 +249,32 @@ void HelloWorld::update(float dt) {
 	}
 
 //	안개 투명도 설정
-//    for (float r = 0; r < 360; r += 0.5f) {
-//        bool escape = false;
-//        for (int i = 0; i < 20; i++) {
-//            if (escape) break;
-//
-//            float x = player->getPositionX() + cos(CC_DEGREES_TO_RADIANS(r)) * i * TILE_SIZE_HALF;
-//            float y = player->getPositionY() + sin(CC_DEGREES_TO_RADIANS(r)) * i * TILE_SIZE_HALF;
-//
-//            int gX = (x + (TILE_SIZE_HALF * (mapWidth - 1) - origin.x)) / TILE_SIZE + 1;
-//            int gY = (y + (TILE_SIZE_HALF * (mapHeight - 1) - origin.y)) / TILE_SIZE + 1;
-//
-//            if (gY > mapHeight - 1 || gY < 0 || gX > mapWidth - 1 || gX < 0) continue;
-//
-//            if (isSolidObject(gX, gY)) escape = true;
-//
-//            mapFog[gY][gX]->setOpacity(255 * MAX(((i - 12.0f) / 8.0f), 0));
-//        }
-//    }
-    auto minVector = Vec2(1, 0), maxVector = Vec2(1.0f, 1.0f);
-    for (int x = max(pX - 0, 0); x < min(pX + 4, mapWidth); x++) {
-        for (int y = max(pY - 0, 0); y < min(pY + 4, mapHeight); y++) {
-            int maxY = (((maxVector * TILE_SIZE * x) + player->getPosition()).y + (TILE_SIZE_HALF * (mapHeight - 1) - origin.y)) / TILE_SIZE + 1;
-            if (y <= maxY) mapFog[y][x]->setOpacity(0);
+    for (float r = 0; r < 360; r += 0.5f) {
+        bool escape = false;
+        for (int i = 0; i < 20; i++) {
+            if (escape) break;
+
+            float x = player->getPositionX() + cos(CC_DEGREES_TO_RADIANS(r)) * i * TILE_SIZE_HALF;
+            float y = player->getPositionY() + sin(CC_DEGREES_TO_RADIANS(r)) * i * TILE_SIZE_HALF;
+
+            int gX = (x + (TILE_SIZE_HALF * (mapWidth - 1) - origin.x)) / TILE_SIZE + 1;
+            int gY = (y + (TILE_SIZE_HALF * (mapHeight - 1) - origin.y)) / TILE_SIZE + 1;
+
+            if (gY > mapHeight - 1 || gY < 0 || gX > mapWidth - 1 || gX < 0) continue;
+
+            if (isSolidObject(gX, gY)) escape = true;
+
+            mapFog[gY][gX]->setOpacity(255 * MAX(((i - 12.0f) / 8.0f), 0));
         }
     }
+//    auto minVector = Vec2(1, 0), maxVector = Vec2::forAngle(CC_DEGREES_TO_RADIANS(45));
+//    for (int x = max(pX - 0, 0); x < min(pX + 4, mapWidth); x++) {
+//        for (int y = max(pY - 0, 0); y < min(pY + 4, mapHeight); y++) {
+//            int maxY = (((maxVector * TILE_SIZE * (x - pX)) + player->getPosition()).y + (TILE_SIZE_HALF * (mapHeight - 1) - origin.y)) / TILE_SIZE + 1;
+//            int minY = (((minVector * TILE_SIZE * (x - pX)) + player->getPosition()).y + (TILE_SIZE_HALF * (mapHeight - 1) - origin.y)) / TILE_SIZE + 1;
+//            if (y <= maxY && y >= minY) mapFog[y][x]->setOpacity(0);
+//        }
+//    }
 
 	player->updateZOrder();
 	player->move(dt);

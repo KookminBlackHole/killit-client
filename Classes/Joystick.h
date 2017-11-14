@@ -32,6 +32,8 @@ public:
     /// 변수 이름 바꿔야 함..
     Player *bnd = nullptr;
     int id = -1;
+    int way = 8;
+    float distance = 360.0f / way;
     
     cocos2d::Vec2 pos;
     

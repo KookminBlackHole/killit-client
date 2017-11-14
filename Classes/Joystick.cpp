@@ -60,20 +60,24 @@ bool Joystick::init() {
 void Joystick::onTouchBegan(const cocos2d::Vec2 &position, int id) {
     this->id = id;
     
-    pos = position;
+    auto angle = CC_RADIANS_TO_DEGREES(position.getAngle());
     
-    int radius = pad->getContentSize().width / 2;
-    if (pos.getLengthSq() > radius * radius) pos = pos.getNormalized() * radius;
+    angle = floor(angle * way / 360.0f + 0.5f) * distance;
+    
+    int radius = pad->getContentSize().width / 2 - 20;
+    pos = Vec2::forAngle(CC_DEGREES_TO_RADIANS(angle)) * radius;
    
     stick->setPosition(pos);
     bnd->onStickBegan(pos.getNormalized(), this);
 }
 
 void Joystick::onTouchMoved(const cocos2d::Vec2 &position, int id) {
-    pos = position;
+    auto angle = CC_RADIANS_TO_DEGREES(position.getAngle());
     
-    int radius = pad->getContentSize().width / 2;
-    if (pos.getLengthSq() > radius * radius) pos = pos.getNormalized() * radius;
+    angle = floor(angle * way / 360.0f + 0.5f) * distance;
+    
+    int radius = pad->getContentSize().width / 2 - 20;
+    pos = Vec2::forAngle(CC_DEGREES_TO_RADIANS(angle)) * radius;
     
     stick->setPosition(pos);
     bnd->onStickMoved(pos.getNormalized(), this);
