@@ -33,3 +33,5 @@
 /proj.*
 .cocos-project.json
 CMakeLists.txt
+*.sai
+*.tmp
