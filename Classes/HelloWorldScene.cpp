@@ -32,12 +32,12 @@ bool HelloWorld::init() {
     auto visibleSize = Director::getInstance()->getVisibleSize();
     Vec2 origin = visibleSize / 2;
     
-    auto bg = LayerColor::create(Color4B::WHITE);
+    auto bg = LayerColor::create(Color4B::BLACK);
     this->addChild(bg);
     
-//    auto lobbyTitle = Label::createWithSystemFont("Lobby", "", 32);
+//    auto lobbyTitle = Label::createWithSystemFont("waiting...", "", 32);
 //    lobbyTitle->setPosition(origin.x, visibleSize.height - 72);
-//    lobbyTitle->setTextColor(Color4B::BLACK);
+//    lobbyTitle->setTextColor(Color4B::WHITE);
 //    this->addChild(lobbyTitle);
 //
 //    auto nicknameField = TextFieldTTF::textFieldWithPlaceHolder("nickname", Size(200, 28), TextHAlignment::LEFT, "fonts/NanumGothic.ttf", 24);
@@ -59,7 +59,7 @@ bool HelloWorld::init() {
 //        auto send = createData({ "name", "\"Hi\"" });
 //        client->emit("lobby:player-ready", send);
 //    });
-////
+//
 //    // 디버그용 (R키를 누르면 재시작함)
 //    auto listen = EventListenerKeyboard::create();
 //    listen->onKeyPressed = [&](EventKeyboard::KeyCode keyCode, Event *e) {
@@ -70,35 +70,37 @@ bool HelloWorld::init() {
 //    this->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listen, this);
 //
 //    client->on("game:start", [&](SIOClient *client, const std::string &data) {
-//    client->emit("start", "");
+//        client->emit("start", "");
 //
-//    client->on("create-this-player", [&](SIOClient *c, const string &data) {
-//        auto otherPlayer = Player::create(2, 2, false);
-//        otherPlayers.push_back(otherPlayer);
-//        this->addChild(otherPlayer);
+//        client->on("create-this-player", [&](SIOClient *c, const string &data) {
+//            auto otherPlayer = Player::create(2, 2, false);
+//            otherPlayers.push_back(otherPlayer);
+//            this->addChild(otherPlayer);
+//        });
+//
+//        client->on("other-player", [&](SIOClient *c, const string &data) {
+//            if (otherPlayers.size() > 0) {
+//                rapidjson::Document doc;
+//                doc.Parse(data.c_str());
+//                float x = doc["x"].GetDouble(), y = doc["y"].GetDouble();
+//                float dx = doc["dirX"].GetDouble(), dy = doc["dirY"].GetDouble();
+//                float angle = doc["angle"].GetDouble();
+//
+//                otherPlayers.front()->angle = angle;
+//
+//                delay = time - lastTime;
+//                lastTime = time;
+//                time = 0;
+//
+//                syncPosition = Vec2(x, y);
+//                syncVelocity = Vec2(dx, dy) * otherPlayers.front()->speed;
+//            }
+//        });
+//
+//        MessageBox(data.c_str(), "");
+//
+//        createGame(0, 0);
 //    });
-//
-//    client->on("other-player", [&](SIOClient *c, const string &data) {
-//        if (otherPlayers.size() > 0) {
-//            rapidjson::Document doc;
-//            doc.Parse(data.c_str());
-//            float x = doc["x"].GetDouble(), y = doc["y"].GetDouble();
-//            float dx = doc["dirX"].GetDouble(), dy = doc["dirY"].GetDouble();
-//            float angle = doc["angle"].GetDouble();
-//
-//            otherPlayers.front()->angle = angle;
-//
-//            delay = time - lastTime;
-//            lastTime = time;
-//            time = 0;
-//
-//            syncPosition = Vec2(x, y);
-//            syncVelocity = Vec2(dx, dy) * otherPlayers.front()->speed;
-//        }
-//    });
-//
-//    createGame(0, 0);
-//});
     
     createGame(0, 0);
 
