@@ -20,7 +20,7 @@ bool IntroScene::init() {
 	image->setScale(2);
 	grid->addChild(image);
 
-	grid->runAction(Sequence::create(Ripple3D::create(3.0f, Size(100, 100), origin, 200, 3, 100.0f), CallFunc::create([&] {
+	grid->runAction(Sequence::create(Ripple3D::create(3.0f, Size(100, 100), origin, 220, 3, 100.0f), CallFunc::create([&] {
 
 	Director::getInstance()->replaceScene(TransitionFade::create(2.0f, HelloWorld::create()));
 
