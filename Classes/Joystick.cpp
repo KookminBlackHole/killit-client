@@ -60,33 +60,41 @@ bool Joystick::init() {
 void Joystick::onTouchBegan(const cocos2d::Vec2 &position, int id) {
     this->id = id;
     
-    auto angle = CC_RADIANS_TO_DEGREES(position.getAngle());
+    prevDirection = direction;
     
+    float angle = CC_RADIANS_TO_DEGREES(position.getAngle());
     angle = floor(angle * way / 360.0f + 0.5f) * distance;
     
     int radius = pad->getContentSize().width / 2 - 20;
-    pos = Vec2::forAngle(CC_DEGREES_TO_RADIANS(angle)) * radius;
+    direction = Vec2::forAngle(CC_DEGREES_TO_RADIANS(angle));
    
-    stick->setPosition(pos);
-    bnd->onStickBegan(pos.getNormalized(), this);
+    stick->setPosition(direction * radius);
+    
+    bnd->onStickBegan(direction, this);
+    if (direction != prevDirection) bnd->onStickChanged(direction, this);
 }
 
 void Joystick::onTouchMoved(const cocos2d::Vec2 &position, int id) {
-    auto angle = CC_RADIANS_TO_DEGREES(position.getAngle());
+    prevDirection = direction;
     
+    float angle = CC_RADIANS_TO_DEGREES(position.getAngle());
     angle = floor(angle * way / 360.0f + 0.5f) * distance;
     
     int radius = pad->getContentSize().width / 2 - 20;
-    pos = Vec2::forAngle(CC_DEGREES_TO_RADIANS(angle)) * radius;
+    direction = Vec2::forAngle(CC_DEGREES_TO_RADIANS(angle));
     
-    stick->setPosition(pos);
-    bnd->onStickMoved(pos.getNormalized(), this);
+    stick->setPosition(direction * radius);
+    
+    bnd->onStickMoved(direction, this);
+    if (direction != prevDirection) bnd->onStickChanged(direction, this);
 }
 
 void Joystick::onTouchEnded(const cocos2d::Vec2 &position, int id) {
     this->id = -1;
+    direction = Vec2::ZERO;
     stick->setPosition(Vec2::ZERO);
-    bnd->onStickEnded(pos.getNormalized(), this);
+    bnd->onStickEnded(direction, this);
+    bnd->onStickChanged(direction, this);
 }
 
 void Joystick::bind(Player *player) {

@@ -21,9 +21,11 @@ public:
     bool init() override;
     void update(float dt) override;
     
-    void onStickBegan(cocos2d::Vec2 angle, cocos2d::Ref *pSender);
-    void onStickMoved(cocos2d::Vec2 angle, cocos2d::Ref *pSender);
-    void onStickEnded(cocos2d::Vec2 angle, cocos2d::Ref *pSender);
+    void onStickBegan(const cocos2d::Vec2 &angle, cocos2d::Ref *pSender);
+    void onStickMoved(const cocos2d::Vec2 &angle, cocos2d::Ref *pSender);
+    void onStickEnded(const cocos2d::Vec2 &angle, cocos2d::Ref *pSender);
+    
+    void onStickChanged(const cocos2d::Vec2 &angle, cocos2d::Ref *pSender);
 
 	/// ¿Ã∏ß ∫Ø∞Ê « ø‰
 	/// Ω«¡¶ ¡¬«•∏¶ ±◊∏ÆµÂ ¡¬«•∑Œ ∫Ø»Ø«œ¥¬ «‘ºˆ

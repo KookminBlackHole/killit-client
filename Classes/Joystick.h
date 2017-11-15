@@ -35,7 +35,7 @@ public:
     int way = 16;
     float distance = 360.0f / way;
     
-    cocos2d::Vec2 pos;
+    cocos2d::Vec2 direction, prevDirection;
     
 };
 

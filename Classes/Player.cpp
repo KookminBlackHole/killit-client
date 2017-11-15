@@ -13,6 +13,7 @@
 #include "CameraUtil.h"
 #include "Definitions.h"
 #include "Raycast.h"
+#include "Utils.h"
 
 USING_NS_CC;
 using namespace std;
@@ -84,19 +85,27 @@ void Player::update(float dt) {
     }
 }
 
-void Player::onStickBegan(Vec2 direction, Ref *pSender) {
+void Player::onStickBegan(const Vec2 &direction, Ref *pSender) {
 //    angle = CC_RADIANS_TO_DEGREES(direction.getAngle());
     this->direction = direction;
     touchJoystick = true;
 }
 
-void Player::onStickMoved(Vec2 direction, Ref *pSender) {
+void Player::onStickMoved(const Vec2 &direction, Ref *pSender) {
 //    angle = CC_RADIANS_TO_DEGREES(direction.getAngle());
     this->direction = direction;
 }
 
-void Player::onStickEnded(Vec2 direction, Ref *pSender) {
+void Player::onStickEnded(const Vec2 &direction, Ref *pSender) {
     touchJoystick = false;
+}
+
+void Player::onStickChanged(const Vec2 &direction, Ref *pSender) {
+    HelloWorld *parent = (HelloWorld *)getParent();
+    
+    auto send = createData({ "dirX", to_string(direction.x).c_str(), "dirY", to_string(direction.y).c_str(), "speed", to_string(speed).c_str() });
+//    parent->client->emit("game:update-player-direction", send);
+    
 }
 
 void Player::calculateGridCoord(int mapWidth, int mapHeight) {
