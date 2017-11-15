@@ -56,7 +56,6 @@ void Dial::onTouchBegan(const cocos2d::Vec2 &position, int id) {
             if (contactObject->type == 1) { // 문 오브젝트를 클릭했을 때
                 contactObject->setSolidObject(!contactObject->isSolidObject());
             }
-            
         }
     }
 }

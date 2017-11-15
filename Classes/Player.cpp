@@ -86,13 +86,11 @@ void Player::update(float dt) {
 }
 
 void Player::onStickBegan(const Vec2 &direction, Ref *pSender) {
-//    angle = CC_RADIANS_TO_DEGREES(direction.getAngle());
     this->direction = direction;
     touchJoystick = true;
 }
 
 void Player::onStickMoved(const Vec2 &direction, Ref *pSender) {
-//    angle = CC_RADIANS_TO_DEGREES(direction.getAngle());
     this->direction = direction;
 }
 
@@ -103,9 +101,8 @@ void Player::onStickEnded(const Vec2 &direction, Ref *pSender) {
 void Player::onStickChanged(const Vec2 &direction, Ref *pSender) {
     HelloWorld *parent = (HelloWorld *)getParent();
     
-    auto send = createData({ "dirX", to_string(direction.x).c_str(), "dirY", to_string(direction.y).c_str(), "speed", to_string(speed).c_str() });
+    auto send = createData({ "uuid", parent->uuid, "x", to_string(getPositionX()).c_str(), "y", to_string(getPositionY()).c_str(), "dirX", to_string(direction.x).c_str(), "dirY", to_string(direction.y).c_str(), "speed", to_string(speed).c_str() });
 //    parent->client->emit("game:update-player-direction", send);
-    
 }
 
 void Player::calculateGridCoord(int mapWidth, int mapHeight) {

@@ -9,9 +9,6 @@
 #include "Utils.h"
 #include "Definitions.h"
 
-#include "json/rapidjson.h"
-#include "json/document.h"
-
 USING_NS_CC;
 using namespace network;
 using namespace std;
@@ -39,7 +36,7 @@ bool HelloWorld::init() {
 //    lobbyTitle->setPosition(origin.x, visibleSize.height - 72);
 //    lobbyTitle->setTextColor(Color4B::WHITE);
 //    this->addChild(lobbyTitle);
-//
+
 //    auto nicknameField = TextFieldTTF::textFieldWithPlaceHolder("nickname", Size(200, 28), TextHAlignment::LEFT, "fonts/NanumGothic.ttf", 24);
 //    nicknameField->setPosition(origin.x, origin.y);
 //    this->addChild(nicknameField);
@@ -54,7 +51,7 @@ bool HelloWorld::init() {
 //    menu->setPosition(origin.x, origin.y - 200);
 //    this->addChild(menu);
 //
-//    client = SocketIO::connect("http://104.131.125.14:8080", *this);
+//    client = SocketIO::connect("http://0.0.0.0:8080", *this);
 //    client->on("lobby:connected", [&](SIOClient *client, const std::string &data) {
 //        auto send = createData({ "name", "\"Hi\"" });
 //        client->emit("lobby:player-ready", send);
@@ -70,39 +67,18 @@ bool HelloWorld::init() {
 //    this->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listen, this);
 //
 //    client->on("game:start", [&](SIOClient *client, const std::string &data) {
-//        client->emit("start", "");
+//        auto pData = toJson(data);
 //
-//        client->on("create-this-player", [&](SIOClient *c, const string &data) {
-//            auto otherPlayer = Player::create(2, 2, false);
-//            otherPlayers.push_back(otherPlayer);
-//            this->addChild(otherPlayer);
-//        });
+//        uuid = pData["uuid"].GetString();
 //
-//        client->on("other-player", [&](SIOClient *c, const string &data) {
-//            if (otherPlayers.size() > 0) {
-//                rapidjson::Document doc;
-//                doc.Parse(data.c_str());
-//                float x = doc["x"].GetDouble(), y = doc["y"].GetDouble();
-//                float dx = doc["dirX"].GetDouble(), dy = doc["dirY"].GetDouble();
-//                float angle = doc["angle"].GetDouble();
+//        auto otherPlayer = Player::create(pData["otherX"].GetInt(), pData["otherY"].GetInt(), false);
+//        otherPlayers.push_back(otherPlayer);
+//        this->addChild(otherPlayer);
 //
-//                otherPlayers.front()->angle = angle;
-//
-//                delay = time - lastTime;
-//                lastTime = time;
-//                time = 0;
-//
-//                syncPosition = Vec2(x, y);
-//                syncVelocity = Vec2(dx, dy) * otherPlayers.front()->speed;
-//            }
-//        });
-//
-//        MessageBox(data.c_str(), "");
-//
-//        createGame(0, 0);
+//        createGame(pData["x"].GetInt(), pData["y"].GetInt());
 //    });
     
-    createGame(0, 0);
+    createGame(2, 2);
 
     return true;
 }
@@ -199,7 +175,7 @@ void HelloWorld::createGame(float x, float y) {
 		zorder -= 1;
 	}
 
-	player = Player::create(2, 2, true);
+	player = Player::create(x, y, true);
 	player->gridCoordUpdate(mapWidth, mapHeight);
 	this->addChild(player);
 

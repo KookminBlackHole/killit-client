@@ -31,6 +31,12 @@ int toInt(const string &txt) {
     return ret;
 }
 
+rapidjson::Document toJson(const std::string &txt) {
+    rapidjson::Document ret;
+    ret.Parse(txt.c_str());
+    return ret;
+}
+
 const string createData(initializer_list<string> list) {
     int idx = 0;
     

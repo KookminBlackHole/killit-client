@@ -40,12 +40,8 @@ public:
     
 public:
     int **mapData, mapWidth, mapHeight;
-    // 현재 맵 데이터와 충돌체, 레이캐스트 용 충돌체가 나뉘어 있지만, 세 개를 합쳐야 할듯.
-//    cocos2d::Sprite ***mapTile, ***mapObjects, ***mapFog;
     cocos2d::Sprite ***mapFog;
     GameObject ***mapTile;
-    
-//    cocos2d::Rect ***mapSolid;
     
     Player *player;
     std::vector<Player*> otherPlayers;
@@ -53,6 +49,7 @@ public:
 	Button * interactButton;
     
     SIOClient *client;
+    std::string uuid;
     
     cocos2d::Vec2 syncPosition, syncVelocity;
     float time = 0, lastTime, delay = 0;

@@ -17,9 +17,14 @@
 #include <iterator>
 #include <initializer_list>
 
+#include "json/rapidjson.h"
+#include "json/document.h"
+
 std::vector<std::string> split(const std::string &s, char delim);
 
 int toInt(const std::string &txt);
+
+rapidjson::Document toJson(const std::string &txt);
 
 const std::string createData(std::initializer_list<std::string> list);
 
