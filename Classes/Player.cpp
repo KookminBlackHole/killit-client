@@ -40,8 +40,9 @@ bool Player::init() {
     
 	solidBB = Rect(-PLAYER_WIDTH, -36 * 2 / 2, PLAYER_WIDTH * DEFAULT_SCALE, PLAYER_HEIGHT * DEFAULT_SCALE);
     
-    player = Sprite::create("res/player2.png");
+    player = Sprite::create("res/player.png");
     player->getTexture()->setAliasTexParameters();
+	player->setTextureRect(Rect(0 * 32, 0 * 36, 32, 36));
     this->addChild(player);
     
     debugHP = DrawNode::create();
@@ -65,14 +66,22 @@ bool Player::init() {
 }
 
 void Player::update(float dt) {
-    if (angle > 180) angle -= 360;
-    if (angle < -180) angle += 360;
-    
-	if (angle > 90 || angle <= -90) {
-		player->setFlippedX(true);
-	} else {
-		player->setFlippedX(false);
-	}
+    //if (angle > 180) angle -= 360;
+    //if (angle < -180) angle += 360;
+	//if (angle > 90 || angle <= -90) {
+	//	player->setFlippedX(true);
+	//} else {
+	//	player->setFlippedX(false);
+	//}
+
+	if (angle < 0 || angle <= -180) angle += 360;
+	if (angle >= 360) angle -= 360;
+
+	int idx = int(floor(angle / 45 + 0.5f)) % 8;
+
+	CameraUtil::getInstance()->fixedLayer->getChildByName<Label*>("debug1")->setString(to_string(idx));
+
+	player->setTextureRect(Rect(0 * 32, idx * 36, 32, 36));
     
     debugAngle->setRotation(-angle);
     

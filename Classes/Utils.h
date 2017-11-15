@@ -19,6 +19,7 @@
 
 #include "json/rapidjson.h"
 #include "json/document.h"
+#include "cocos2d.h"
 
 std::vector<std::string> split(const std::string &s, char delim);
 
