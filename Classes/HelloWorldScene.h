@@ -39,6 +39,8 @@ public:
     void gameStart(const std::string &ip);
     
     void updatePosition(float dt);
+
+	void emit(const std::string &event, const std::string &args);
     
 public:
     int **mapData, mapWidth, mapHeight;

@@ -66,22 +66,13 @@ bool Player::init() {
 }
 
 void Player::update(float dt) {
-    //if (angle > 180) angle -= 360;
-    //if (angle < -180) angle += 360;
-	//if (angle > 90 || angle <= -90) {
-	//	player->setFlippedX(true);
-	//} else {
-	//	player->setFlippedX(false);
-	//}
+    //prevIdx = idx;
     
-    prevIdx = idx;
-    
-	if (angle < 0 || angle <= -180) angle += 360;
-	if (angle >= 360) angle -= 360;
+	//if (angle < 0 || angle <= -180) angle += 360;
+	//if (angle >= 360) angle -= 360;
 
-	idx = int(floor(angle / 45 + 0.5f)) % 8;
-    
-    if (idx != prevIdx) onAngleChanged(idx);
+	//idx = int(floor(angle / 45 + 0.5f)) % 8;
+    //if (idx != prevIdx) onAngleChanged(idx);
     
     debugAngle->setRotation(-angle);
     
@@ -109,9 +100,18 @@ void Player::onStickEnded(const Vec2 &direction, Ref *pSender) {
 
 void Player::onStickChanged(const Vec2 &direction, Ref *pSender) {
     HelloWorld *parent = (HelloWorld *)getParent();
-    
+
+	float angle = CC_RADIANS_TO_DEGREES(direction.getAngle());
+	if (angle < 0 || angle <= -180) angle += 360;
+	if (angle >= 360) angle -= 360;
+
+	if (direction != Vec2::ZERO) {
+		idx = (int(floor(angle / 45 + 0.5f)) % 8);
+		player->setTextureRect(Rect(0 * 32, idx * 36, 32, 36));
+	}
+
     auto send = createData({ "uuid", "\"" + parent->uuid + "\"", "x", toString(getPositionX()).c_str(), "y", toString(getPositionY()).c_str(), "dirX", toString(direction.x).c_str(), "dirY", toString(direction.y).c_str(), "speed", toString(speed).c_str() });
-    parent->client->emit("game:update-player-direction", send);
+    parent->emit("game:update-player-direction", send);
 }
 
 void Player::onAngleChanged(int idx) {
@@ -119,7 +119,7 @@ void Player::onAngleChanged(int idx) {
     
     player->setTextureRect(Rect(0 * 32, idx * 36, 32, 36));
     auto send = createData({ "uuid", "\"" + parent->uuid + "\"", "angle", toString(idx) });
-    parent->client->emit("game:update-player-angle", send);
+    parent->emit("game:update-player-angle", send);
 }
 
 void Player::calculateGridCoord(int mapWidth, int mapHeight) {
