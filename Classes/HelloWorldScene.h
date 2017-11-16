@@ -36,6 +36,8 @@ public:
 
 	void createGame(float x, float y);
     
+    void gameStart(const std::string &ip);
+    
     void updatePosition(float dt);
     
 public:
@@ -51,7 +53,8 @@ public:
     SIOClient *client;
     std::string uuid;
     
-    cocos2d::Vec2 syncPosition, syncVelocity;
+    cocos2d::Vec2 syncPosition, syncVelocity, otherDirection, otherPosition;
+    float otherSpeed = 0;
     float time = 0, lastTime, delay = 0;
 };
 

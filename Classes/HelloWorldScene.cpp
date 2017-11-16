@@ -32,55 +32,103 @@ bool HelloWorld::init() {
     auto bg = LayerColor::create(Color4B::BLACK);
     this->addChild(bg);
     
-//    auto lobbyTitle = Label::createWithSystemFont("waiting...", "", 32);
-//    lobbyTitle->setPosition(origin.x, visibleSize.height - 72);
-//    lobbyTitle->setTextColor(Color4B::WHITE);
-//    this->addChild(lobbyTitle);
-
-//    auto nicknameField = TextFieldTTF::textFieldWithPlaceHolder("nickname", Size(200, 28), TextHAlignment::LEFT, "fonts/NanumGothic.ttf", 24);
-//    nicknameField->setPosition(origin.x, origin.y);
-//    this->addChild(nicknameField);
-//
-//    auto startButton = MenuItemFont::create("Start", [&](Ref *r) {
-//        MessageBox("", "");
-//    });
-//    startButton->setFontNameObj("fonts/NanumGothic.ttf");
-//    startButton->setColor(Color3B::BLACK);
-//
-//    auto menu = Menu::createWithItem(startButton);
-//    menu->setPosition(origin.x, origin.y - 200);
-//    this->addChild(menu);
-//
-//    client = SocketIO::connect("http://0.0.0.0:8080", *this);
-//    client->on("lobby:connected", [&](SIOClient *client, const std::string &data) {
-//        auto send = createData({ "name", "\"Hi\"" });
-//        client->emit("lobby:player-ready", send);
-//    });
-//
-//    // 디버그용 (R키를 누르면 재시작함)
-//    auto listen = EventListenerKeyboard::create();
-//    listen->onKeyPressed = [&](EventKeyboard::KeyCode keyCode, Event *e) {
-//        if (keyCode == EventKeyboard::KeyCode::KEY_R) {
-//            Director::getInstance()->replaceScene(HelloWorld::create());
-//        }
-//    };
-//    this->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listen, this);
-//
-//    client->on("game:start", [&](SIOClient *client, const std::string &data) {
-//        auto pData = toJson(data);
-//
-//        uuid = pData["uuid"].GetString();
-//
-//        auto otherPlayer = Player::create(pData["otherX"].GetInt(), pData["otherY"].GetInt(), false);
-//        otherPlayers.push_back(otherPlayer);
-//        this->addChild(otherPlayer);
-//
-//        createGame(pData["x"].GetInt(), pData["y"].GetInt());
-//    });
+    auto connectLayer = Layer::create();
+    connectLayer->setName("connectLayer");
+    this->addChild(connectLayer);
     
-    createGame(2, 2);
+    auto lobbyTitle = Label::createWithSystemFont("lobby", "", 32);
+    lobbyTitle->setPosition(origin.x, visibleSize.height - 72);
+    lobbyTitle->setTextColor(Color4B::WHITE);
+    connectLayer->addChild(lobbyTitle);
+
+    auto nicknameField = TextFieldTTF::textFieldWithPlaceHolder("0.0.0.0", Size(320, 28), TextHAlignment::LEFT, "fonts/NanumGothic.ttf", 24);
+    nicknameField->setPosition(origin.x, origin.y);
+    connectLayer->addChild(nicknameField);
+    
+    auto tl = EventListenerTouchOneByOne::create();
+    tl->onTouchBegan = [=](Touch *t, Event *e)->bool {
+        auto pos = Vec2(t->getLocation());
+        
+        if (nicknameField->getBoundingBox().containsPoint(pos)) {
+            nicknameField->attachWithIME();
+        } else {
+            nicknameField->detachWithIME();
+        }
+        
+        return false;
+    };
+    this->getEventDispatcher()->addEventListenerWithSceneGraphPriority(tl, connectLayer);
+
+    auto startButton = MenuItemFont::create("Start", [=](Ref *r) {
+        string ip = "0.0.0.0";
+        if (nicknameField->getString() != "") ip = nicknameField->getString();
+        gameStart(ip);
+    });
+    startButton->setFontNameObj("fonts/NanumGothic.ttf");
+    startButton->setColor(Color3B::WHITE);
+
+    auto menu = Menu::createWithItem(startButton);
+    menu->setPosition(origin.x, origin.y - 200);
+    connectLayer->addChild(menu);
+
+    auto listen = EventListenerKeyboard::create();
+    listen->onKeyPressed = [=](EventKeyboard::KeyCode keyCode, Event *e) {
+        if (keyCode == EventKeyboard::KeyCode::KEY_R) {
+            Director::getInstance()->replaceScene(HelloWorld::create());
+        } else if (keyCode == EventKeyboard::KeyCode::KEY_ENTER) {
+            string ip = "0.0.0.0";
+            if (nicknameField->getString() != "") ip = nicknameField->getString();
+            gameStart(ip);
+        }
+    };
+    this->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listen, connectLayer);
+    
+//    createGame(2, 2);
 
     return true;
+}
+
+void HelloWorld::gameStart(const string &ip) {
+    client = SocketIO::connect("http://" + ip + ":8080", *this);
+    client->on("lobby:connected", [&](SIOClient *client, const std::string &data) {
+        auto send = createData({ "name", "\"Hi\"" });
+        client->emit("lobby:player-ready", send);
+        
+        client->on("game:start", [&](SIOClient *client, const std::string &data) {
+            
+            this->getChildByName<Layer*>("connectLayer")->runAction(RemoveSelf::create());
+            
+            auto pData = toJson(data);
+            
+            uuid = pData["uuid"].GetString();
+            
+            createGame(pData["x"].GetInt(), pData["y"].GetInt());
+            
+            auto otherPlayer = Player::create(pData["otherX"].GetInt(), pData["otherY"].GetInt(), false);
+            otherPlayers.push_back(otherPlayer);
+            this->addChild(otherPlayer);
+            
+            otherPlayer->gridCoordUpdate(mapWidth, mapHeight);
+        });
+        
+        client->on("game:feed-player-direction", [&](SIOClient *client, const std::string &data) {
+            auto pData = toJson(data);
+            
+            otherDirection = Vec2(pData["dirX"].GetDouble(), pData["dirY"].GetDouble());
+            otherPosition = Vec2(pData["x"].GetDouble(), pData["y"].GetDouble());
+            otherSpeed = pData["speed"].GetDouble();
+            
+            otherPlayers.front()->setPosition(otherPosition);
+        });
+        
+        client->on("game:feed-player-angle", [&](SIOClient *client, const std::string &data) {
+            auto pData = toJson(data);
+            
+            int idx = pData["angle"].GetInt();
+            
+            otherPlayers.front()->player->setTextureRect(Rect(0 * 32, idx * 36, 32, 36));
+        });
+    });
 }
 
 void HelloWorld::createGame(float x, float y) {
@@ -259,17 +307,6 @@ void HelloWorld::update(float dt) {
 	player->collision();
 	player->checkSolidObjects();
 	player->updatePosition();
-
-//    auto send = createData(
-//    {
-//        "uuid", "",
-//        "x", to_string(player->getPositionX()).c_str(),
-//        "y", to_string(player->getPositionY()).c_str(),
-//        "dirX", to_string((player->direction * player->speed).x).c_str(),
-//        "dirY", to_string((player->direction * player->speed).y).c_str(),
-//        "angle", to_string(player->angle).c_str()
-//    });
-//    client->emit("game:update-player-position", send);
     
     time += dt;
 
@@ -278,14 +315,8 @@ void HelloWorld::update(float dt) {
 
 void HelloWorld::updatePosition(float dt) {
     if (otherPlayers.size() > 0) {
-        otherPlayers.front()->updateZOrder();
-        float d = time / delay;
-        CameraUtil::getInstance()->fixedLayer->getChildByName<Label*>("debug1")->setString(to_string(time) + ", " + to_string(delay) + ", " + to_string(d));
-//        CameraUtil::getInstance()->fixedLayer->getChildByName<Label*>("debug1")->setScale(d);
-        
-//        auto pos = lerp(otherPlayers.front()->getPosition(), syncPosition, 0.5);
-        auto pos = syncPosition;
-        otherPlayers.front()->setPosition(pos);
+//        otherPlayers.front()->setPosition(pos);
+        otherPlayers.front()->setPosition(otherPlayers.front()->getPosition() + otherDirection * otherSpeed * (dt * 60));
     }
 }
 

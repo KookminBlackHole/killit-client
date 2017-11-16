@@ -27,6 +27,9 @@ int toInt(const std::string &txt);
 
 rapidjson::Document toJson(const std::string &txt);
 
+std::string toString(int n);
+std::string toString(float n);
+
 const std::string createData(std::initializer_list<std::string> list);
 
 cocos2d::Vec2 lerp(const cocos2d::Vec2 &from, const cocos2d::Vec2 &to, float alpha);

@@ -26,6 +26,8 @@ public:
     void onStickEnded(const cocos2d::Vec2 &angle, cocos2d::Ref *pSender);
     
     void onStickChanged(const cocos2d::Vec2 &angle, cocos2d::Ref *pSender);
+    
+    void onAngleChanged(int idx);
 
 	/// ¿Ã∏ß ∫Ø∞Ê « ø‰
 	/// Ω«¡¶ ¡¬«•∏¶ ±◊∏ÆµÂ ¡¬«•∑Œ ∫Ø»Ø«œ¥¬ «‘ºˆ
@@ -57,7 +59,7 @@ public:
     bool touchJoystick = false, owner = false;
     float speed = 3.0f, angle = 0;
     
-	int gX = 0, gY = 0;
+	int gX = 0, gY = 0, idx = 0, prevIdx = 0;
     
     int hp = 100;
     

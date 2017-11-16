@@ -37,6 +37,18 @@ rapidjson::Document toJson(const std::string &txt) {
     return ret;
 }
 
+string toString(int n) {
+    std::ostringstream ss;
+    ss << n ;
+    return ss.str();
+}
+
+string toString(float n) {
+    std::ostringstream ss;
+    ss << n ;
+    return ss.str();
+}
+
 const string createData(initializer_list<string> list) {
     int idx = 0;
     

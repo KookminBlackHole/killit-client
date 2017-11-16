@@ -73,15 +73,15 @@ void Player::update(float dt) {
 	//} else {
 	//	player->setFlippedX(false);
 	//}
-
+    
+    prevIdx = idx;
+    
 	if (angle < 0 || angle <= -180) angle += 360;
 	if (angle >= 360) angle -= 360;
 
-	int idx = int(floor(angle / 45 + 0.5f)) % 8;
-
-	CameraUtil::getInstance()->fixedLayer->getChildByName<Label*>("debug1")->setString(to_string(idx));
-
-	player->setTextureRect(Rect(0 * 32, idx * 36, 32, 36));
+	idx = int(floor(angle / 45 + 0.5f)) % 8;
+    
+    if (idx != prevIdx) onAngleChanged(idx);
     
     debugAngle->setRotation(-angle);
     
@@ -110,8 +110,16 @@ void Player::onStickEnded(const Vec2 &direction, Ref *pSender) {
 void Player::onStickChanged(const Vec2 &direction, Ref *pSender) {
     HelloWorld *parent = (HelloWorld *)getParent();
     
-    auto send = createData({ "uuid", parent->uuid, "x", to_string(getPositionX()).c_str(), "y", to_string(getPositionY()).c_str(), "dirX", to_string(direction.x).c_str(), "dirY", to_string(direction.y).c_str(), "speed", to_string(speed).c_str() });
-//    parent->client->emit("game:update-player-direction", send);
+    auto send = createData({ "uuid", "\"" + parent->uuid + "\"", "x", toString(getPositionX()).c_str(), "y", toString(getPositionY()).c_str(), "dirX", toString(direction.x).c_str(), "dirY", toString(direction.y).c_str(), "speed", toString(speed).c_str() });
+    parent->client->emit("game:update-player-direction", send);
+}
+
+void Player::onAngleChanged(int idx) {
+    HelloWorld *parent = (HelloWorld *)getParent();
+    
+    player->setTextureRect(Rect(0 * 32, idx * 36, 32, 36));
+    auto send = createData({ "uuid", "\"" + parent->uuid + "\"", "angle", toString(idx) });
+    parent->client->emit("game:update-player-angle", send);
 }
 
 void Player::calculateGridCoord(int mapWidth, int mapHeight) {
