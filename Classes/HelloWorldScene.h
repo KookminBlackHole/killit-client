@@ -34,7 +34,7 @@ public:
     void onClose(SIOClient *client) override;
     void onError(SIOClient *client, const std::string &data) override;
 
-	void createGame(float x, float y);
+	void createMap(float x, float y);
     
     void gameStart(const std::string &ip);
     

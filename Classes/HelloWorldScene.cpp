@@ -13,6 +13,8 @@ USING_NS_CC;
 using namespace network;
 using namespace std;
 
+//#define MULTIPLAY
+
 HelloWorld::~HelloWorld() {
     for (int i = 0; i < mapHeight; i++) delete[] mapData[i];
     delete[] mapData;
@@ -32,59 +34,63 @@ bool HelloWorld::init() {
     auto bg = LayerColor::create(Color4B::BLACK);
     this->addChild(bg);
     
-    //auto connectLayer = Layer::create();
-    //connectLayer->setName("connectLayer");
-    //this->addChild(connectLayer);
-    //
-    //auto lobbyTitle = Label::createWithSystemFont("lobby", "", 32);
-    //lobbyTitle->setPosition(origin.x, visibleSize.height - 72);
-    //lobbyTitle->setTextColor(Color4B::WHITE);
-    //connectLayer->addChild(lobbyTitle);
-
-    //auto nicknameField = TextFieldTTF::textFieldWithPlaceHolder("0.0.0.0", Size(320, 28), TextHAlignment::LEFT, "fonts/NanumGothic.ttf", 24);
-    //nicknameField->setPosition(origin.x, origin.y);
-    //connectLayer->addChild(nicknameField);
-    //
-    //auto tl = EventListenerTouchOneByOne::create();
-    //tl->onTouchBegan = [=](Touch *t, Event *e)->bool {
-    //    auto pos = Vec2(t->getLocation());
-    //    
-    //    if (nicknameField->getBoundingBox().containsPoint(pos)) {
-    //        nicknameField->attachWithIME();
-    //    } else {
-    //        nicknameField->detachWithIME();
-    //    }
-    //    
-    //    return false;
-    //};
-    //this->getEventDispatcher()->addEventListenerWithSceneGraphPriority(tl, connectLayer);
-
-    //auto startButton = MenuItemFont::create("Start", [=](Ref *r) {
-    //    string ip = "0.0.0.0";
-    //    if (nicknameField->getString() != "") ip = nicknameField->getString();
-    //    gameStart(ip);
-    //});
-    //startButton->setFontNameObj("fonts/NanumGothic.ttf");
-    //startButton->setColor(Color3B::WHITE);
-
-    //auto menu = Menu::createWithItem(startButton);
-    //menu->setPosition(origin.x, origin.y - 200);
-    //connectLayer->addChild(menu);
-
-    //auto listen = EventListenerKeyboard::create();
-    //listen->onKeyPressed = [=](EventKeyboard::KeyCode keyCode, Event *e) {
-    //    if (keyCode == EventKeyboard::KeyCode::KEY_R) {
-    //        Director::getInstance()->replaceScene(HelloWorld::create());
-    //    } else if (keyCode == EventKeyboard::KeyCode::KEY_ENTER) {
-    //        string ip = "0.0.0.0";
-    //        if (nicknameField->getString() != "") ip = nicknameField->getString();
-    //        gameStart(ip);
-    //    }
-    //};
-    //this->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listen, connectLayer);
+#ifdef MULTIPLAY
+    auto connectLayer = Layer::create();
+    connectLayer->setName("connectLayer");
+    this->addChild(connectLayer);
     
-    createGame(2, 2);
+    auto lobbyTitle = Label::createWithSystemFont("lobby", "", 32);
+    lobbyTitle->setPosition(origin.x, visibleSize.height - 72);
+    lobbyTitle->setTextColor(Color4B::WHITE);
+    connectLayer->addChild(lobbyTitle);
 
+    auto nicknameField = TextFieldTTF::textFieldWithPlaceHolder("0.0.0.0", Size(320, 28), TextHAlignment::LEFT, "fonts/NanumGothic.ttf", 24);
+    nicknameField->setPosition(origin.x, origin.y);
+    connectLayer->addChild(nicknameField);
+    
+    auto tl = EventListenerTouchOneByOne::create();
+    tl->onTouchBegan = [=](Touch *t, Event *e)->bool {
+        auto pos = Vec2(t->getLocation());
+        
+        if (nicknameField->getBoundingBox().containsPoint(pos)) {
+            nicknameField->attachWithIME();
+        } else {
+            nicknameField->detachWithIME();
+        }
+        
+        return false;
+    };
+    this->getEventDispatcher()->addEventListenerWithSceneGraphPriority(tl, connectLayer);
+
+    auto startButton = MenuItemFont::create("Start", [=](Ref *r) {
+        string ip = "0.0.0.0";
+        if (nicknameField->getString() != "") ip = nicknameField->getString();
+        gameStart(ip);
+    });
+    startButton->setFontNameObj("fonts/NanumGothic.ttf");
+    startButton->setColor(Color3B::WHITE);
+
+    auto menu = Menu::createWithItem(startButton);
+    menu->setPosition(origin.x, origin.y - 200);
+    connectLayer->addChild(menu);
+
+    auto listen = EventListenerKeyboard::create();
+    listen->onKeyPressed = [=](EventKeyboard::KeyCode keyCode, Event *e) {
+        if (keyCode == EventKeyboard::KeyCode::KEY_R) {
+            Director::getInstance()->replaceScene(HelloWorld::create());
+        } else if (keyCode == EventKeyboard::KeyCode::KEY_ENTER) {
+            string ip = "0.0.0.0";
+            if (nicknameField->getString() != "") ip = nicknameField->getString();
+            gameStart(ip);
+        }
+    };
+    this->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listen, connectLayer);
+    
+#else
+    createMap(2, 2);
+    
+#endif
+    
     return true;
 }
 
@@ -96,14 +102,13 @@ void HelloWorld::gameStart(const string &ip) {
     });
 
 	client->on("game:start", [&](SIOClient *client, const std::string &data) {
-
 		this->getChildByName<Layer*>("connectLayer")->runAction(RemoveSelf::create());
 
 		auto pData = toJson(data);
-
+        
 		uuid = pData["uuid"].GetString();
 
-		createGame(pData["x"].GetInt(), pData["y"].GetInt());
+		createMap(pData["x"].GetInt(), pData["y"].GetInt());
 
 		auto otherPlayer = Player::create(pData["otherX"].GetInt(), pData["otherY"].GetInt(), false);
 		otherPlayers.push_back(otherPlayer);
@@ -131,7 +136,7 @@ void HelloWorld::gameStart(const string &ip) {
 	});
 }
 
-void HelloWorld::createGame(float x, float y) {
+void HelloWorld::createMap(float x, float y) {
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = visibleSize / 2;
 
