@@ -11,7 +11,7 @@
 
 #include "cocos2d.h"
 
-#include "Object.h"
+#include "GameObject.h"
 
 class Player : public cocos2d::Node {
 public:
@@ -46,7 +46,7 @@ public:
     
     void attack();
     
-    bool raycast(kit::Object ***objects, float angle, float length, cocos2d::Vec2 &out);
+    bool raycast(GameObject ***objects, float angle, float length, cocos2d::Vec2 &out);
     
 public:
     cocos2d::Sprite *player;

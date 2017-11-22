@@ -5,7 +5,7 @@
 
 #include "network/SocketIO.h"
 
-#include "Object.h"
+#include "GameObject.h"
 #include "Button.h"
 
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
@@ -45,14 +45,12 @@ public:
 public:
     int **mapData, mapWidth, mapHeight;
     cocos2d::Sprite ***mapFog;
-    kit::Object ***mapTile;
+    GameObject ***mapTile;
     
     Player *player;
     std::vector<Player*> otherPlayers;
     
 	Button * interactButton;
-    
-//    cocos2d::RenderTexture *fogTexture;
     
     SIOClient *client;
     std::string uuid;

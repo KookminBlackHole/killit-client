@@ -24,7 +24,4 @@
 #define MAP_WIDTH 64
 #define MAP_HEIGHT 64
 
-#define KIT_BEGIN namespace kit {
-#define KIT_END }
-
 #endif /* Definitions_h */

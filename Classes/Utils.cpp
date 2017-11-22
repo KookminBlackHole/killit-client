@@ -9,8 +9,6 @@
 
 using namespace std;
 
-KIT_BEGIN
-
 vector<string> split(const string &s, char delim) {
     vector<string> elems;
     
@@ -74,5 +72,3 @@ const string createData(initializer_list<string> list) {
 cocos2d::Vec2 lerp(const cocos2d::Vec2 &from, const cocos2d::Vec2 &to, float alpha) {
     return cocos2d::Vec2(cocos2d::MathUtil::lerp(from.x, to.x, alpha), cocos2d::MathUtil::lerp(from.y, to.y, alpha));
 }
-
-KIT_END

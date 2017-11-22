@@ -5,15 +5,13 @@
 //  Created by a on 2017. 11. 1..
 //
 
-#include "Object.h"
+#include "GameObject.h"
 
 USING_NS_CC;
 using namespace std;
 
-KIT_BEGIN
-
-Object *Object::create(const string &imagePath, int type) {
-    Object *ret = new (std::nothrow) Object();
+GameObject *GameObject::create(const string &imagePath, int type) {
+    GameObject *ret = new (std::nothrow) GameObject();
     if (ret && ret->init(imagePath, type)) {
         ret->autorelease();
         return ret;
@@ -23,8 +21,8 @@ Object *Object::create(const string &imagePath, int type) {
     }
 }
 
-Object *Object::create(SpriteFrame *sf, int type) {
-    Object *ret = new (std::nothrow) Object();
+GameObject *GameObject::create(SpriteFrame *sf, int type) {
+	GameObject *ret = new (std::nothrow) GameObject();
 	if (ret && ret->initWithTexture(sf, type)) {
 		ret->autorelease();
 		return ret;
@@ -34,7 +32,7 @@ Object *Object::create(SpriteFrame *sf, int type) {
 	}
 }
 
-bool Object::init(const string &imagePath, int type) {
+bool GameObject::init(const string &imagePath, int type) {
 	setScale(2);
     setCascadeOpacityEnabled(true);
 
@@ -49,7 +47,7 @@ bool Object::init(const string &imagePath, int type) {
 	return true;
 }
 
-bool Object::initWithTexture(SpriteFrame *sf, int type) {
+bool GameObject::initWithTexture(SpriteFrame *sf, int type) {
 	setScale(2);
     setCascadeOpacityEnabled(true);
 
@@ -62,25 +60,24 @@ bool Object::initWithTexture(SpriteFrame *sf, int type) {
 	return true;
 }
 
-void Object::setSolidObject(bool solid) {
+void GameObject::setSolidObject(bool solid) {
 	isSolid = solid;
 }
 
-void Object::setSolidArea(const Rect &area) {
+
+void GameObject::setSolidArea(const Rect &area) {
 	collisionArea = area;
 }
 
-bool Object::isSolidObject() const {
+bool GameObject::isSolidObject() const {
     return isSolid;
 }
 
-void Object::setZOrder(int zorder) {
+void GameObject::setZOrder(int zorder) {
 	this->setGlobalZOrder(zorder);
 	for (auto &i : getChildren()) i->setGlobalZOrder(zorder);
 }
 
-Rect Object::getBoundingBox() const {
+Rect GameObject::getBoundingBox() const {
 	return Rect(getPosition() + collisionArea.origin, collisionArea.size);
 }
-
-KIT_END

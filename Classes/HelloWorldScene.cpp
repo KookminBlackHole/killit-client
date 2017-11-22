@@ -8,12 +8,10 @@
 #include "UIManager.h"
 #include "Utils.h"
 #include "Definitions.h"
-#include "Renderer.h"
 
 USING_NS_CC;
 using namespace network;
 using namespace std;
-using namespace kit;
 
 //#define MULTIPLAY
 
@@ -178,16 +176,16 @@ void HelloWorld::createMap(float x, float y) {
 	int zorder = ZORDER::WALL;
 
 	/// 맵 타일 초기화 및 맵 데이터 매핑
-    mapTile = new kit::Object**[mapHeight];
+    mapTile = new GameObject**[mapHeight];
 	mapFog = new Sprite**[mapHeight];
 	for (int i = 0; i < mapHeight; i++) {
-        mapTile[i] = new kit::Object*[mapWidth];
+        mapTile[i] = new GameObject*[mapWidth];
 		mapFog[i] = new Sprite*[mapWidth];
 		for (int j = 0; j < mapWidth; j++) {
 			Vec2 pos = Vec2(j * TILE_SIZE + origin.x - TILE_SIZE * mapWidth * 0.5,
 				i * TILE_SIZE + origin.y - TILE_SIZE * mapHeight * 0.5);
 			if (mapData[i][j] <= 10) {/// 게임 오브젝트 생성
-                mapTile[i][j] = kit::Object::create("res/tile0.png", mapData[i][j]);
+				mapTile[i][j] = GameObject::create("res/tile0.png", mapData[i][j]);
 				mapTile[i][j]->setSolidObject(false);
                 mapTile[i][j]->setZOrder(zorder - 1000);
 				if (mapData[i][j] == 1) {
@@ -206,7 +204,7 @@ void HelloWorld::createMap(float x, float y) {
 
 				auto sf = SpriteFrame::create("res/tileset_wall2.png", Rect(REAL_TILE_WIDTH * (idx % 7), REAL_TILE_HEIGHT * (idx / 7), REAL_TILE_WIDTH, REAL_TILE_HEIGHT));
 
-                mapTile[i][j] = kit::Object::create(sf, mapData[i][j]);
+				mapTile[i][j] = GameObject::create(sf, mapData[i][j]);
 				mapTile[i][j]->setSolidObject(true);
 				mapTile[i][j]->setSolidArea(Rect(-Vec2(TILE_SIZE_HALF, TILE_SIZE_HALF), { TILE_SIZE, TILE_SIZE }));
 				mapTile[i][j]->image->setAnchorPoint(Vec2(0.5f, 0.25f));
@@ -300,9 +298,6 @@ void HelloWorld::update(float dt) {
             mapFog[gY][gX]->setOpacity(255 * MAX(((i - 12.0f) / 8.0f), 0));
         }
     }
-    
-    
-    
 //    auto minVector = Vec2(1, 0), maxVector = Vec2::forAngle(CC_DEGREES_TO_RADIANS(45));
 //    for (int x = max(pX - 0, 0); x < min(pX + 4, mapWidth); x++) {
 //        for (int y = max(pY - 0, 0); y < min(pY + 4, mapHeight); y++) {

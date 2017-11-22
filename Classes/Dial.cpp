@@ -50,7 +50,7 @@ void Dial::onTouchBegan(const cocos2d::Vec2 &position, int id) {
     if (fx < 0 || fx > parent->mapWidth -1 || fy < 0 || fy > parent->mapHeight - 1) return;
     
     if (parent->mapTile[fy][fx]->type > 0 && parent->mapTile[fy][fx]->type < 11) {
-        kit::Object *contactObject;
+        GameObject *contactObject;
         Vec2 trash;
         if (raycast(parent->mapTile, bnd->getPosition(), prevAngle, 150, trash, contactObject)) {
             if (contactObject->type == 1) { // 문 오브젝트를 클릭했을 때

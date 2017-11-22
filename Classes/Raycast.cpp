@@ -12,8 +12,6 @@
 USING_NS_CC;
 using namespace std;
 
-KIT_BEGIN
-
 // 가장 작은 양수를 epsilon이라 하지만 너무 작은 수를 더하면 같은 좌표로 인식해서 무한 루프에 빠지므로 1로 설정해둠.
 //const float Edge::EPSILON = 1;
 //const float Edge::MIN = std::numeric_limits<float>().min();
@@ -63,7 +61,7 @@ KIT_BEGIN
 //    return ray;
 //}
 
-bool raycast(Object ***objects, const Vec2 &start, float angle, float length, Vec2 &contactPosition, Object *&contactObject) {
+bool raycast(GameObject ***objects, const Vec2 &start, float angle, float length, Vec2 &contactPosition, GameObject *&contactObject) {
     Vec2 origin = Director::getInstance()->getVisibleSize() / 2;
     auto ray = start - Vec2::forAngle(CC_DEGREES_TO_RADIANS(angle));
     for (int i = 0; i < length; i += 4) {
@@ -90,6 +88,4 @@ bool raycast(Object ***objects, const Vec2 &start, float angle, float length, Ve
     
     return false;
 }
-
-KIT_END
 
