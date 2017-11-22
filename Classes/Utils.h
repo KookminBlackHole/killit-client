@@ -20,6 +20,9 @@
 #include "json/rapidjson.h"
 #include "json/document.h"
 #include "cocos2d.h"
+#include "Definitions.h"
+
+KIT_BEGIN
 
 std::vector<std::string> split(const std::string &s, char delim);
 
@@ -33,5 +36,7 @@ std::string toString(float n);
 const std::string createData(std::initializer_list<std::string> list);
 
 cocos2d::Vec2 lerp(const cocos2d::Vec2 &from, const cocos2d::Vec2 &to, float alpha);
+
+KIT_END
 
 #endif /* Utils_h */

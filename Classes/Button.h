@@ -10,6 +10,9 @@
 #define Button_h
 
 #include "cocos2d.h"
+#include "Definitions.h"
+
+KIT_BEGIN
 
 class Button : public cocos2d::Sprite {
 public:
@@ -25,5 +28,7 @@ public:
     int id = -1;
     
 };
+
+KIT_END
 
 #endif /* Button_h */

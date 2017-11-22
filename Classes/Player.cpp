@@ -17,6 +17,7 @@
 
 USING_NS_CC;
 using namespace std;
+using namespace kit;
 
 Player *Player::create(int sx, int sy, bool owner) {
     Player *ret = new (std::nothrow) Player();
@@ -250,7 +251,7 @@ void Player::attack() {
     parent->getChildByName<DrawNode*>("debug2")->drawDot(dot, 4, Color4F::RED);
 }
 
-bool Player::raycast(GameObject ***objects, float angle, float length, Vec2 &out) {
+bool Player::raycast(kit::Object ***objects, float angle, float length, Vec2 &out) {
     Vec2 origin = Director::getInstance()->getVisibleSize() / 2;
     auto ray = getPosition() - Vec2::forAngle(CC_DEGREES_TO_RADIANS(angle));
     bool escape = false;

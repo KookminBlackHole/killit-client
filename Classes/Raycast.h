@@ -9,8 +9,11 @@
 #define Raycast_h
 
 #include "cocos2d.h"
-#include "GameObject.h"
+#include "Object.h"
+#include "Definitions.h"
 #include <limits>
+
+KIT_BEGIN
 
 //class Edge {
 //public:
@@ -42,6 +45,8 @@
 // 폴리곤을 지원하는 레이캐스트
 //cocos2d::Vec2 raycast(const std::vector<Rectangle> &rects, const cocos2d::Vec2 &start, float angle, float length);
 // 사각형만 지원하는 레이캐스트에서 최적화를 조금 함
-bool raycast(GameObject ***objects, const cocos2d::Vec2 &start, float angle, float length, cocos2d::Vec2 &contactPosition, GameObject *&contactObject);
+bool raycast(kit::Object ***objects, const cocos2d::Vec2 &start, float angle, float length, cocos2d::Vec2 &contactPosition, kit::Object *&contactObject);
+
+KIT_END
 
 #endif /* Raycast_h */

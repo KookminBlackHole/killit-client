@@ -9,11 +9,14 @@
 #define GameObject_h
 
 #include "cocos2d.h"
+#include "Definitions.h"
 
-class GameObject : public cocos2d::Node {
+KIT_BEGIN
+
+class Object : public cocos2d::Node {
 public:
-    static GameObject *create(const std::string &imagePath, int type);
-	static GameObject *create(cocos2d::SpriteFrame *sf, int type);
+    static Object *create(const std::string &imagePath, int type);
+	static Object *create(cocos2d::SpriteFrame *sf, int type);
     
     bool init(const std::string &imagePath, int type);
 	bool initWithTexture(cocos2d::SpriteFrame *sf, int type);
@@ -35,5 +38,7 @@ public:
 	bool isSolid = false;
     
 };
+
+KIT_END
 
 #endif /* GameObject_h */
