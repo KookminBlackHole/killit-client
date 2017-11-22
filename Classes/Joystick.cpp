@@ -70,8 +70,8 @@ void Joystick::onTouchBegan(const cocos2d::Vec2 &position, int id) {
    
     stick->setPosition(direction * radius);
     
-    bnd->onStickBegan(direction, this);
-    if (direction != prevDirection) bnd->onStickChanged(direction, this);
+    player->onStickBegan(direction, this);
+    if (direction != prevDirection) player->onStickChanged(direction, this);
 }
 
 void Joystick::onTouchMoved(const cocos2d::Vec2 &position, int id) {
@@ -85,18 +85,18 @@ void Joystick::onTouchMoved(const cocos2d::Vec2 &position, int id) {
     
     stick->setPosition(direction * radius);
     
-    bnd->onStickMoved(direction, this);
-    if (direction != prevDirection) bnd->onStickChanged(direction, this);
+    player->onStickMoved(direction, this);
+    if (direction != prevDirection) player->onStickChanged(direction, this);
 }
 
 void Joystick::onTouchEnded(const cocos2d::Vec2 &position, int id) {
     this->id = -1;
     direction = Vec2::ZERO;
     stick->setPosition(Vec2::ZERO);
-    bnd->onStickEnded(direction, this);
-    bnd->onStickChanged(direction, this);
+    player->onStickEnded(direction, this);
+    player->onStickChanged(direction, this);
 }
 
 void Joystick::bind(Player *player) {
-    bnd = player;
+    this->player = player;
 }

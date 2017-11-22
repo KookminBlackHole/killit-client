@@ -87,6 +87,9 @@ bool HelloWorld::init() {
     this->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listen, connectLayer);
     
 #else
+    renderer = ::Renderer::create();
+    this->addChild(renderer);
+    
     createMap(2, 2);
     
 #endif
@@ -139,8 +142,8 @@ void HelloWorld::gameStart(const string &ip) {
 void HelloWorld::createMap(float x, float y) {
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = visibleSize / 2;
-
-	CameraUtil::getInstance()->initialize(this);
+    
+    CameraUtil::getInstance()->initialize(this);
 
 	/// 맵 파일 읽음
 	auto mapFileString = FileUtils::getInstance()->getStringFromFile("res/map.txt");
@@ -223,7 +226,7 @@ void HelloWorld::createMap(float x, float y) {
 			mapFog[i][j]->setPosition(pos.x, pos.y + TILE_SIZE);
 			mapFog[i][j]->setVisible(false);
             
-			this->addChild(mapFog[i][j]);
+            this->addChild(mapFog[i][j]);
 		}
 		zorder -= 1;
 	}

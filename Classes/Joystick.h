@@ -30,7 +30,7 @@ public:
 public:
     cocos2d::Sprite *pad, *stick;
     /// 변수 이름 바꿔야 함..
-    Player *bnd = nullptr;
+    Player *player = nullptr;
     int id = -1;
     int way = 16;
     float distance = 360.0f / way;

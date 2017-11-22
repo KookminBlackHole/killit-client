@@ -7,6 +7,7 @@
 
 #include "GameObject.h"
 #include "Button.h"
+#include "Renderer.h"
 
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
 #pragma execution_character_set("utf-8")
@@ -49,6 +50,8 @@ public:
     
     Player *player;
     std::vector<Player*> otherPlayers;
+    
+    ::Renderer *renderer;
     
 	Button * interactButton;
     
