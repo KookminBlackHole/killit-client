@@ -8,6 +8,7 @@
 #include "UIManager.h"
 #include "Utils.h"
 #include "Definitions.h"
+#include "ShadowCaster.h"
 
 USING_NS_CC;
 using namespace network;
@@ -30,6 +31,8 @@ HelloWorld::~HelloWorld() {
 bool HelloWorld::init() {
     auto visibleSize = Director::getInstance()->getVisibleSize();
     Vec2 origin = visibleSize / 2;
+    
+    CameraUtil::getInstance()->initialize(this);
     
     auto bg = LayerColor::create(Color4B::BLACK);
     this->addChild(bg);
@@ -87,9 +90,6 @@ bool HelloWorld::init() {
     this->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listen, connectLayer);
     
 #else
-    renderer = ::Renderer::create();
-    this->addChild(renderer);
-    
     createMap(2, 2);
     
 #endif
@@ -142,8 +142,6 @@ void HelloWorld::gameStart(const string &ip) {
 void HelloWorld::createMap(float x, float y) {
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = visibleSize / 2;
-    
-    CameraUtil::getInstance()->initialize(this);
 
 	/// 맵 파일 읽음
 	auto mapFileString = FileUtils::getInstance()->getStringFromFile("res/map.txt");
@@ -301,6 +299,9 @@ void HelloWorld::update(float dt) {
             mapFog[gY][gX]->setOpacity(255 * MAX(((i - 12.0f) / 8.0f), 0));
         }
     }
+    
+    ShadowCaster::getInstance()->compute(pX, pY, 6, mapTile, mapFog);
+    
 //    auto minVector = Vec2(1, 0), maxVector = Vec2::forAngle(CC_DEGREES_TO_RADIANS(45));
 //    for (int x = max(pX - 0, 0); x < min(pX + 4, mapWidth); x++) {
 //        for (int y = max(pY - 0, 0); y < min(pY + 4, mapHeight); y++) {

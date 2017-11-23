@@ -44,17 +44,21 @@ bool ::Renderer::init(Size size) {
     
     rt->setAutoDraw(false);
     
+    drawFunction = [&] {
+        for (auto &i : nodes) {
+            i->visit();
+        }
+    };
+    
     scheduleUpdate();
     
     return ret;
 }
 
 void ::Renderer::update(float dt) {
-    rt->beginWithClear(0, 0, 0, 0);
+    rt->beginWithClear(1, 0, 1, 0.5f);
     
-    for (auto &i : nodes) {
-        i->visit();
-    }
+    drawFunction();
     
     rt->end();
     
@@ -72,4 +76,8 @@ void ::Renderer::remove(Node *node) {
     
     node->release();
     nodes.erase(it);
+}
+
+void ::Renderer::setFunction(const function<void()> &drawFunction) {
+    this->drawFunction = drawFunction;
 }

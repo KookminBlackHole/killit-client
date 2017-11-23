@@ -11,6 +11,7 @@
 #include "cocos2d.h"
 
 #include <vector>
+#include <functional>
 
 class Renderer : public cocos2d::Sprite {
 public:
@@ -27,9 +28,12 @@ public:
     void add(cocos2d::Node *node);
     void remove(cocos2d::Node *node);
     
-public:
+    void setFunction(const std::function<void()> &drawFunction);
+    
+protected:
     cocos2d::RenderTexture *rt;
     std::vector<cocos2d::Node *> nodes;
+    std::function<void()> drawFunction;
     
 };
 
