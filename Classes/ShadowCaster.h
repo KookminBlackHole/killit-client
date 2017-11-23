@@ -25,9 +25,11 @@ private:
     ShadowCaster() {}
     virtual ~ShadowCaster() {}
     
-    void computeOctant(int radius, int octant, GameObject ***tile, cocos2d::Sprite ***fog);
-    void computeColumnPortion(int radius, ColumnPortion current, GameObject ***tile, cocos2d::Sprite ***fog, std::queue<ColumnPortion> queue);
+    void computeOctant(int pX, int pY, int radius, int octant, GameObject ***tile, cocos2d::Sprite ***fog);
+    void computeColumnPortion(int pX, int pY, int radius, int octant, ColumnPortion current, GameObject ***tile, cocos2d::Sprite ***fog, std::queue<ColumnPortion> &queue);
     bool isInRadius(int x, int y, int length);
+	cocos2d::Sprite *convertFogOctant(int x, int y, int pX, int pY, int octant, cocos2d::Sprite ***fog);
+	GameObject *convertObjectOctant(int x, int y, int pX, int pY, int octant, GameObject ***tile);
     
     static ShadowCaster instance;
     
