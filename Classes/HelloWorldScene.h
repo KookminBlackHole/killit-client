@@ -17,50 +17,50 @@ using namespace cocos2d::network;
 
 class Player;
 
-class HelloWorld : public cocos2d::Scene, public SocketIO::SIODelegate
-{
+class HelloWorld : public cocos2d::Scene, public SocketIO::SIODelegate {
 public:
-    ~HelloWorld();
-    virtual bool init();
-    
-    void update(float dt);
-    
-    CREATE_FUNC(HelloWorld);
+	~HelloWorld();
+	virtual bool init();
+
+	void update(float dt);
+
+	CREATE_FUNC(HelloWorld);
 
 	bool isSolidObject(int x, int y);
-    
-    /// network
-    void onConnect(SIOClient *client) override;
-    void onMessage(SIOClient *client, const std::string &data) override;
-    void onClose(SIOClient *client) override;
-    void onError(SIOClient *client, const std::string &data) override;
+
+	/// network
+	void onConnect(SIOClient *client) override;
+	void onMessage(SIOClient *client, const std::string &data) override;
+	void onClose(SIOClient *client) override;
+	void onError(SIOClient *client, const std::string &data) override;
 
 	void createMap(float x, float y);
-    
-    void gameStart(const std::string &ip);
-    
-    void updatePosition(float dt);
+
+	void gameStart(const std::string &ip);
+
+	void updatePosition(float dt);
 
 	void emit(const std::string &event, const std::string &args);
-    
+
 public:
-    int **mapData, mapWidth, mapHeight;
-    cocos2d::Sprite ***mapFog;
-    GameObject ***mapTile;
-    
-    Player *player;
-    std::vector<Player*> otherPlayers;
-    
-    ::Renderer *renderer;
-    
+	int **mapData, mapWidth, mapHeight;
+	cocos2d::Sprite ***mapFog;
+	GameObject ***mapTile;
+
+	Player *player;
+	std::vector<Player*> otherPlayers;
+
+	::Renderer *renderer;
+
 	Button * interactButton;
-    
-    SIOClient *client;
-    std::string uuid;
-    
-    cocos2d::Vec2 syncPosition, syncVelocity, otherDirection, otherPosition;
-    float otherSpeed = 0;
-    float time = 0, lastTime, delay = 0;
+
+	SIOClient *client;
+	std::string uuid;
+
+	cocos2d::Vec2 syncPosition, syncVelocity, otherDirection, otherPosition;
+	float otherSpeed = 0;
+	float time = 0, lastTime, delay = 0;
 };
 
 #endif // __HELLOWORLD_SCENE_H__
+

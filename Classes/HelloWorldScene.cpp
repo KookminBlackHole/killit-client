@@ -14,7 +14,7 @@ USING_NS_CC;
 using namespace network;
 using namespace std;
 
-#define MULTIPLAY
+//#define MULTIPLAY
 
 HelloWorld::~HelloWorld() {
     for (int i = 0; i < mapHeight; i++) delete[] mapData[i];
@@ -54,7 +54,7 @@ bool HelloWorld::init() {
     
     static int idx = 0;
     static float force = 0;
-    static int oy[6];
+    static int oy[8];
     
     auto loadingCircle = Sprite::create("res/player.png");
     loadingCircle->setPosition(visibleSize.width - 120, 120);
@@ -64,12 +64,13 @@ bool HelloWorld::init() {
     loadingCircle->schedule([=](float dt) {
         loadingCircle->setTextureRect(Rect(0 * 32, idx * 36, 32, 36));
         idx = (idx + 1) % 8;
-    }, 0.125f, "loading");
-    loadingCircle->runAction(RepeatForever::create(RotateBy::create(1.2f, -360)));
+    }, 0.15f, "loading");
+    //loadingCircle->runAction(RepeatForever::create(RotateBy::create(1.2f, -360)));
+	loadingCircle->runAction(RepeatForever::create(Sequence::create(MoveBy::create(1.0f, Vec2(0, 8)), MoveBy::create(1.0f, Vec2(0, -8)), nullptr)));
     connectLayer->addChild(loadingCircle);
     
-    auto loadingText = Label::createWithTTF("loading", "fonts/NanumGothic.ttf", 24);
-    loadingText->setPosition(loadingCircle->getPositionX(), loadingCircle->getPositionY() - 52);
+    auto loadingText = Label::createWithTTF("Loading..", "fonts/NanumGothic.ttf", 24);
+    loadingText->setPosition(loadingCircle->getPositionX(), loadingCircle->getPositionY() - 45);
     loadingText->setTextColor(Color4B::BLACK);
     
     for (int i = 0; i < loadingText->getStringLength(); i++) {
@@ -80,9 +81,9 @@ bool HelloWorld::init() {
     loadingText->schedule([=](float dt) {
         for (int i = 0; i < loadingText->getStringLength(); i++) {
             auto txt = loadingText->getLetter(i);
-            txt->setPositionY(oy[i] + sin(CC_RADIANS_TO_DEGREES(force + i)) * 5.0f);
+            txt->setPositionY(oy[i] + sin(CC_RADIANS_TO_DEGREES(force + i)) * 4.0f);
         }
-        force += 0.002f;
+        force += 0.0016f;
         if (force > 90) force = 0;
     }, "loadingText");
     connectLayer->addChild(loadingText);
@@ -253,7 +254,7 @@ void HelloWorld::createMap(float x, float y) {
 			this->addChild(mapTile[i][j]);
 
             /// 맵 시야 생성
-			mapFog[i][j] = Sprite::create("res/tile5.png");
+			mapFog[i][j] = Sprite::create("res/tile6.png");
 			mapFog[i][j]->setGlobalZOrder(ZORDER::FOG);
 			mapFog[i][j]->getTexture()->setAliasTexParameters();
 			mapFog[i][j]->setScale(2);
