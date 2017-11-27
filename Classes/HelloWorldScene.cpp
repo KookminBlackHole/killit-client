@@ -14,7 +14,7 @@ USING_NS_CC;
 using namespace network;
 using namespace std;
 
-//#define MULTIPLAY
+#define MULTIPLAY
 
 HelloWorld::~HelloWorld() {
     for (int i = 0; i < mapHeight; i++) delete[] mapData[i];
@@ -34,7 +34,7 @@ bool HelloWorld::init() {
     
     CameraUtil::getInstance()->initialize(this);
     
-    auto bg = LayerColor::create(Color4B::BLACK);
+    auto bg = LayerColor::create(Color4B::WHITE);
     this->addChild(bg);
     
 #ifdef MULTIPLAY
@@ -44,12 +44,48 @@ bool HelloWorld::init() {
     
     auto lobbyTitle = Label::createWithSystemFont("lobby", "", 32);
     lobbyTitle->setPosition(origin.x, visibleSize.height - 72);
-    lobbyTitle->setTextColor(Color4B::WHITE);
+    lobbyTitle->setTextColor(Color4B::BLACK);
     connectLayer->addChild(lobbyTitle);
 
     auto nicknameField = TextFieldTTF::textFieldWithPlaceHolder("0.0.0.0", Size(320, 28), TextHAlignment::LEFT, "fonts/NanumGothic.ttf", 24);
     nicknameField->setPosition(origin.x, origin.y);
+    nicknameField->setTextColor(Color4B::BLACK);
     connectLayer->addChild(nicknameField);
+    
+    static int idx = 0;
+    static float force = 0;
+    static int oy[6];
+    
+    auto loadingCircle = Sprite::create("res/player.png");
+    loadingCircle->setPosition(visibleSize.width - 120, 120);
+    loadingCircle->getTexture()->setAliasTexParameters();
+    loadingCircle->setScale(2);
+    loadingCircle->setTextureRect(Rect(0 * 32, 0 * 36, 32, 36));
+    loadingCircle->schedule([=](float dt) {
+        loadingCircle->setTextureRect(Rect(0 * 32, idx * 36, 32, 36));
+        idx = (idx + 1) % 8;
+    }, 0.125f, "loading");
+    loadingCircle->runAction(RepeatForever::create(RotateBy::create(1.2f, -360)));
+    connectLayer->addChild(loadingCircle);
+    
+    auto loadingText = Label::createWithTTF("loading", "fonts/NanumGothic.ttf", 24);
+    loadingText->setPosition(loadingCircle->getPositionX(), loadingCircle->getPositionY() - 52);
+    loadingText->setTextColor(Color4B::BLACK);
+    
+    for (int i = 0; i < loadingText->getStringLength(); i++) {
+        auto txt = loadingText->getLetter(i);
+        oy[i] = txt->getPositionY();
+    }
+    
+    loadingText->schedule([=](float dt) {
+        for (int i = 0; i < loadingText->getStringLength(); i++) {
+            auto txt = loadingText->getLetter(i);
+            txt->setPositionY(oy[i] + sin(CC_RADIANS_TO_DEGREES(force + i)) * 5.0f);
+        }
+        force += 0.002f;
+        if (force > 90) force = 0;
+    }, "loadingText");
+    connectLayer->addChild(loadingText);
     
     auto tl = EventListenerTouchOneByOne::create();
     tl->onTouchBegan = [=](Touch *t, Event *e)->bool {
@@ -71,7 +107,7 @@ bool HelloWorld::init() {
         gameStart(ip);
     });
     startButton->setFontNameObj("fonts/NanumGothic.ttf");
-    startButton->setColor(Color3B::WHITE);
+    startButton->setColor(Color3B::BLACK);
 
     auto menu = Menu::createWithItem(startButton);
     menu->setPosition(origin.x, origin.y - 200);

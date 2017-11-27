@@ -67,7 +67,7 @@ void ShadowCaster::computeColumnPortion(int pX, int pY, int radius, int octant, 
 		if (inRadius) {
 			/// setFoV
             int length = (2 * x - 1) * (2 * x - 1) + (2 * y - 1) * (2 * y - 1);
-            length = length < 50 ? 0 : length;
+//            length = length < 50 ? 0 : length;
 			convertFogOctant(x, y, pX, pY, octant, fog)->setOpacity(length);
 		}
 
