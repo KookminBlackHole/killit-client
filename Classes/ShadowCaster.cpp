@@ -8,6 +8,7 @@
 #include "ShadowCaster.h"
 
 #include "GameObject.h"
+#include "Utils.h"
 
 USING_NS_CC;
 
@@ -65,10 +66,12 @@ void ShadowCaster::computeColumnPortion(int pX, int pY, int radius, int octant, 
 		bool inRadius = isInRadius(x, y, radius);
 		if (inRadius) {
 			/// setFoV
-			convertFogOctant(x, y, pX, pY, octant, fog)->setOpacity(0);
+            int length = (2 * x - 1) * (2 * x - 1) + (2 * y - 1) * (2 * y - 1);
+            length = length < 50 ? 0 : length;
+			convertFogOctant(x, y, pX, pY, octant, fog)->setOpacity(length);
 		}
 
-		bool currentIsOpaque = !inRadius || !convertObjectOctant(x, y, pX, pY, octant, tile)->isSolidObject();
+		bool currentIsOpaque = !inRadius || convertObjectOctant(x, y, pX, pY, octant, tile)->isSolidObject();
 		if (wasLastCellOpaque != -1) {
 			if (currentIsOpaque) {
 				if (wasLastCellOpaque == 0) {
@@ -82,7 +85,7 @@ void ShadowCaster::computeColumnPortion(int pX, int pY, int radius, int octant, 
 		wasLastCellOpaque = currentIsOpaque;
 	}
 
-	if (wasLastCellOpaque == 1) {
+	if (wasLastCellOpaque == 0) {
 		queue.push(ColumnPortion(x + 1, bottom, top));
 	}
 }
@@ -94,14 +97,14 @@ bool ShadowCaster::isInRadius(int x, int y, int length) {
 Sprite * ShadowCaster::convertFogOctant(int x, int y, int pX, int pY, int octant, Sprite ***fog) {
 	Sprite *ret = nullptr;
 	switch (octant) {
-	case 0: ret = fog[y + pY][x + pX]; break;
-	case 1: ret = fog[x + pY][y + pX]; break;
-	case 2: ret = fog[x + pY][-y + pX]; break;
-	case 3: ret = fog[y + pY][-x + pX]; break;
-	case 4: ret = fog[-y + pY][-x + pX]; break;
-	case 5: ret = fog[-x + pY][-y + pX]; break;
-	case 6: ret = fog[-x + pY][y + pX]; break;
-	case 7: ret = fog[-y + pY][x + pX]; break;
+	case 0: ret = fog[clamp(y + pY, 0, 63)][clamp(x + pX, 0, 63)]; break;
+	case 1: ret = fog[clamp(x + pY, 0, 63)][clamp(y + pX, 0, 63)]; break;
+	case 2: ret = fog[clamp(x + pY, 0, 63)][clamp(-y + pX, 0, 63)]; break;
+	case 3: ret = fog[clamp(y + pY, 0, 63)][clamp(-x + pX, 0, 63)]; break;
+	case 4: ret = fog[clamp(-y + pY, 0, 63)][clamp(-x + pX, 0, 63)]; break;
+	case 5: ret = fog[clamp(-x + pY, 0, 63)][clamp(-y + pX, 0, 63)]; break;
+	case 6: ret = fog[clamp(-x + pY, 0, 63)][clamp(y + pX, 0, 63)]; break;
+	case 7: ret = fog[clamp(-y + pY, 0, 63)][clamp(x + pX, 0, 63)]; break;
 	}
 
 	return ret;
@@ -110,14 +113,14 @@ Sprite * ShadowCaster::convertFogOctant(int x, int y, int pX, int pY, int octant
 GameObject * ShadowCaster::convertObjectOctant(int x, int y, int pX, int pY, int octant, GameObject ***tile) {
 	GameObject *ret = nullptr;
 	switch (octant) {
-	case 0: ret = tile[y + pY][x + pX]; break;
-	case 1: ret = tile[x + pY][y + pX]; break;
-	case 2: ret = tile[x + pY][-y + pX]; break;
-	case 3: ret = tile[y + pY][-x + pX]; break;
-	case 4: ret = tile[-y + pY][-x + pX]; break;
-	case 5: ret = tile[-x + pY][-y + pX]; break;
-	case 6: ret = tile[-x + pY][y + pX]; break;
-	case 7: ret = tile[-y + pY][x + pX]; break;
+	case 0: ret = tile[clamp(y + pY, 0, 63)][clamp(x + pX, 0, 63)]; break;
+	case 1: ret = tile[clamp(x + pY, 0, 63)][clamp(y + pX, 0, 63)]; break;
+	case 2: ret = tile[clamp(x + pY, 0, 63)][clamp(-y + pX, 0, 63)]; break;
+	case 3: ret = tile[clamp(y + pY, 0, 63)][clamp(-x + pX, 0, 63)]; break;
+	case 4: ret = tile[clamp(-y + pY, 0, 63)][clamp(-x + pX, 0, 63)]; break;
+	case 5: ret = tile[clamp(-x + pY, 0, 63)][clamp(-y + pX, 0, 63)]; break;
+	case 6: ret = tile[clamp(-x + pY, 0, 63)][clamp(y + pX, 0, 63)]; break;
+	case 7: ret = tile[clamp(-y + pY, 0, 63)][clamp(x + pX, 0, 63)]; break;
 	}
 
 	return ret;

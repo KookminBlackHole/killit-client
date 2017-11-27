@@ -34,4 +34,9 @@ const std::string createData(std::initializer_list<std::string> list);
 
 cocos2d::Vec2 lerp(const cocos2d::Vec2 &from, const cocos2d::Vec2 &to, float alpha);
 
+template<typename T>
+T clamp(T value, T min, T max) {
+    return (value < min) ? min : ((value > max) ? max : value);
+}
+
 #endif /* Utils_h */
