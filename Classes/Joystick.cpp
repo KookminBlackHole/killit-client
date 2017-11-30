@@ -78,7 +78,7 @@ void Joystick::onTouchMoved(const cocos2d::Vec2 &position, int id) {
     prevDirection = direction;
     
     float angle = CC_RADIANS_TO_DEGREES(position.getAngle());
-    angle = floor(angle * way / 360.0f + 0.5f) * distance;
+    angle = floor(angle * 1 / distance + 0.5f) * distance;
     
     int radius = pad->getContentSize().width / 2 - 20;
     direction = Vec2::forAngle(CC_DEGREES_TO_RADIANS(angle));

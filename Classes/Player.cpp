@@ -160,6 +160,7 @@ void Player::collision() {
 				if (playerBB.intersectsRect(otherBB)) {
 //                    parent->mapTile[i][j]->setColor(Color3B::MAGENTA);
 
+                    /// 벽 기준
 					/// 0: left, 1: right, 2: up, 3: down
 					int dir = 0;
 

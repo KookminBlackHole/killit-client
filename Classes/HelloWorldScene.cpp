@@ -268,7 +268,7 @@ void HelloWorld::createMap(float x, float y) {
 
 	player = Player::create(x, y, true);
 	player->gridCoordUpdate(mapWidth, mapHeight);
-	this->addChild(player);
+    this->addChild(player);
 
 	auto lb = Label::createWithSystemFont("x: 0\ny: 0", "", 24);
 	lb->setTextColor(Color4B::RED);
@@ -318,26 +318,26 @@ void HelloWorld::update(float dt) {
 	}
 
 //	안개 투명도 설정
-//    for (float r = 0; r < 360; r += 0.5f) {
-//        bool escape = false;
-//        for (int i = 0; i < 20; i++) {
-//            if (escape) break;
-//
-//            float x = player->getPositionX() + cos(CC_DEGREES_TO_RADIANS(r)) * i * TILE_SIZE_HALF;
-//            float y = player->getPositionY() + sin(CC_DEGREES_TO_RADIANS(r)) * i * TILE_SIZE_HALF;
-//
-//            int gX = (x + (TILE_SIZE_HALF * (mapWidth - 1) - origin.x)) / TILE_SIZE + 1;
-//            int gY = (y + (TILE_SIZE_HALF * (mapHeight - 1) - origin.y)) / TILE_SIZE + 1;
-//
-//            if (gY > mapHeight - 1 || gY < 0 || gX > mapWidth - 1 || gX < 0) continue;
-//
-//            if (isSolidObject(gX, gY)) escape = true;
-//
-//            mapFog[gY][gX]->setOpacity(255 * MAX(((i - 12.0f) / 8.0f), 0));
-//        }
-//    }
+    for (float r = 0; r < 360; r += 0.5f) {
+        bool escape = false;
+        for (int i = 0; i < 20; i++) {
+            if (escape) break;
+
+            float x = player->getPositionX() + cos(CC_DEGREES_TO_RADIANS(r)) * i * TILE_SIZE_HALF;
+            float y = player->getPositionY() + sin(CC_DEGREES_TO_RADIANS(r)) * i * TILE_SIZE_HALF;
+
+            int gX = (x + (TILE_SIZE_HALF * (mapWidth - 1) - origin.x)) / TILE_SIZE + 1;
+            int gY = (y + (TILE_SIZE_HALF * (mapHeight - 1) - origin.y)) / TILE_SIZE + 1;
+
+            if (gY > mapHeight - 1 || gY < 0 || gX > mapWidth - 1 || gX < 0) continue;
+
+            if (isSolidObject(gX, gY)) escape = true;
+
+            mapFog[gY][gX]->setOpacity(255 * MAX(((i - 12.0f) / 8.0f), 0));
+        }
+    }
     
-    ShadowCaster::getInstance()->compute(pX, pY, 8, mapTile, mapFog);
+//    ShadowCaster::getInstance()->compute(pX, pY, 8, mapTile, mapFog);
 
 	player->updateZOrder();
 	player->move(dt);
