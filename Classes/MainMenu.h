@@ -3,11 +3,13 @@
 
 #include "cocos2d.h"
 
-class IntroScene : public cocos2d::Scene {
+class MainMenu : public cocos2d::Scene {
 public:
+	static cocos2d::Scene* createScene();
+
 	bool init();
 
-	CREATE_FUNC(IntroScene);
+	CREATE_FUNC(MainMenu);
 };
 
 #endif
