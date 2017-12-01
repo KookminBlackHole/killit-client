@@ -11,7 +11,7 @@
 #include "CameraUtil.h"
 #include "ZOrder.h"
 #include "Definitions.h"
-#include "HelloWorldScene.h"
+#include "GameScene.h"
 #include "Raycast.h"
 
 USING_NS_CC;
@@ -36,7 +36,7 @@ bool Dial::init() {
 void Dial::onTouchBegan(const cocos2d::Vec2 &position, int id) {
     this->id = id;
     
-    HelloWorld *parent = (HelloWorld *)bnd->getParent();
+    GameScene *parent = (GameScene *)bnd->getParent();
     auto size = Director::getInstance()->getVisibleSize();
     Vec2 origin = size / 2;
     

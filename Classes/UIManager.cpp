@@ -1,7 +1,7 @@
 #include "UIManager.h"
 
 #include "CameraUtil.h"
-#include "HelloWorldScene.h"
+#include "GameScene.h"
 #include "ZOrder.h"
 
 USING_NS_CC;
@@ -19,7 +19,7 @@ UIManager *UIManager::create(Scene *parent) {
 }
 
 bool UIManager::init(Scene *parent) {
-	auto parentScene = (HelloWorld *)parent;
+	auto parentScene = (GameScene *)parent;
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 
 	listener = EventListenerTouchAllAtOnce::create();

@@ -8,7 +8,7 @@
 
 #include "Player.h"
 
-#include "HelloWorldScene.h"
+#include "GameScene.h"
 #include "ZOrder.h"
 #include "CameraUtil.h"
 #include "Definitions.h"
@@ -99,7 +99,7 @@ void Player::onStickEnded(const Vec2 &direction, Ref *pSender) {
 }
 
 void Player::onStickChanged(const Vec2 &direction, Ref *pSender) {
-    HelloWorld *parent = (HelloWorld *)getParent();
+    GameScene *parent = (GameScene *)getParent();
 
 	float angle = CC_RADIANS_TO_DEGREES(direction.getAngle());
 	if (angle < 0 || angle <= -180) angle += 360;
@@ -115,7 +115,7 @@ void Player::onStickChanged(const Vec2 &direction, Ref *pSender) {
 }
 
 void Player::onAngleChanged(int idx) {
-    HelloWorld *parent = (HelloWorld *)getParent();
+    GameScene *parent = (GameScene *)getParent();
     
     player->setTextureRect(Rect(0 * 32, idx * 36, 32, 36));
     auto send = createData({ "uuid", "\"" + parent->uuid + "\"", "angle", toString(idx) });
@@ -143,7 +143,7 @@ void Player::move(float dt) {
 
 // 충돌 범위가 정사각형이 아닌 경우 제대로 동작하지 않음
 void Player::collision() {
-	HelloWorld *parent = (HelloWorld *)getParent();
+	GameScene *parent = (GameScene *)getParent();
     
     /// 충돌 처리 시 벽에 끼이는 문제를 해결하기 위해 충돌 검사 순서를 가운데 - 위 - 아래 순으로 바꿈.
     int yOrder[3] = { 0, 1, -1 }, xOrder[3] = { 0, 1, -1 };
@@ -188,7 +188,7 @@ void Player::collision() {
 }
 
 void Player::updateZOrder() {
-	HelloWorld *parent = (HelloWorld *)getParent();
+	GameScene *parent = (GameScene *)getParent();
 
 	/// ≪√∑π¿AæO z-order ∫Ø∞E
     int zorder = parent->mapTile[int(clampf(gY, 0, parent->mapHeight - 1))][int(clampf(gX, 0, parent->mapWidth - 1))]->getGlobalZOrder() + 1000;
@@ -206,7 +206,7 @@ void Player::updatePosition() {
 }
 
 bool Player::checkGameObjects() {
-	HelloWorld *parent = (HelloWorld *)getParent();
+	GameScene *parent = (GameScene *)getParent();
 	Vec2 origin = Director::getInstance()->getVisibleSize() / 2;
 
 	Vec2 check = this->getPosition() + direction * TILE_SIZE;
@@ -229,7 +229,7 @@ bool Player::checkGameObjects() {
 }
 
 void Player::checkSolidObjects() {
-    HelloWorld *parent = (HelloWorld *)getParent();
+    GameScene *parent = (GameScene *)getParent();
     Vec2 origin = Director::getInstance()->getVisibleSize() / 2;
     
     if (gY > 0 && parent->isSolidObject(gX, gY - 1)) {
@@ -242,7 +242,7 @@ void Player::checkSolidObjects() {
 }
 
 void Player::attack() {
-    HelloWorld *parent = (HelloWorld *)getParent();
+    GameScene *parent = (GameScene *)getParent();
     Vec2 dot;
     this->raycast(parent->mapTile, angle, 500, dot);
     

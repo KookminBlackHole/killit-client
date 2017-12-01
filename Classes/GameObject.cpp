@@ -64,7 +64,6 @@ void GameObject::setSolidObject(bool solid) {
 	isSolid = solid;
 }
 
-
 void GameObject::setSolidArea(const Rect &area) {
 	collisionArea = area;
 }

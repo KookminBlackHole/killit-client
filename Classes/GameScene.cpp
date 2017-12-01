@@ -1,4 +1,4 @@
-#include "HelloWorldScene.h"
+#include "GameScene.h"
 #include "SimpleAudioEngine.h"
 #include "Joystick.h"
 #include "Button.h"
@@ -8,7 +8,7 @@
 #include "UIManager.h"
 #include "Utils.h"
 #include "Definitions.h"
-#include "ShadowCaster.h"
+#include "MapLoader.h"
 
 USING_NS_CC;
 using namespace network;
@@ -16,7 +16,7 @@ using namespace std;
 
 //#define MULTIPLAY
 
-HelloWorld::~HelloWorld() {
+GameScene::~GameScene() {
     for (int i = 0; i < mapHeight; i++) delete[] mapData[i];
     delete[] mapData;
     
@@ -28,7 +28,7 @@ HelloWorld::~HelloWorld() {
 }
 
 // on "init" you need to initialize your instance
-bool HelloWorld::init() {
+bool GameScene::init() {
     auto visibleSize = Director::getInstance()->getVisibleSize();
     Vec2 origin = visibleSize / 2;
     
@@ -117,7 +117,7 @@ bool HelloWorld::init() {
     auto listen = EventListenerKeyboard::create();
     listen->onKeyPressed = [=](EventKeyboard::KeyCode keyCode, Event *e) {
         if (keyCode == EventKeyboard::KeyCode::KEY_R) {
-            Director::getInstance()->replaceScene(HelloWorld::create());
+            Director::getInstance()->replaceScene(GameScene::create());
         } else if (keyCode == EventKeyboard::KeyCode::KEY_ENTER) {
             string ip = "0.0.0.0";
             if (nicknameField->getString() != "") ip = nicknameField->getString();
@@ -134,7 +134,7 @@ bool HelloWorld::init() {
     return true;
 }
 
-void HelloWorld::gameStart(const string &ip) {
+void GameScene::gameStart(const string &ip) {
     client = SocketIO::connect("http://" + ip + ":8080", *this);
     client->on("lobby:connected", [&](SIOClient *client, const std::string &data) {
         auto send = createData({ "name", "\"Hi\"" });
@@ -176,95 +176,12 @@ void HelloWorld::gameStart(const string &ip) {
 	});
 }
 
-void HelloWorld::createMap(float x, float y) {
+void GameScene::createMap(float x, float y) {
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = visibleSize / 2;
 
-	/// 맵 파일 읽음
-	auto mapFileString = FileUtils::getInstance()->getStringFromFile("res/map.txt");
-	int **tempData, idx = -1;
-	for (auto i : split(mapFileString, '\n')) {
-		auto data = split(i, ' ');
-		if (idx < 0) {
-			mapWidth = toInt(data[0]);
-			mapHeight = toInt(data[1]);
-
-			mapData = new int*[mapHeight];
-			tempData = new int*[mapHeight];
-			idx++;
-		} else {
-			mapData[(idx / mapHeight)] = new int[mapWidth];
-			tempData[(idx / mapHeight)] = new int[mapWidth];
-			for (auto j : data) {
-				tempData[(idx / mapHeight)][(idx % mapWidth)] = toInt(j);
-				idx++;
-			}
-		}
-	}
-
-	for (int i = 0; i < mapHeight; i++) {
-		for (int j = 0; j < mapWidth; j++) {
-			mapData[mapHeight - i - 1][j] = tempData[i][j];
-		}
-	}
-
-	for (int i = 0; i < mapHeight; i++) delete[] tempData[i];
-	delete[] tempData;
-
-	int zorder = ZORDER::WALL;
-
-	/// 맵 타일 초기화 및 맵 데이터 매핑
-    mapTile = new GameObject**[mapHeight];
-	mapFog = new Sprite**[mapHeight];
-	for (int i = 0; i < mapHeight; i++) {
-        mapTile[i] = new GameObject*[mapWidth];
-		mapFog[i] = new Sprite*[mapWidth];
-		for (int j = 0; j < mapWidth; j++) {
-			Vec2 pos = Vec2(j * TILE_SIZE + origin.x - TILE_SIZE * mapWidth * 0.5,
-				i * TILE_SIZE + origin.y - TILE_SIZE * mapHeight * 0.5);
-			if (mapData[i][j] <= 10) {/// 게임 오브젝트 생성
-				mapTile[i][j] = GameObject::create("res/tile0.png", mapData[i][j]);
-				mapTile[i][j]->setSolidObject(false);
-                mapTile[i][j]->setZOrder(zorder - 1000);
-				if (mapData[i][j] == 1) {
-					auto door = Sprite::create("res/tile2.png");
-					door->getTexture()->setAliasTexParameters();
-                    door->setAnchorPoint(Vec2(0.5f, 0.25f));
-                    door->setGlobalZOrder(zorder);
-					mapTile[i][j]->addChild(door);
-                    
-                    mapTile[i][j]->setSolidObject(true);
-                    mapTile[i][j]->setSolidArea(Rect(-Vec2(TILE_SIZE_HALF, TILE_SIZE_HALF), { TILE_SIZE, TILE_SIZE }));
-                    mapTile[i][j]->type = mapData[i][j];
-				}
-			} else { /// 맵 타일
-				int idx = mapData[i][j] - 11;
-
-				auto sf = SpriteFrame::create("res/tileset_wall2.png", Rect(REAL_TILE_WIDTH * (idx % 7), REAL_TILE_HEIGHT * (idx / 7), REAL_TILE_WIDTH, REAL_TILE_HEIGHT));
-
-				mapTile[i][j] = GameObject::create(sf, mapData[i][j]);
-				mapTile[i][j]->setSolidObject(true);
-				mapTile[i][j]->setSolidArea(Rect(-Vec2(TILE_SIZE_HALF, TILE_SIZE_HALF), { TILE_SIZE, TILE_SIZE }));
-				mapTile[i][j]->image->setAnchorPoint(Vec2(0.5f, 0.25f));
-				mapTile[i][j]->setZOrder(zorder);
-			}
-
-            mapTile[i][j]->setPosition(pos);
-			mapTile[i][j]->setVisible(false);
-			this->addChild(mapTile[i][j]);
-
-            /// 맵 시야 생성
-			mapFog[i][j] = Sprite::create("res/tile6.png");
-			mapFog[i][j]->setGlobalZOrder(ZORDER::FOG);
-			mapFog[i][j]->getTexture()->setAliasTexParameters();
-			mapFog[i][j]->setScale(2);
-			mapFog[i][j]->setPosition(pos.x, pos.y + TILE_SIZE);
-			mapFog[i][j]->setVisible(false);
-            
-            this->addChild(mapFog[i][j]);
-		}
-		zorder -= 1;
-	}
+    MapLoader::getInstance()->loadData("res/map.txt");
+    MapLoader::getInstance()->createMap(this, &mapTile, &mapFog);
 
 	player = Player::create(x, y, true);
 	player->gridCoordUpdate(mapWidth, mapHeight);
@@ -289,7 +206,7 @@ void HelloWorld::createMap(float x, float y) {
 	this->scheduleUpdate();
 }
 
-void HelloWorld::update(float dt) {
+void GameScene::update(float dt) {
 	Vec2 origin = Director::getInstance()->getVisibleSize() / 2;
 
 	int pX = player->gX, pY = player->gY;
@@ -336,8 +253,6 @@ void HelloWorld::update(float dt) {
             mapFog[gY][gX]->setOpacity(255 * MAX(((i - 12.0f) / 8.0f), 0));
         }
     }
-    
-//    ShadowCaster::getInstance()->compute(pX, pY, 8, mapTile, mapFog);
 
 	player->updateZOrder();
 	player->move(dt);
@@ -350,30 +265,30 @@ void HelloWorld::update(float dt) {
     updatePosition(dt);
 }
 
-void HelloWorld::emit(const string &event, const string &args) {
+void GameScene::emit(const string &event, const string &args) {
 	if (client != nullptr) {
 		client->emit(event, args);
 	}
 }
 
-void HelloWorld::updatePosition(float dt) {
+void GameScene::updatePosition(float dt) {
     if (otherPlayers.size() > 0) {
         otherPlayers.front()->setPosition(otherPlayers.front()->getPosition() + otherDirection * otherSpeed * (dt * 60));
     }
 }
 
-bool HelloWorld::isSolidObject(int x, int y) {
+bool GameScene::isSolidObject(int x, int y) {
     return mapTile[y][x]->isSolidObject();
 }
 
-void HelloWorld::onConnect(SIOClient *client) {
+void GameScene::onConnect(SIOClient *client) {
 }
 
-void HelloWorld::onMessage(SIOClient *client, const std::string &data) {
+void GameScene::onMessage(SIOClient *client, const std::string &data) {
 }
 
-void HelloWorld::onClose(SIOClient *client) {
+void GameScene::onClose(SIOClient *client) {
 }
 
-void HelloWorld::onError(SIOClient *client, const std::string &data) {
+void GameScene::onError(SIOClient *client, const std::string &data) {
 }

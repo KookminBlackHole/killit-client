@@ -1,6 +1,6 @@
 #include "IntroScene.h"
 
-#include "HelloWorldScene.h"
+#include "GameScene.h"
 
 USING_NS_CC;
 
@@ -22,7 +22,7 @@ bool IntroScene::init() {
 
 	grid->runAction(Sequence::create(Ripple3D::create(3.0f, Size(100, 100), origin, 220, 3, 100.0f), CallFunc::create([&] {
 
-	Director::getInstance()->replaceScene(TransitionFade::create(2.0f, HelloWorld::create()));
+	Director::getInstance()->replaceScene(TransitionFade::create(2.0f, GameScene::create()));
 
 	}), NULL));
 

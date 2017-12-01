@@ -1,5 +1,5 @@
-#ifndef __HELLOWORLD_SCENE_H__
-#define __HELLOWORLD_SCENE_H__
+#ifndef __GAME_SCENE_H__
+#define __GAME_SCENE_H__
 
 #include "cocos2d.h"
 
@@ -17,14 +17,14 @@ using namespace cocos2d::network;
 
 class Player;
 
-class HelloWorld : public cocos2d::Scene, public SocketIO::SIODelegate {
+class GameScene : public cocos2d::Scene, public SocketIO::SIODelegate {
 public:
-	~HelloWorld();
+	virtual ~GameScene();
 	virtual bool init();
 
 	void update(float dt);
 
-	CREATE_FUNC(HelloWorld);
+	CREATE_FUNC(GameScene);
 
 	bool isSolidObject(int x, int y);
 
