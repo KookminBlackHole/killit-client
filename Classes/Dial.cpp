@@ -13,6 +13,7 @@
 #include "Definitions.h"
 #include "GameScene.h"
 #include "Raycast.h"
+#include "MapLoader.h"
 
 USING_NS_CC;
 using namespace std;
@@ -39,15 +40,16 @@ void Dial::onTouchBegan(const cocos2d::Vec2 &position, int id) {
     GameScene *parent = (GameScene *)bnd->getParent();
     auto size = Director::getInstance()->getVisibleSize();
     Vec2 origin = size / 2;
+	int mapWidth = MapLoader::getInstance()->getWidth(), mapHeight = MapLoader::getInstance()->getHeight();
     
     prevAngle = CC_RADIANS_TO_DEGREES((position - origin).getAngle());
     
     // 1. 터치한 좌표에 문이 있는지 확인
     // 2. 문이 있으면 레이캐스트로 벽 뒤에서 문을 열진 않았는지 확인
-    int fx = (bnd->getPositionX() + position.x - size.width + TILE_SIZE_HALF * (parent->mapWidth - 1)) / TILE_SIZE + 1;
-    int fy = (bnd->getPositionY() + position.y - size.height + TILE_SIZE_HALF * (parent->mapHeight - 1)) / TILE_SIZE + 1;
+    int fx = (bnd->getPositionX() + position.x - size.width + TILE_SIZE_HALF * (mapWidth - 1)) / TILE_SIZE + 1;
+    int fy = (bnd->getPositionY() + position.y - size.height + TILE_SIZE_HALF * (mapHeight - 1)) / TILE_SIZE + 1;
     
-    if (fx < 0 || fx > parent->mapWidth -1 || fy < 0 || fy > parent->mapHeight - 1) return;
+    if (fx < 0 || fx > mapWidth -1 || fy < 0 || fy > mapHeight - 1) return;
     
     if (parent->mapTile[fy][fx]->type > 0 && parent->mapTile[fy][fx]->type < 11) {
         GameObject *contactObject;

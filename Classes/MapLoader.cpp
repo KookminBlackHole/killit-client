@@ -32,7 +32,7 @@ void MapLoader::loadData(const string &path) {
             for (auto j : data) {
                 tempData[(idx / height)][(idx % width)] = toInt(j);
                 idx++;
-            }
+            }	
         }
     }
     
@@ -55,51 +55,51 @@ void MapLoader::createMap(Node *scene, GameObject ****outTile, Sprite ****outFog
     (*outTile) = new GameObject**[height];
     (*outFog) = new Sprite**[height];
     for (int i = 0; i < height; i++) {
-        (*outTile[i]) = new GameObject*[width];
-        (*outFog[i]) = new Sprite*[width];
+        (*outTile)[i] = new GameObject*[width];
+        (*outFog)[i] = new Sprite*[width];
         for (int j = 0; j < width; j++) {
             Vec2 pos = Vec2(j * TILE_SIZE + origin.x - TILE_SIZE * width * 0.5,
                             i * TILE_SIZE + origin.y - TILE_SIZE * height * 0.5);
             if (mapData[i][j] <= 10) {/// 게임 오브젝트 생성
-                (*outTile[i][j]) = GameObject::create("res/tile0.png", mapData[i][j]);
-                (*outTile[i][j])->setSolidObject(false);
-                (*outTile[i][j])->setZOrder(zorder - 1000);
+                (*outTile)[i][j] = GameObject::create("res/tile0.png", mapData[i][j]);
+                (*outTile)[i][j]->setSolidObject(false);
+                (*outTile)[i][j]->setZOrder(zorder - 1000);
                 if (mapData[i][j] == 1) {
                     auto door = Sprite::create("res/tile2.png");
                     door->getTexture()->setAliasTexParameters();
                     door->setAnchorPoint(Vec2(0.5f, 0.25f));
                     door->setGlobalZOrder(zorder);
-                    (*outTile[i][j])->addChild(door);
+                    (*outTile)[i][j]->addChild(door);
                     
-                    (*outTile[i][j])->setSolidObject(true);
-                    (*outTile[i][j])->setSolidArea(Rect(-Vec2(TILE_SIZE_HALF, TILE_SIZE_HALF), { TILE_SIZE, TILE_SIZE }));
-                    (*outTile[i][j])->type = mapData[i][j];
+                    (*outTile)[i][j]->setSolidObject(true);
+                    (*outTile)[i][j]->setSolidArea(Rect(-Vec2(TILE_SIZE_HALF, TILE_SIZE_HALF), { TILE_SIZE, TILE_SIZE }));
+                    (*outTile)[i][j]->type = mapData[i][j];
                 }
             } else { /// 맵 타일
                 int idx = mapData[i][j] - 11;
                 
                 auto sf = SpriteFrame::create("res/tileset_wall2.png", Rect(REAL_TILE_WIDTH * (idx % 7), REAL_TILE_HEIGHT * (idx / 7), REAL_TILE_WIDTH, REAL_TILE_HEIGHT));
                 
-                (*outTile[i][j]) = GameObject::create(sf, mapData[i][j]);
-                (*outTile[i][j])->setSolidObject(true);
-                (*outTile[i][j])->setSolidArea(Rect(-Vec2(TILE_SIZE_HALF, TILE_SIZE_HALF), { TILE_SIZE, TILE_SIZE }));
-                (*outTile[i][j])->image->setAnchorPoint(Vec2(0.5f, 0.25f));
-                (*outTile[i][j])->setZOrder(zorder);
+                (*outTile)[i][j] = GameObject::create(sf, mapData[i][j]);
+                (*outTile)[i][j]->setSolidObject(true);
+                (*outTile)[i][j]->setSolidArea(Rect(-Vec2(TILE_SIZE_HALF, TILE_SIZE_HALF), { TILE_SIZE, TILE_SIZE }));
+                (*outTile)[i][j]->image->setAnchorPoint(Vec2(0.5f, 0.25f));
+                (*outTile)[i][j]->setZOrder(zorder);
             }
             
-            (*outTile[i][j])->setPosition(pos);
-            (*outTile[i][j])->setVisible(false);
-            scene->addChild(*outTile[i][j]);
+            (*outTile)[i][j]->setPosition(pos);
+            (*outTile)[i][j]->setVisible(false);
+            scene->addChild((*outTile)[i][j]);
             
             /// 맵 안개 생성
-            (*outFog[i][j]) = Sprite::create("res/tile6.png");
-            (*outFog[i][j])->setGlobalZOrder(ZORDER::FOG);
-            (*outFog[i][j])->getTexture()->setAliasTexParameters();
-            (*outFog[i][j])->setScale(2);
-            (*outFog[i][j])->setPosition(pos.x, pos.y + TILE_SIZE);
-            (*outFog[i][j])->setVisible(false);
-            
-            scene->addChild(*outFog[i][j]);
+            (*outFog)[i][j] = Sprite::create("res/tile6.png");
+            (*outFog)[i][j]->setGlobalZOrder(ZORDER::FOG);
+            (*outFog)[i][j]->getTexture()->setAliasTexParameters();
+            (*outFog)[i][j]->setScale(2);
+            (*outFog)[i][j]->setPosition(pos.x, pos.y + TILE_SIZE);
+            (*outFog)[i][j]->setVisible(false);
+            		
+            scene->addChild((*outFog)[i][j]);
         }
         zorder -= 1;
     }

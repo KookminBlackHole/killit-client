@@ -16,6 +16,9 @@ public:
     
     int getWidth() const { return width; }
     int getHeight() const { return height; }
+	int getMapData(int x, int y) const { return mapData[y][x]; }
+
+	void setMapData(int x, int y, int value) { mapData[y][x] = value; }
     
 private:
     MapLoader() {}

@@ -14,6 +14,7 @@
 #include "Definitions.h"
 #include "Raycast.h"
 #include "Utils.h"
+#include "MapLoader.h"
 
 USING_NS_CC;
 using namespace std;
@@ -144,13 +145,14 @@ void Player::move(float dt) {
 // 충돌 범위가 정사각형이 아닌 경우 제대로 동작하지 않음
 void Player::collision() {
 	GameScene *parent = (GameScene *)getParent();
+	int mapWidth = MapLoader::getInstance()->getWidth(), mapHeight = MapLoader::getInstance()->getHeight();
     
     /// 충돌 처리 시 벽에 끼이는 문제를 해결하기 위해 충돌 검사 순서를 가운데 - 위 - 아래 순으로 바꿈.
     int yOrder[3] = { 0, 1, -1 }, xOrder[3] = { 0, 1, -1 };
     for (int k = 0; k < 3; k++) {
-        int i = clampf(gY + yOrder[k], 0, parent->mapHeight - 1);
+        int i = clampf(gY + yOrder[k], 0, mapHeight - 1);
         for (int l = 0; l < 3; l++) {
-            int j = clampf(gX + xOrder[l], 0, parent->mapWidth - 1);
+            int j = clampf(gX + xOrder[l], 0, mapWidth - 1);
             //if (i == gY && j == gX) continue;
             if (parent->isSolidObject(j, i)) {
                 /// ≪√∑π¿AæOøO ªU￥I √Eμπ√º¿≪ BoundingBox∏¶ ∞°¡Æø≫
@@ -189,9 +191,10 @@ void Player::collision() {
 
 void Player::updateZOrder() {
 	GameScene *parent = (GameScene *)getParent();
+	int mapWidth = MapLoader::getInstance()->getWidth(), mapHeight = MapLoader::getInstance()->getHeight();
 
 	/// ≪√∑π¿AæO z-order ∫Ø∞E
-    int zorder = parent->mapTile[int(clampf(gY, 0, parent->mapHeight - 1))][int(clampf(gX, 0, parent->mapWidth - 1))]->getGlobalZOrder() + 1000;
+    int zorder = parent->mapTile[int(clampf(gY, 0, mapHeight - 1))][int(clampf(gX, 0, mapWidth - 1))]->getGlobalZOrder() + 1000;
     this->setGlobalZOrder(zorder);
     for (auto &i : this->getChildren()) {
         i->setGlobalZOrder(zorder);
@@ -208,18 +211,19 @@ void Player::updatePosition() {
 bool Player::checkGameObjects() {
 	GameScene *parent = (GameScene *)getParent();
 	Vec2 origin = Director::getInstance()->getVisibleSize() / 2;
+	int mapWidth = MapLoader::getInstance()->getWidth(), mapHeight = MapLoader::getInstance()->getHeight();
 
 	Vec2 check = this->getPosition() + direction * TILE_SIZE;
 
-    int xx = (check.x + (TILE_SIZE_HALF * (parent->mapWidth - 1) - origin.x)) / TILE_SIZE + 1;
-	int yy = (check.y + (TILE_SIZE_HALF * (parent->mapHeight - 1) - origin.y)) / TILE_SIZE + 1;
+    int xx = (check.x + (TILE_SIZE_HALF * (mapWidth - 1) - origin.x)) / TILE_SIZE + 1;
+	int yy = (check.y + (TILE_SIZE_HALF * (mapHeight - 1) - origin.y)) / TILE_SIZE + 1;
 
-	switch (parent->mapData[yy][xx]) {
+	switch (MapLoader::getInstance()->getMapData(xx, yy)) {
         case 1:
-            parent->mapData[yy][xx] = 3;
+			MapLoader::getInstance()->setMapData(xx, yy, 3);
             break;
         case 3:
-            parent->mapData[yy][xx] = 1;
+			MapLoader::getInstance()->setMapData(xx, yy, 1);
             break;
         default:
             return false;
@@ -231,9 +235,10 @@ bool Player::checkGameObjects() {
 void Player::checkSolidObjects() {
     GameScene *parent = (GameScene *)getParent();
     Vec2 origin = Director::getInstance()->getVisibleSize() / 2;
+	int mapWidth = MapLoader::getInstance()->getWidth(), mapHeight = MapLoader::getInstance()->getHeight();
     
     if (gY > 0 && parent->isSolidObject(gX, gY - 1)) {
-        for (int i = MAX(gX - 1, 0); i < MIN(gX + 2, parent->mapWidth - 1); i++) {
+        for (int i = MAX(gX - 1, 0); i < MIN(gX + 2, mapWidth - 1); i++) {
             if (parent->isSolidObject(i, gY - 1)) {
                 parent->mapTile[gY - 1][i]->setOpacity(255 * 0.5f);
             }

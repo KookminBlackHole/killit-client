@@ -17,9 +17,8 @@ using namespace std;
 //#define MULTIPLAY
 
 GameScene::~GameScene() {
-    for (int i = 0; i < mapHeight; i++) delete[] mapData[i];
-    delete[] mapData;
-    
+	int mapWidth = MapLoader::getInstance()->getWidth(), mapHeight = MapLoader::getInstance()->getHeight();
+
     for (int i = 0; i < mapHeight; i++) delete[] mapTile[i];
     delete[] mapTile;
     
@@ -154,7 +153,7 @@ void GameScene::gameStart(const string &ip) {
 		otherPlayers.push_back(otherPlayer);
 		this->addChild(otherPlayer);
 
-		otherPlayer->gridCoordUpdate(mapWidth, mapHeight);
+		otherPlayer->gridCoordUpdate(MapLoader::getInstance()->getWidth(), MapLoader::getInstance()->getHeight());
 	});
 
 	client->on("game:feed-player-direction", [&](SIOClient *client, const std::string &data) {
@@ -183,6 +182,8 @@ void GameScene::createMap(float x, float y) {
     MapLoader::getInstance()->loadData("res/map.txt");
     MapLoader::getInstance()->createMap(this, &mapTile, &mapFog);
 
+	int mapWidth = MapLoader::getInstance()->getWidth(), mapHeight = MapLoader::getInstance()->getHeight();
+
 	player = Player::create(x, y, true);
 	player->gridCoordUpdate(mapWidth, mapHeight);
     this->addChild(player);
@@ -209,6 +210,8 @@ void GameScene::createMap(float x, float y) {
 void GameScene::update(float dt) {
 	Vec2 origin = Director::getInstance()->getVisibleSize() / 2;
 
+	int mapWidth = MapLoader::getInstance()->getWidth(), mapHeight = MapLoader::getInstance()->getHeight();
+
 	int pX = player->gX, pY = player->gY;
 
 	/// 이전에 그려진 맵 지우기
@@ -234,7 +237,7 @@ void GameScene::update(float dt) {
 		}
 	}
 
-//	안개 투명도 설정
+///	안개 투명도 설정
     for (float r = 0; r < 360; r += 0.5f) {
         bool escape = false;
         for (int i = 0; i < 20; i++) {

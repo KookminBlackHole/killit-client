@@ -43,7 +43,6 @@ public:
 	void emit(const std::string &event, const std::string &args);
 
 public:
-	int **mapData, mapWidth, mapHeight;
 	cocos2d::Sprite ***mapFog;
 	GameObject ***mapTile;
 
