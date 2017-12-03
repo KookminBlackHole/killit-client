@@ -237,7 +237,7 @@ void GameScene::update(float dt) {
 		}
 	}
 
-///	안개 투명도 설정
+	///	안개 투명도 설정
     for (float r = 0; r < 360; r += 0.5f) {
         bool escape = false;
         for (int i = 0; i < 20; i++) {

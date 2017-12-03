@@ -72,6 +72,10 @@ bool GameObject::isSolidObject() const {
     return isSolid;
 }
 
+bool GameObject::isInteractionObject() const {
+	return type >= 0 && type < 10;
+}
+
 void GameObject::setZOrder(int zorder) {
 	this->setGlobalZOrder(zorder);
 	for (auto &i : getChildren()) i->setGlobalZOrder(zorder);

@@ -41,13 +41,13 @@ public:
 	void updateZOrder();
 	void updatePosition();
 	/// 사용되고 있지 않는 함수.
-	bool checkGameObjects();
+	//bool checkGameObjects();
     /// 벽이 밑에 있는지 체크하고 있으면 투명도를 조절해주는 함수
     void checkSolidObjects();
     
     void attack();
     
-    bool raycast(GameObject ***objects, float angle, float length, cocos2d::Vec2 &out);
+    bool raycast(GameObject ***objects, float angle, float length, cocos2d::Vec2 *out);
     
 public:
     cocos2d::Sprite *player;

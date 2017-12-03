@@ -208,29 +208,29 @@ void Player::updatePosition() {
 	CameraUtil::getInstance()->setPosition((this->getPositionX()), (this->getPositionY()));
 }
 
-bool Player::checkGameObjects() {
-	GameScene *parent = (GameScene *)getParent();
-	Vec2 origin = Director::getInstance()->getVisibleSize() / 2;
-	int mapWidth = MapLoader::getInstance()->getWidth(), mapHeight = MapLoader::getInstance()->getHeight();
-
-	Vec2 check = this->getPosition() + direction * TILE_SIZE;
-
-    int xx = (check.x + (TILE_SIZE_HALF * (mapWidth - 1) - origin.x)) / TILE_SIZE + 1;
-	int yy = (check.y + (TILE_SIZE_HALF * (mapHeight - 1) - origin.y)) / TILE_SIZE + 1;
-
-	switch (MapLoader::getInstance()->getMapData(xx, yy)) {
-        case 1:
-			MapLoader::getInstance()->setMapData(xx, yy, 3);
-            break;
-        case 3:
-			MapLoader::getInstance()->setMapData(xx, yy, 1);
-            break;
-        default:
-            return false;
-	}
-    
-    return true;
-}
+//bool Player::checkGameObjects() {
+//	GameScene *parent = (GameScene *)getParent();
+//	Vec2 origin = Director::getInstance()->getVisibleSize() / 2;
+//	int mapWidth = MapLoader::getInstance()->getWidth(), mapHeight = MapLoader::getInstance()->getHeight();
+//
+//	Vec2 check = this->getPosition() + direction * TILE_SIZE;
+//
+//    int xx = (check.x + (TILE_SIZE_HALF * (mapWidth - 1) - origin.x)) / TILE_SIZE + 1;
+//	int yy = (check.y + (TILE_SIZE_HALF * (mapHeight - 1) - origin.y)) / TILE_SIZE + 1;
+//
+//	switch (MapLoader::getInstance()->getMapData(xx, yy)) {
+//        case 1:
+//			MapLoader::getInstance()->setMapData(xx, yy, 3);
+//            break;
+//        case 3:
+//			MapLoader::getInstance()->setMapData(xx, yy, 1);
+//            break;
+//        default:
+//            return false;
+//	}
+//    
+//    return true;
+//}
 
 void Player::checkSolidObjects() {
     GameScene *parent = (GameScene *)getParent();
@@ -249,15 +249,17 @@ void Player::checkSolidObjects() {
 void Player::attack() {
     GameScene *parent = (GameScene *)getParent();
     Vec2 dot;
-    this->raycast(parent->mapTile, angle, 500, dot);
+    this->raycast(parent->mapTile, angle, 500, &dot);
     
     parent->getChildByName<DrawNode*>("debug2")->clear();
     parent->getChildByName<DrawNode*>("debug2")->drawLine(getPosition(), dot, Color4F::BLACK);
     parent->getChildByName<DrawNode*>("debug2")->drawDot(dot, 4, Color4F::RED);
 }
 
-bool Player::raycast(GameObject ***objects, float angle, float length, Vec2 &out) {
+bool Player::raycast(GameObject ***objects, float angle, float length, Vec2 *out) {
     Vec2 origin = Director::getInstance()->getVisibleSize() / 2;
+	int mapWidth = MapLoader::getInstance()->getWidth(), mapHeight = MapLoader::getInstance()->getHeight();
+
     auto ray = getPosition() - Vec2::forAngle(CC_DEGREES_TO_RADIANS(angle));
     bool escape = false;
     for (int i = 0; i < length && !escape; i += 4) {
@@ -265,8 +267,8 @@ bool Player::raycast(GameObject ***objects, float angle, float length, Vec2 &out
         
         // 현재 문의 상태를 알 수 없어서 문에 무조건 충돌함.
         int lim = floor(i / TILE_SIZE) + 1;
-        for (int k = max(gY - lim, 0); k < min(gY + lim + 1, 64) && !escape; k++) {
-            for (int l = max(gX - lim, 0); l < min(gX + lim + 1, 64) && !escape; l++) {
+        for (int k = max(gY - lim, 0); k < min(gY + lim + 1, mapHeight) && !escape; k++) {
+            for (int l = max(gX - lim, 0); l < min(gX + lim + 1, mapWidth) && !escape; l++) {
                 if (objects[k][l]->isSolidObject()) {
                     if (objects[k][l]->getBoundingBox().containsPoint(ray)) escape = true;
                 }
@@ -274,7 +276,7 @@ bool Player::raycast(GameObject ***objects, float angle, float length, Vec2 &out
         }
     }
     
-    out = ray;
+    if (out != nullptr) *out = ray;
     
     return escape;
 }

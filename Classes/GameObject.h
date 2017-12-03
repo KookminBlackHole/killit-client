@@ -22,6 +22,7 @@ public:
 	void setSolidArea(const cocos2d::Rect &area);
 
     bool isSolidObject() const;
+	bool isInteractionObject() const;
     
 	void setZOrder(int zorder);
 
