@@ -52,8 +52,6 @@ bool Joystick::init() {
         i->setGlobalZOrder(ZORDER::UI);
     }
     
-//    scheduleUpdate();
-    
     return true;
 }
 

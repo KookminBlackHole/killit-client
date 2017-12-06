@@ -7,6 +7,7 @@
 #include "ActionButton.h"
 #include "Dial.h"
 
+/// UI 관리를 위한 클래스
 class UIManager : public cocos2d::Node {
 public:
     static UIManager *create(cocos2d::Scene *parent);

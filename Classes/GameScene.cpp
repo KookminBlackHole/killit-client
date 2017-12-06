@@ -51,42 +51,6 @@ bool GameScene::init() {
     nicknameField->setTextColor(Color4B::BLACK);
     connectLayer->addChild(nicknameField);
     
-    static int idx = 0;
-    static float force = 0;
-    static int oy[8];
-    
-    auto loadingCircle = Sprite::create("res/player.png");
-    loadingCircle->setPosition(visibleSize.width - 120, 120);
-    loadingCircle->getTexture()->setAliasTexParameters();
-    loadingCircle->setScale(2);
-    loadingCircle->setTextureRect(Rect(0 * 32, 0 * 36, 32, 36));
-    loadingCircle->schedule([=](float dt) {
-        loadingCircle->setTextureRect(Rect(0 * 32, idx * 36, 32, 36));
-        idx = (idx + 1) % 8;
-    }, 0.15f, "loading");
-    //loadingCircle->runAction(RepeatForever::create(RotateBy::create(1.2f, -360)));
-	loadingCircle->runAction(RepeatForever::create(Sequence::create(MoveBy::create(1.0f, Vec2(0, 8)), MoveBy::create(1.0f, Vec2(0, -8)), nullptr)));
-    connectLayer->addChild(loadingCircle);
-    
-    auto loadingText = Label::createWithTTF("Loading..", "fonts/NanumGothic.ttf", 24);
-    loadingText->setPosition(loadingCircle->getPositionX(), loadingCircle->getPositionY() - 45);
-    loadingText->setTextColor(Color4B::BLACK);
-    
-    for (int i = 0; i < loadingText->getStringLength(); i++) {
-        auto txt = loadingText->getLetter(i);
-        oy[i] = txt->getPositionY();
-    }
-    
-    loadingText->schedule([=](float dt) {
-        for (int i = 0; i < loadingText->getStringLength(); i++) {
-            auto txt = loadingText->getLetter(i);
-            txt->setPositionY(oy[i] + sin(CC_RADIANS_TO_DEGREES(force + i)) * 4.0f);
-        }
-        force += 0.0016f;
-        if (force > 90) force = 0;
-    }, "loadingText");
-    connectLayer->addChild(loadingText);
-    
     auto tl = EventListenerTouchOneByOne::create();
     tl->onTouchBegan = [=](Touch *t, Event *e)->bool {
         auto pos = Vec2(t->getLocation());
@@ -102,6 +66,7 @@ bool GameScene::init() {
     this->getEventDispatcher()->addEventListenerWithSceneGraphPriority(tl, connectLayer);
 
     auto startButton = MenuItemFont::create("Start", [=](Ref *r) {
+		/// 디버그 용으로 ip 입력하게 함.
         string ip = "0.0.0.0";
         if (nicknameField->getString() != "") ip = nicknameField->getString();
         gameStart(ip);
@@ -135,59 +100,74 @@ bool GameScene::init() {
 
 void GameScene::gameStart(const string &ip) {
     client = SocketIO::connect("http://" + ip + ":8080", *this);
+
+	/// 플레이어가 서버와 연결 성공 후 메시지를 받음.
     client->on("lobby:connected", [&](SIOClient *client, const std::string &data) {
         auto send = createData({ "name", "\"Hi\"" });
+		/// 받았으면 플레이어 정보와 함께 준비 완료 메시지 보냄.
         client->emit("lobby:player-ready", send);
     });
 
+	/// 플레이어 2명이 모여 서버에서 준비가 완료되면 메시지를 받음.
 	client->on("game:start", [&](SIOClient *client, const std::string &data) {
+		/// 로비 화면을 지움.
 		this->getChildByName<Layer*>("connectLayer")->runAction(RemoveSelf::create());
 
 		auto pData = toJson(data);
         
+		/// uuid 저장 후,
 		uuid = pData["uuid"].GetString();
-
+		/// 맵을 만듦 (이 때 자기 캐릭터 생성).
 		createMap(pData["x"].GetInt(), pData["y"].GetInt());
 
+		/// 상대 플레이어 생성
 		auto otherPlayer = Player::create(pData["otherX"].GetInt(), pData["otherY"].GetInt(), false);
 		otherPlayers.push_back(otherPlayer);
 		this->addChild(otherPlayer);
 
-		otherPlayer->gridCoordUpdate(MapLoader::getInstance()->getWidth(), MapLoader::getInstance()->getHeight());
+		/// 상대 플레이어 위치 업데이트.
+		otherPlayer->gridCoordUpdate();
 	});
 
+	/// 상대 플레이어의 이동 방향이 변경 됐을 때,
 	client->on("game:feed-player-direction", [&](SIOClient *client, const std::string &data) {
 		auto pData = toJson(data);
 
+		/// 적용 후 상대 플레이어의 좌표를 실제 위치로 동기화 함.
 		otherDirection = Vec2(pData["dirX"].GetDouble(), pData["dirY"].GetDouble());
 		otherPosition = Vec2(pData["x"].GetDouble(), pData["y"].GetDouble());
 		otherSpeed = pData["speed"].GetDouble();
 
+		/// 상대 플레이어 이미지 각도도 동기화해야 함.
+
 		otherPlayers.front()->setPosition(otherPosition);
 	});
 
-	client->on("game:feed-player-angle", [&](SIOClient *client, const std::string &data) {
-		auto pData = toJson(data);
+	//client->on("game:feed-player-angle", [&](SIOClient *client, const std::string &data) {
+	//	auto pData = toJson(data);
 
-		int idx = pData["angle"].GetInt();
+	//	int idx = pData["angle"].GetInt();
 
-		otherPlayers.front()->player->setTextureRect(Rect(0 * 32, idx * 36, 32, 36));
-	});
+	//	otherPlayers.front()->player->setTextureRect(Rect(0 * 32, idx * 36, 32, 36));
+	//});
 }
 
 void GameScene::createMap(float x, float y) {
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = visibleSize / 2;
 
+	/// 맵 로드 후 만듦.
     MapLoader::getInstance()->loadData("res/map.txt");
     MapLoader::getInstance()->createMap(this, &mapTile, &mapFog);
 
 	int mapWidth = MapLoader::getInstance()->getWidth(), mapHeight = MapLoader::getInstance()->getHeight();
 
+	/// 내 캐릭터 생성 후 위치 업데이트. 
 	player = Player::create(x, y, true);
-	player->gridCoordUpdate(mapWidth, mapHeight);
+	player->gridCoordUpdate();
     this->addChild(player);
 
+	/// 디버그용 라벨.
 	auto lb = Label::createWithSystemFont("x: 0\ny: 0", "", 24);
 	lb->setTextColor(Color4B::RED);
 	lb->setPosition(20, visibleSize.height - 20);
@@ -196,6 +176,7 @@ void GameScene::createMap(float x, float y) {
 	lb->setGlobalZOrder(ZORDER::UI);
 	CameraUtil::getInstance()->addUIChild(lb);
 
+	/// uimanager 생성.
 	auto uim = UIManager::create(this);
 	CameraUtil::getInstance()->addUIChild(uim);
 
@@ -204,14 +185,15 @@ void GameScene::createMap(float x, float y) {
 	dn->setGlobalZOrder(ZORDER::UI);
 	this->addChild(dn);
 
+	/// update함수 스케쥴 등록.
 	this->scheduleUpdate();
 }
 
 void GameScene::update(float dt) {
 	Vec2 origin = Director::getInstance()->getVisibleSize() / 2;
-
 	int mapWidth = MapLoader::getInstance()->getWidth(), mapHeight = MapLoader::getInstance()->getHeight();
 
+	/// 이전 플레이어의 위치 가져옴.
 	int pX = player->gX, pY = player->gY;
 
 	/// 이전에 그려진 맵 지우기
@@ -223,8 +205,8 @@ void GameScene::update(float dt) {
 		}
 	}
 
-	/// 플레이어 좌표를 타일맵 좌표로 변환
-	player->calculateGridCoord(mapWidth, mapHeight);
+	/// 플레이어 현재 위치 가져옴.
+	player->calculateGridCoord();
 	pX = player->gX;
 	pY = player->gY;
 
@@ -238,19 +220,24 @@ void GameScene::update(float dt) {
 	}
 
 	///	안개 투명도 설정
+	/// 0.5도 간격으로 360도 검사.
     for (float r = 0; r < 360; r += 0.5f) {
         bool escape = false;
         for (int i = 0; i < 20; i++) {
+			/// 벽과 충돌 후 바로 break를 하지 않는 이유는 부딪힌 벽은 보여야 하기 때문.
             if (escape) break;
 
+			/// 플레이어의 위치에서 r 각도로 타일 사이즈의 반 길이만큼 더해줌.
             float x = player->getPositionX() + cos(CC_DEGREES_TO_RADIANS(r)) * i * TILE_SIZE_HALF;
             float y = player->getPositionY() + sin(CC_DEGREES_TO_RADIANS(r)) * i * TILE_SIZE_HALF;
 
+			/// 그 더해진 각도를 타일맵 좌표로 변경.
             int gX = (x + (TILE_SIZE_HALF * (mapWidth - 1) - origin.x)) / TILE_SIZE + 1;
             int gY = (y + (TILE_SIZE_HALF * (mapHeight - 1) - origin.y)) / TILE_SIZE + 1;
 
+			/// 변환된 타일맵 좌표가 맵을 벗어나는지 체크.
             if (gY > mapHeight - 1 || gY < 0 || gX > mapWidth - 1 || gX < 0) continue;
-
+			/// 변환된 위치의 맵 타일이 솔리드 오브젝트인지 검사
             if (isSolidObject(gX, gY)) escape = true;
 
             mapFog[gY][gX]->setOpacity(255 * MAX(((i - 12.0f) / 8.0f), 0));

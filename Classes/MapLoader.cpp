@@ -52,6 +52,7 @@ void MapLoader::createMap(Node *scene, GameObject ****outTile, Sprite ****outFog
 
     int zorder = ZORDER::WALL;
     /// 맵 타일 초기화 및 맵 데이터 매핑
+	/// 같은 열의 타일은 zorder가 같음.
     (*outTile) = new GameObject**[height];
     (*outFog) = new Sprite**[height];
     for (int i = 0; i < height; i++) {

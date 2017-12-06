@@ -18,10 +18,14 @@ public:
     bool init(const std::string &imagePath, int type);
 	bool initWithTexture(cocos2d::SpriteFrame *sf, int type);
 
+	/// 솔리드 오브젝트 설정 함수.
 	void setSolidObject(bool solid);
+	/// 충돌 영역 설정.
 	void setSolidArea(const cocos2d::Rect &area);
 
+	/// 솔리드 오브젝트 여부 반환 함수.
     bool isSolidObject() const;
+	/// 상호작용 오브젝트 여부 반환 함수.
 	bool isInteractionObject() const;
     
 	void setZOrder(int zorder);

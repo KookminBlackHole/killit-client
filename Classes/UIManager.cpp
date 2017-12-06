@@ -71,7 +71,7 @@ void UIManager::onTouchesBegan(const vector<Touch*> &touches, Event *) {
 			dial->onTouchBegan(cp, id);
 		}
 	}
-}
+}	
 
 void UIManager::onTouchesMoved(const vector<Touch*> &touches, Event *) {
 	for (auto &t : touches) {

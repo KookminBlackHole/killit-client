@@ -73,7 +73,7 @@ bool GameObject::isSolidObject() const {
 }
 
 bool GameObject::isInteractionObject() const {
-	return type >= 0 && type < 10;
+	return type >= 0 && type <= 10;
 }
 
 void GameObject::setZOrder(int zorder) {

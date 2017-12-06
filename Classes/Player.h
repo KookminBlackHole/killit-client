@@ -15,30 +15,29 @@
 
 class Player : public cocos2d::Node {
 public:
-	// sx, sy: 플레이어의 타일맵 좌표, player: 현재 플레이어 구분 
+	/// sx, sy: 플레이어의 타일맵 좌표, owner: 내 캐릭터 구분 
     static Player *create(int sx, int sy, bool owner);
     
     bool init() override;
     void update(float dt) override;
     
+	/// 조이스틱 관련 콜백 함수.
     void onStickBegan(const cocos2d::Vec2 &angle, cocos2d::Ref *pSender);
     void onStickMoved(const cocos2d::Vec2 &angle, cocos2d::Ref *pSender);
     void onStickEnded(const cocos2d::Vec2 &angle, cocos2d::Ref *pSender);
-    
     void onStickChanged(const cocos2d::Vec2 &angle, cocos2d::Ref *pSender);
     
-    void onAngleChanged(int idx);
+    //void onAngleChanged(int idx);
 
-	/// ¿Ã∏ß ∫Ø∞Ê « ø‰
-	/// Ω«¡¶ ¡¬«•∏¶ ±◊∏ÆµÂ ¡¬«•∑Œ ∫Ø»Ø«œ¥¬ «‘ºˆ
-	void calculateGridCoord(int mapWidth, int mapHeight);
-	/// ±◊∏Æµµ ¡¬«•∏¶ Ω«¡¶ ¡¬«•ø° π›øµΩ√≈∞¥¬ «‘ºˆ
-	void gridCoordUpdate(int mapWidth, int mapHeight);
+	/// 캐릭터의 실제 좌표를 타일맵 좌표로 변환하는 함수.
+	void calculateGridCoord();
+	/// 캐릭터의 타일맵 좌표를 실제 좌표로 변경하는 함수(게임 초기 세팅에만 쓰임).
+	void gridCoordUpdate();
 
-	/// ∞ËªÍ Ω√¡°¿ª ∏Ì»Æ»˜ «ÿæﬂ«ÿº≠ µ˚∑Œ ∏∏µÁ «‘ºˆµÈ
 	void move(float dt);
 	void collision();
 	void updateZOrder();
+	/// 플레이어의 위치를 최종적으로 반영하는 함수.
 	void updatePosition();
 	/// 사용되고 있지 않는 함수.
 	//bool checkGameObjects();
@@ -51,10 +50,12 @@ public:
     
 public:
     cocos2d::Sprite *player;
-    /// 벽과 충돌 할 떄 쓰는 바운딩박스
+    /// 벽과 충돌 할 때 쓰는 바운딩박스
 	cocos2d::Rect solidBB;
+	/// tempPosition을 쓰는 이유는 플레이어의 위치를 모든(이동, 충돌 등) 처리가 끝난 뒤 실제 적용 하기 위해서.
     cocos2d::Vec2 direction, tempPosition;
     
+	/// 디버그 용 drawnode
     cocos2d::DrawNode *debugHP, *debugAttack, *debugAngle;
 
     bool touchJoystick = false, owner = false;
