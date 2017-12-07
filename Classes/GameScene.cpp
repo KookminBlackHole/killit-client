@@ -231,7 +231,7 @@ void GameScene::update(float dt) {
             float x = player->getPositionX() + cos(CC_DEGREES_TO_RADIANS(r)) * i * TILE_SIZE_HALF;
             float y = player->getPositionY() + sin(CC_DEGREES_TO_RADIANS(r)) * i * TILE_SIZE_HALF;
 
-			/// 그 더해진 각도를 타일맵 좌표로 변경.
+			/// 그 더해진 각도로 나온 좌표를 타일맵 좌표로 변경.
             int gX = (x + (TILE_SIZE_HALF * (mapWidth - 1) - origin.x)) / TILE_SIZE + 1;
             int gY = (y + (TILE_SIZE_HALF * (mapHeight - 1) - origin.y)) / TILE_SIZE + 1;
 

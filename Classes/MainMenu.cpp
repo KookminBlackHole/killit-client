@@ -6,5 +6,3 @@ bool MainMenu::init(){
     
     return false;
 }
-
-

@@ -28,8 +28,7 @@ public:
     
 public:
     float prevAngle = 0, sensitivity = 2.5f;
-    /// 변수 이름 바꿔야 함..
-    Player *bnd = nullptr;
+    Player *player = nullptr;
     int id = -1;
     
     // 문을 여는 행동과 조준하는 행동을 겹치지 않게 하기 위한 변수
